@@ -1,0 +1,13 @@
+Format: 1.0
+Type: Application
+FullName: io.murano.apps.Gerrit
+Name: Gerrit
+Description: |
+ Gerrit is a web based code review system, facilitating online code reviews
+ for projects using the Git version control system.
+Author: 'Mirantis, Inc'
+Tags: [Server, Java, Gerrit, CI]
+Classes:
+ io.murano.apps.Gerrit: Gerrit.yaml
+UI: ui.yaml
+Logo: logo.png

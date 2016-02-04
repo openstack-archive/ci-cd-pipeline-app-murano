@@ -1,0 +1,90 @@
+Namespaces:
+  =: io.murano.apps
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+
+Name: OpenLDAP
+
+Extends: std:Application
+
+Properties:
+  instance:
+    Contract: $.class(res:Instance).notNull()
+  name:
+    Contract: $.string().notNull()
+  domain:
+    Contract: $.string()
+  ldapUser:
+    Contract: $.string()
+  ldapPass:
+    Contract: $.string()
+
+Methods:
+  initialize:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - If: not $.getAttr(deployed, false)
+        Then:
+          - $securityGroupIngress:
+              - ToPort: 389
+                FromPort: 389
+                IpProtocol: tcp
+                External: true
+              - ToPort: 636
+                FromPort: 636
+                IpProtocol: tcp
+                External: true
+          - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
+          - $._environment.reporter.report($this, 'Creating VM for OpenLDAP')
+          - $.instance.deploy()
+          - $resources: new(sys:Resources)
+          - $template: $resources.yaml('DeployOpenLDAP.template')
+          - $._environment.reporter.report($this, 'OpenLDAP deploying')
+          - $.instance.agent.call($template, $resources)
+          - $._environment.reporter.report($this, format('OpenLDAP is available at {0}', $.instance.floatingIpAddress))
+          - If: $.domain != '' and $.domain != null
+            Then:
+              - $.configureOpenLDAPDomain()
+              - If: $.ldapUser != '' and $.ldapUser != null
+                Then:
+                  - $.configureOpenLDAPUser($.domain, $.ldapUser, $.ldapPass)
+          - $.setAttr(deployed, true)
+          - $._environment.reporter.report($this, 'OpenLDAP is deployed!')
+
+  configureOpenLDAPDomain:
+    Body:
+      - If: not $.getAttr(domainConfigured, false)
+        Then:
+          - $resources: new(sys:Resources)
+          - $template: $resources.yaml('ConfigureOpenLDAPDomain.template').bind(dict(domain => $.domain))
+          - $.instance.agent.call($template, $resources)
+          - $._environment.reporter.report($this, 'OpenLDAP domain is configured')
+          - $.setAttr(domainConfigured, true)
+
+  configureOpenLDAPUser:
+    Arguments:
+      - domain:
+          Contract: $.string().notNull()
+      - ldapUser:
+          Contract: $.string().notNull()
+      - ldapPass:
+          Contract: $.string().notNull()
+    Body:
+      - $.configureOpenLDAPDomain()
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('ConfigureOpenLDAPUser.template').bind(dict(
+            domain => $domain,
+            ldapUser => $ldapUser,
+            ldapPass => $ldapPass
+          ))
+      - $.instance.agent.call($template, $resources)
+      - $._environment.reporter.report($this, 'OpenLDAP user {0} is added'.format($ldapUser))
+
+  destroy:
+    Body:
+      - $.reportDestroyed()
+      - $.setAttr(deployed, false)

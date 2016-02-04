@@ -1,0 +1,20 @@
+FormatVersion: 2.0.0
+Version: 1.0.0
+Name: Deploy Jenkins
+
+Parameters:
+  appName: $appName
+
+Body: |
+  return deploy(args.appName).stdout
+
+Scripts:
+  deploy:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: deployJenkins.sh
+    Files: []
+    Options:
+      captureStdout: true
+      captureStderr: true
+      verifyExitcode: false

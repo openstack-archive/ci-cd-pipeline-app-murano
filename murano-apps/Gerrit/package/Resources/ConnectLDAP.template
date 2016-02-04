@@ -1,0 +1,22 @@
+FormatVersion: 2.0.0
+Version: 1.0.0
+Name: Connect LDAP
+
+Parameters:
+  openLDAPip: $openLDAPip
+  host:       $host
+  domain:     $domain
+
+Body: |
+  return configure('{0} {1} {2}'.format(args.openLDAPip, args.host, args.domain)).stdout
+
+Scripts:
+  configure:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: connectLDAP.sh
+    Files: []
+    Options:
+      captureStdout: true
+      captureStderr: true
+      verifyExitcode: false

@@ -1,0 +1,19 @@
+FormatVersion: 2.0.0
+Version: 1.0.0
+Name: Put sshKey
+
+Parameters:
+  sshKey: $sshKey
+
+Body: |
+  return configure('{0}'.format(args.sshKey)).stdout
+
+Scripts:
+  configure:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: putKey.sh
+    Files: []
+    Options:
+      captureStdout: true
+      captureStderr: true

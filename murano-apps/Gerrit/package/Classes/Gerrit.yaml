@@ -1,0 +1,99 @@
+Namespaces:
+  =: io.murano.apps
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+
+Name: Gerrit
+
+Extends: std:Application
+
+Properties:
+  name:
+    Contract: $.string().notNull()
+  warUrl:
+    Contract: $.string().notNull()
+  ldap:
+    Contract: $.class(OpenLDAP)
+  instance:
+    Contract: $.class(res:Instance).notNull()
+
+Methods:
+  initialize:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - If: not $.getAttr(deployed, false)
+        Then:
+          - $securityGroupIngress:
+              - ToPort: 8080
+                FromPort: 8080
+                IpProtocol: tcp
+                External: true
+              - ToPort: 29418
+                FromPort: 29418
+                IpProtocol: tcp
+                External: true
+          - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
+          - $._environment.reporter.report($this, 'Creating VM for Gerrit')
+          - $.instance.deploy()
+          - $resources: new(sys:Resources)
+          - $template: $resources.yaml('DeployGerrit.template').bind(dict(
+                warUrl => $.warUrl
+              ))
+          - $._environment.reporter.report($this, 'Deploying Gerrit')
+          - $.instance.agent.call($template, $resources)
+          - If: $.ldap != null
+            Then:
+              - $._environment.reporter.report($this, 'Gerrit waits OpenLDAP to be deployed...')
+              - $.ldap.deploy()
+              - $.connectLDAP()
+
+          - $._environment.reporter.report($this, 'Gerrit is deployed!')
+          - $.setAttr(deployed, true)
+
+  connectLDAP:
+    Body:
+      - $._environment.reporter.report($this, 'Connecting Gerrit to OpenLDAP server')
+      - $ldapInstance: $.ldap.instance
+      - If: $ldapInstance.assignFloatingIp
+        Then:
+          - $ldapHost: $ldapInstance.floatingIpAddress
+        Else:
+          - $ldapHost: $ldapInstance.ipAddresses[0]
+
+      - $host: "localhost"
+      - If: $.instance.assignFloatingIp
+        Then:
+          - $host: $.instance.floatingIpAddress
+        Else:
+          - $host: $.instance.ipAddresses[0]
+
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('ConnectLDAP.template').bind(dict(
+            openLDAPip => $ldapHost,
+            host => $host,
+            domain => $.ldap.domain
+          ))
+      - $.instance.agent.call($template, $resources)
+      - $._environment.reporter.report($this, format('Gerrit is available at {0}:8080', $host))
+
+  putKey:
+    Arguments:
+      - sshKey:
+          Contract: $.string().notNull()
+
+    Body:
+      - $._environment.reporter.report($this, 'Put SSH key to Gerrit server')
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('PutKey.template').bind(dict(
+                sshKey => $sshKey
+              ))
+      - $.instance.agent.call($template, $resources)
+
+  destroy:
+    Body:
+      - $.reportDestroyed()
+      - $.setAttr(deployed, false)

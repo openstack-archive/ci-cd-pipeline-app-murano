@@ -1,0 +1,22 @@
+FormatVersion: 2.0.0
+Version: 1.0.0
+Name: Get ssh key
+
+Parameters:
+  sshKey: $sshKey
+
+Body: |
+  key = ''
+  with open('/var/lib/jenkins/.ssh/jenkins-id_rsa.pub','r') as f:
+    key = f.read()
+  return key
+
+Scripts:
+  noop:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: noop.sh
+    Files: []
+    Options:
+      captureStdout: true
+      captureStderr: true

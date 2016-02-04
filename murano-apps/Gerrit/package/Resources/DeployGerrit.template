@@ -1,0 +1,20 @@
+FormatVersion: 2.0.0
+Version: 1.0.0
+Name: Deploy Gerrit
+
+Parameters:
+  warUrl: $warUrl
+
+Body: |
+  return deploy('{0}'.format(args.warUrl)).stdout
+
+Scripts:
+  deploy:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: deployGerrit.sh
+    Files: []
+    Options:
+      captureStdout: true
+      captureStderr: true
+      verifyExitcode: false
