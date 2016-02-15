@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e -x
+
+AUTH_URL=<%= p('openstack.os_auth_url') %>
+USERNAME=<%= p('openstack.os_username') %>
+TENANT=<%= p('openstack.os_tenant_name') %>
+PASSWORD=<%= p('openstack.os_password') %>
+
+JOB_DIR=/var/vcap/jobs/delete-lbaas
+BIN=/var/vcap/packages/python/bin
+
+echo "Deleting LBaaS..."
+${BIN}/python3 ${JOB_DIR}/config/delete_lbaas.py $AUTH_URL $USERNAME $TENANT $PASSWORD
+echo "Deleted."

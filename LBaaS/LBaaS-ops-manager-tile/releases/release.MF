@@ -1,0 +1,24 @@
+---
+packages:
+- name: python
+  version: 795a8f8acc5e1c4688e3823355e7681532ba85f9
+  fingerprint: 795a8f8acc5e1c4688e3823355e7681532ba85f9
+  sha1: %sha1_python_package%
+  dependencies: []
+jobs:
+- name: lbaas-config
+  version: b8e48895b6fa2a8224e5907f5ee983d99eab6086
+  fingerprint: b8e48895b6fa2a8224e5907f5ee983d99eab6086
+  sha1: %sha1_lbaas_job%
+- name: delete-lbaas
+  version: b8e48895b6fa2a8224e5907f5ee983d99eab6086
+  fingerprint: b8e48895b6fa2a8224e5907f5ee983d99eab6086
+  sha1: %sha1_delete_lbaas_job%
+license:
+  version: e6c4ccc65c76e75e2338d1edabdcf264d37ee663
+  fingerprint: e6c4ccc65c76e75e2338d1edabdcf264d37ee663
+  sha1: e9f73d92771324e6da16044b1d28d045e5eb71c3
+commit_hash: bedfbc4e
+uncommitted_changes: true
+name: example-release
+version: '10'

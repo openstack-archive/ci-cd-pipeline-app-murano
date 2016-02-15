@@ -1,0 +1,5 @@
+check process lbaas-config
+  with pidfile /var/vcap/sys/run/lbaas-config/pidfile
+  start program "/var/vcap/jobs/lbaas-config/bin/ctl start"
+  stop program "/var/vcap/jobs/lbaas-config/bin/ctl stop"
+  group vcap

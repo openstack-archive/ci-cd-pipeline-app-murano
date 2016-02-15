@@ -1,0 +1,38 @@
+---
+name: lbaas-config
+description: "Job which installs LBaaS"
+
+packages: [python]
+
+templates:
+  ctl.erb: bin/ctl
+  create_lbaas.py: config/create_lbaas.py
+  create_keypair.py: config/create_keypair.py
+  configure_lbaas.py: config/configure_lbaas.py
+  put_pem.sh: config/put_pem.sh
+  config.json: config/config.json
+  cf.pem.erb: config/cf.pem
+  pkey.erb: config/pkey
+
+properties:
+  openstack.os_auth_url:
+    description: ''
+  openstack.os_username:
+    description: ''
+  openstack.os_tenant_name:
+    description: ''
+  openstack.os_password:
+    description: ''
+
+  lbaas.pcf_router_ips:
+    description: ''
+  lbaas.private_key_ssh:
+    description: ''
+  lbaas.public_key_ssh:
+    description: ''
+  lbaas.ssl_rsa_cert:
+    description: ''
+  lbaas.lbaas_impl:
+    description: ''
+  lbaas.image_name:
+    description: ''

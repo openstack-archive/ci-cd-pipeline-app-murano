@@ -1,0 +1,30 @@
+set -e -x
+
+echo "Installing dependencies..."
+dpkg -i python/*.deb
+
+echo "Extracting python..."
+tar xzvf python/Python-3.5.0.tgz
+
+echo "Building python..."
+pushd Python-3.5.0
+  ./configure \
+    --prefix=${BOSH_INSTALL_TARGET}
+
+  make
+  make install
+popd
+
+echo "Installing service-broker..."
+pushd service-broker
+  ${BOSH_INSTALL_TARGET}/bin/pip3 install .
+popd
+
+echo "Installing muranoclient..."
+${BOSH_INSTALL_TARGET}/bin/pip3 install -U python/python-muranoclient.tgz
+
+echo "Installing python-novaclient..."
+${BOSH_INSTALL_TARGET}/bin/pip3 install python-novaclient
+
+echo "Installing wrapt (dependency for novaclient)..."
+${BOSH_INSTALL_TARGET}/bin/pip3 install wrapt

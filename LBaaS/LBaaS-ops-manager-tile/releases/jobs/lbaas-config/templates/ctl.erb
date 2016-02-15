@@ -1,0 +1,64 @@
+#!/bin/bash
+set -e -x
+
+RUN_DIR=/var/vcap/sys/run/lbaas-config
+LOG_DIR=/var/vcap/sys/log/lbaas-config
+JOB_DIR=/var/vcap/jobs/lbaas-config
+PIDFILE=${RUN_DIR}/pidfile
+INSTANCE_ID_FILE=${RUN_DIR}/instance_id
+
+BIN=/var/vcap/packages/python/bin
+
+case $1 in
+  start)
+    mkdir -p $RUN_DIR
+    mkdir -p $LOG_DIR
+    chown vcap:vcap $LOG_DIR
+
+    $BIN/python3 ${JOB_DIR}/config/create_keypair.py "<%= p('openstack.os_auth_url') %>" \
+        "<%= p('openstack.os_username') %>" "<%= p('openstack.os_tenant_name') %>" "<%= p('openstack.os_password') %>" lbaas-generated "<%= p('lbaas.public_key_ssh') %>"
+
+    $BIN/lbaas-broker-server \
+      ${JOB_DIR}/config/config.json \
+      >> ${LOG_DIR}/stdout.log \
+      2>> ${LOG_DIR}/stderr.log &
+
+    echo $! > $PIDFILE
+
+    # Wait a moment while broker-server is starting.
+    sleep 5
+
+    # Create LBaaS instance.
+    $BIN/python3 ${JOB_DIR}/config/create_lbaas.py > ${LOG_DIR}/creating.log
+
+    lbaas_url=$(cat ${LOG_DIR}/creating.log | tail -2 | head -1)
+    instance_id=$(cat ${LOG_DIR}/creating.log | tail -1)
+
+    echo $instance_id > $INSTANCE_ID_FILE
+
+    # Put pem file to LBaaS instance.
+    lbaas_host=$(echo $lbaas_url | grep -Po '(?<=://)[\w\.]*')
+    chmod +x ${JOB_DIR}/config/put_pem.sh
+    chmod 0600 ${JOB_DIR}/config/pkey
+    ${JOB_DIR}/config/put_pem.sh $lbaas_host ${JOB_DIR}/config/cf.pem ${JOB_DIR}/config/pkey
+
+    # Configure LBaaS.
+    $BIN/python3 ${JOB_DIR}/config/configure_lbaas.py $lbaas_url "<%= p('lbaas.pcf_router_ips') %>"
+    ;;
+
+  stop)
+    curl -X DELETE http://localhost:8080/v2/service_instances/$(cat $INSTANCE_ID_FILE)
+
+    sleep 5
+
+    PID=$(head -1 ${PIDFILE})
+    kill ${PID}
+    while [ -e /proc/${PID} ]; do sleep 0.1; done
+    rm -f ${PIDFILE}
+    ;;
+
+  *)
+    echo "Usage: ctl {start|stop}"
+  ;;
+
+esac
