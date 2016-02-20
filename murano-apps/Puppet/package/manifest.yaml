@@ -1,0 +1,12 @@
+Format: 1.0
+Type: Library
+FullName: io.murano.opaas.puppet.Puppet
+Name: Puppet
+Description: |
+ Puppet is an open-source configuration management tool. It runs on many
+ Unix-like systems as well as on Microsoft Windows, and includes its own
+ declarative language to describe system configuration.
+Author: 'Mirantis, Inc'
+Tags: [Server, Puppet]
+Classes:
+ io.murano.opaas.puppet.PuppetInstance: PuppetInstance.yaml

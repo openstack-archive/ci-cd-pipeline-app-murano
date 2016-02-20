@@ -1,0 +1,19 @@
+FormatVersion: 2.0.0
+Version: 1.0.0
+Name: Install Hiera
+
+Parameters:
+
+Body: |
+  return installHiera().stdout
+
+Scripts:
+  installHiera:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: installHiera.sh
+    Files: ['hiera.yaml', 'murano.yaml']
+    Options:
+      captureStdout: true
+      captureStderr: true
+      verifyExitcode: true

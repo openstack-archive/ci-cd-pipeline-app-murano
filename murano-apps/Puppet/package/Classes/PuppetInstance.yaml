@@ -1,0 +1,113 @@
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+
+Namespaces:
+    =: io.murano.opaas.puppet
+    res: io.murano.resources
+    std: io.murano
+    sys: io.murano.system
+
+Name: PuppetInstance
+
+Extends: res:LinuxMuranoInstance
+
+Methods:
+  initialize:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - $.super($.deploy())
+
+      # Deploy host only once
+      - If: $.getAttr(hostDeployed, false)
+        Then:
+          - Return:
+
+      - $.installPuppet()
+      - $.installHiera()
+      - $.installPuppetModule('reidmv/yamlfile')
+      - !yaql "$.setHieraConfigValue(':hierarchy', 'murano')"
+      - $.setAttr(hostDeployed, true)
+
+  installPuppet:
+    Body:
+      - $._environment.reporter.report($this,
+        'Install puppet on instance {0}'.format($.openstackId))
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('InstallPuppet.template')
+      - $.agent.call($template, $resources)
+      - $._environment.reporter.report($this,
+        'Puppet installed on instance {0}'.format($.openstackId))
+
+  installHiera:
+    Body:
+      - $._environment.reporter.report($this,
+        'Install Hiera on instance {0}'.format($.openstackId))
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('InstallHiera.template')
+      - $.agent.call($template, $resources)
+      - $._environment.reporter.report($this,
+        'Puppet installed on instance {0}'.format($.openstackId))
+
+  installPuppetModule:
+    Arguments:
+      - module:
+          Contract: $.string().notNull()
+    Body:
+      - $._environment.reporter.report($this,
+        'Installing puppet module {0} on {1}'.format( $module, $.openstackId))
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('InstallPuppetModule.template').bind(dict(
+          module => $module))
+      - $.agent.call($template, $resources)
+      - $._environment.reporter.report($this,
+        'Puppet module {0} installed on {1}'.format( $module, $.openstackId))
+
+  setHieraValue:
+    Arguments:
+      - key:
+          Contract: $.string().notNull()
+      - value:
+          Contract: $.string().notNull()
+    Body:
+      - $._environment.reporter.report($this,
+        'Put value {0} = {1}'.format( $key, $value))
+      - $.setYamlValue('/etc/puppet/hieradata/murano.yaml', $key, $value)
+
+  setHieraConfigValue:
+    Arguments:
+      - key:
+          Contract: $.string().notNull()
+      - value:
+          Contract: $.string().notNull()
+    Body:
+      - $._environment.reporter.report($this,
+        'setHieraConfigValue {0}={1}'.format( $key, $value))
+      - $.setYamlValue('/etc/puppet/hiera.yaml', $key, $value)
+
+  setYamlValue:
+    Arguments:
+      - path:
+          Contract: $.string().notNull()
+      - key:
+          Contract: $.string().notNull()
+      - value:
+          Contract: $.string().notNull()
+    Body:
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('setYamlValue.template').bind(dict(
+          path => $path,
+          key => $key,
+          value => $value))
+      - $.agent.call($template, $resources)

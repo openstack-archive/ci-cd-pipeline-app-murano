@@ -1,0 +1,19 @@
+FormatVersion: 2.0.0
+Version: 1.0.0
+Name: InstallPuppet
+
+Parameters:
+
+Body: |
+  return installPuppet().stdout
+
+Scripts:
+  installPuppet:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: installPuppet.sh
+    Files: []
+    Options:
+      captureStdout: true
+      captureStderr: true
+      verifyExitcode: true

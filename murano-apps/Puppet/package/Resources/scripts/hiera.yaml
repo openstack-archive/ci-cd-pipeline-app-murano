@@ -1,0 +1,10 @@
+---
+:backends: yaml
+
+:logger: puppet
+
+:hierarchy:
+  - murano
+
+:yaml:
+   :datadir: /etc/puppet/hieradata

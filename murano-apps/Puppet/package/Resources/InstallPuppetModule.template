@@ -1,0 +1,20 @@
+FormatVersion: 2.0.0
+Version: 1.0.0
+Name: InstallPuppetModule
+
+Parameters:
+  module: $module
+
+Body: |
+  return installPuppetModule('{0}'.format(args.module)).stdout
+
+Scripts:
+  installPuppetModule:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: installPuppetModule.sh
+    Files: []
+    Options:
+      captureStdout: true
+      captureStderr: true
+      verifyExitcode: true
