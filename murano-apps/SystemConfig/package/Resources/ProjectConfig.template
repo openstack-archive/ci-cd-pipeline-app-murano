@@ -1,0 +1,18 @@
+FormatVersion: 2.1.0
+Version: 1.0.0
+Name: Deploy Project Config
+
+Parameters:
+
+Body: |
+  return deploy().stdout
+
+Scripts:
+  deploy:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: deploy.sh
+    Files: []
+    Options:
+      captureStdout: true
+      captureStderr: true
