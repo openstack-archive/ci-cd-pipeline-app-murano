@@ -1,0 +1,16 @@
+FormatVersion: 2.0.0
+Version: 1.0.0
+Name: Deploy HAProxy
+
+Body: |
+  return HAProxyDeploy().stdout
+
+Scripts:
+  HAProxyDeploy:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: deployHAProxy.sh
+    Files: []
+    Options:
+      captureStdout: true
+      captureStderr: true
