@@ -38,6 +38,10 @@ Properties:
     Contract: $.class(std:Environment)
     Usage: Runtime
 
+  url:
+    Contract: $.string()
+    Usage: Out
+
 Methods:
   initialize:
     Body:
@@ -67,8 +71,16 @@ Methods:
           - $host: $.instance.floatingIpAddress
         Else:
           - $host: $.instance.ipAddresses[0]
-      - $.environment.reporter.report($this, format('LBaaS is available at http://{0}:{1}{2}', $host, $lbaas.port, $lbaas.path))
+      - $.url: format('http://{0}:{1}{2}', $host, $lbaas.port, $lbaas.path)
+      - $.environment.reporter.report($this, format('LBaaS is available at {0}', $.url))
       - $.setAttr(deployed, true)
+
+  getCredentials:
+    Usage: Action
+    Body:
+      - Return:
+          credentials:
+            uri: $.url
 
   installLoadBalancer:
 
