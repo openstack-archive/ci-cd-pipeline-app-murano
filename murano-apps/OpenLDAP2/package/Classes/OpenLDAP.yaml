@@ -1,0 +1,111 @@
+Namespaces:
+  =: io.murano.opaas
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+  puppet: io.murano.opaas.puppet
+
+
+Name: OpenLDAP
+
+Extends: std:Application
+
+Properties:
+  instance:
+    Contract: $.class(puppet:PuppetInstance).notNull()
+  name:
+    Contract: $.string().notNull()
+  domain:
+    Contract: $.string()
+  ldapUser:
+    Contract: $.string()
+  ldapPass:
+    Contract: $.string()
+
+Methods:
+  initialize:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - If: not $.getAttr(deployed, false)
+        Then:
+          - $securityGroupIngress:
+              - ToPort: 389
+                FromPort: 389
+                IpProtocol: tcp
+                External: true
+              - ToPort: 636
+                FromPort: 636
+                IpProtocol: tcp
+                External: true
+          - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
+          - $._environment.reporter.report($this, 'Creating VM for OpenLDAP {0}'.format($.instance.openstackId))
+          - $.instance.deploy()
+          - $._environment.reporter.report($this, 'VM Created {0}'.format($.instance.openstackId))
+
+          - $.instance.installPuppetModule('datacentred-ldap')
+
+          - $.createConfiguration()
+
+
+          - $resources: new(sys:Resources)
+          - $template: $resources.yaml('DeployOpenLDAP.template')
+          - $._environment.reporter.report($this, 'OpenLDAP deploying')
+          - $.instance.agent.call($template, $resources)
+          - $._environment.reporter.report($this, format('OpenLDAP is available at {0}', $.instance.floatingIpAddress))
+
+          - If: $.domain != '' and $.domain != null
+            Then:
+              - If: $.ldapUser != '' and $.ldapUser != null
+                Then:
+                  - $.configureOpenLDAPUser($.domain, $.ldapUser, $.ldapPass)
+          - $.setAttr(deployed, true)
+          - $._environment.reporter.report($this, 'OpenLDAP is deployed!')
+
+  createConfiguration:
+    Body:
+      - $.instance.setHieraValue('ldap_domain', $.domain)
+      - $.instance.setHieraValue('ldap_dc', $.domain.split('.')[0])
+      - $.instance.setHieraValue('ldap_user', $.ldapUser)
+      - $.instance.setHieraValue('ldap_password', $.ldapPass)
+
+      - !yaql "$.instance.setHieraValue('ldap::client::uri', 'localhost')"
+      - !yaql "$.instance.setHieraValue('ldap::server::rootpw', $.ldapPass)"
+      - !yaql "$.instance.setHieraValue('ldap::client::ssl_cert', '')"
+
+      #
+      # these values are also supported by puppet module
+      #
+      #- !yaql "$.instance.setHieraValue('ldap::client::base', 'dc=example,dc=com')"
+      #- !yaql "$.instance.setHieraValue('ldap::client::ssl', 'false')"
+      #- !yaql "$.instance.setHieraValue('ldap::server::suffix', 'dc=example,dc=com')"
+      #- !yaql "$.instance.setHieraValue('ldap::server::rootdn', 'cn=admin,dc=example,dc=com')"
+      #- !yaql "$.instance.setHieraValue('ldap::server::ssl', false)"
+      #- !yaql "$.instance.setHieraValue('ldap::server::ssl_cacert', '')"
+      #- !yaql "$.instance.setHieraValue('ldap::server::ssl_cert', '')"
+      #- !yaql "$.instance.setHieraValue('ldap::server::ssl_key', '')"
+
+  configureOpenLDAPUser:
+    Arguments:
+      - domain:
+          Contract: $.string().notNull()
+      - ldapUser:
+          Contract: $.string().notNull()
+      - ldapPass:
+          Contract: $.string().notNull()
+    Body:
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('ConfigureOpenLDAPUser.template').bind(dict(
+            domain => $domain,
+            ldapUser => $ldapUser,
+            ldapPass => $ldapPass
+          ))
+      - $.instance.agent.call($template, $resources)
+      - $._environment.reporter.report($this, 'OpenLDAP user {0} is added'.format($ldapUser))
+
+  destroy:
+    Body:
+      - $.reportDestroyed()
+      - $.setAttr(deployed, false)
