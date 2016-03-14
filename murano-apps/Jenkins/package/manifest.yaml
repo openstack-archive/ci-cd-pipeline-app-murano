@@ -1,12 +1,12 @@
 Format: 1.0
 Type: Application
-FullName: io.murano.apps.Jenkins
+FullName: io.murano.opaas.Jenkins
 Name: Jenkins
 Description: |
  Jenkins is an open source continuous integration tool written in Java.
 Author: 'Mirantis, Inc'
 Tags: [Server, Java, CI, Jenkins]
 Classes:
- io.murano.apps.Jenkins: Jenkins.yaml
+ io.murano.opaas.Jenkins: Jenkins.yaml
 UI: ui.yaml
 Logo: logo.png

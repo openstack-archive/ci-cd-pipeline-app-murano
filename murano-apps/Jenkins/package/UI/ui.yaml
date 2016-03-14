@@ -2,13 +2,11 @@ Version: 2
 
 Application:
   ?:
-    type: io.murano.apps.Jenkins
+    type: io.murano.opaas.Jenkins
   name: $.appConfiguration.name
-  ldap: $.appConfiguration.OpenLDAP
-  gerrit: $.appConfiguration.GerritServer
   instance:
     ?:
-      type: io.murano.resources.LinuxMuranoInstance
+      type: io.murano.opaas.puppet.PuppetInstance
     name: generateHostname($.instanceConfiguration.unitNamingPattern, 1)
     flavor: $.instanceConfiguration.flavor
     image: $.instanceConfiguration.osImage
@@ -22,7 +20,7 @@ Forms:
         - name: name
           type: string
           label: Application Name
-          initial: Jenkins
+          initial: JenkinsPuppet
           description: >-
             Enter a desired name for the application. Just A-Z, a-z, 0-9, dash and
             underline are allowed
@@ -33,16 +31,6 @@ Forms:
              Select to true to assign floating IP automatically
           initial: true
           required: false
-        - name: OpenLDAP
-          type: io.murano.apps.OpenLDAP
-          required: false
-          description: >-
-            Specify OpenLDAP domain for authentication
-        - name: GerritServer
-          type: io.murano.apps.Gerrit
-          required: false
-          description: >-
-            Specify Gerrit server
   - instanceConfiguration:
       fields:
         - name: title
