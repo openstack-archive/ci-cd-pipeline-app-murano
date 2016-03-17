@@ -1,0 +1,19 @@
+FormatVersion: 2.0.0
+Version: 1.0.0
+Name: Deploy LBaaS
+
+Parameters:
+  impl: $impl
+
+Body: |
+  return LBaasDeploy('{0}'.format(args.impl)).stdout
+
+Scripts:
+  LBaasDeploy:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: deployLBaaS.sh
+    Files: []
+    Options:
+      captureStdout: true
+      captureStderr: true
