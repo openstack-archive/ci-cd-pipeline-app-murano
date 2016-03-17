@@ -1,0 +1,18 @@
+Namespaces:
+  =: io.murano.opaas.puppet
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+  puppet: io.murano.opaas.puppet
+
+Name: ProjectConfig
+
+Methods:
+  installOnTheNode:
+    Arguments:
+      instance:
+        Contract: $.class(puppet:PuppetInstance)
+    Body:
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('ProjectConfig.template')
+      - $instance.agent.call($template, $resources)
