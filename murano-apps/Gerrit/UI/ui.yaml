@@ -2,13 +2,13 @@ Version: 2
 
 Application:
   ?:
-    type: io.murano.apps.Gerrit
+    type: io.murano.opaas.Gerrit
   name: $.appConfiguration.name
   warUrl: $.appConfiguration.warUrl
   ldap: $.appConfiguration.OpenLDAP
   instance:
     ?:
-      type: io.murano.resources.LinuxMuranoInstance
+      type: io.murano.opaas.puppet.PuppetInstance
     name: generateHostname($.instanceConfiguration.unitNamingPattern, 1)
     flavor: $.instanceConfiguration.flavor
     image: $.instanceConfiguration.osImage
@@ -22,7 +22,7 @@ Forms:
         - name: name
           type: string
           label: Application Name
-          initial: Gerrit
+          initial: GerritPuppet
           description: >-
             Enter a desired name for the application. Just A-Z, a-z, 0-9, dash and
             underline are allowed
@@ -40,11 +40,6 @@ Forms:
           description: >-
             Enter the war version from Gerrit's site
             http://gerrit-releases.storage.googleapis.com/index.html
-        - name: OpenLDAP
-          type: io.murano.apps.OpenLDAP
-          required: false
-          description: >-
-            Specify OpenLDAP domain for authentication.
   - instanceConfiguration:
       fields:
         - name: title

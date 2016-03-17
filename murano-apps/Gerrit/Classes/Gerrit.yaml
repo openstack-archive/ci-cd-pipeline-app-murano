@@ -1,0 +1,107 @@
+Namespaces:
+  =: io.murano.opaas
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+  opaas: io.murano.opaas
+  puppet: io.murano.opaas.puppet
+
+Name: Gerrit
+
+Extends: std:Application
+
+Properties:
+  instance:
+    Contract: $.class(puppet:PuppetInstance).notNull()
+  name:
+    Contract: $.string().notNull()
+
+Methods:
+  initialize:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - $.super($.deploy())
+      - If: $.getAttr(deployed, false)
+        Then:
+          Return:
+      - $securityGroupIngress:
+          - ToPort: 80
+            FromPort: 80
+            IpProtocol: tcp
+            External: true
+          - ToPort: 8081
+            FromPort: 8081
+            IpProtocol: tcp
+            External: true
+          - ToPort: 443
+            FromPort: 443
+            IpProtocol: tcp
+            External: true
+      - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
+      - $._environment.reporter.report($this, 'Creating VM for Gerrit {0}'.format($.instance.openstackId))
+      - $.instance.deploy()
+      - $._environment.reporter.report($this, 'Gerrit VM Created {0}'.format($.instance.openstackId))
+
+      - $._environment.reporter.report($this, 'Deploying Gerrit')
+
+      - $this.systemConfig: new(puppet:ProjectConfig)
+      - $this.systemConfig.installOnTheNode($this.instance)
+
+      - $.createConfiguration()
+
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('DeployGerrit.template')
+      - $.instance.agent.call($template, $resources)
+      - $.setAttr(deployed, true)
+      - $._environment.reporter.report($this, format('Gerrit is available at {0}:80 or {1}:8081',
+          $.instance.floatingIpAddress, $.instance.floatingIpAddress))
+
+  createConfiguration:
+    Body:
+      - $.instance.setHieraValue( 'project_config_repo', 'https://github.com/mirademo/project-config.git')
+      - $.instance.setHieraValue( 'gerrit_github_token', 'f84013d50c69e60e902f748ea75c611695f35ef2')
+      - $.instance.setHieraValue( 'github_project_username', 'mirademo')
+      - $.instance.setHieraValue( 'github_project_password', 'github_project_password')
+      - $.instance.setHieraValue( 'gerrit_mysql_host', 'localhost')
+      - $.instance.setHieraValue( 'gerrit_email_private_key', 'gerrit_email_private_key')
+      - $.instance.setHieraValue( 'gerrit_rest_token_private_key', 'gerrit_rest_token_private_key45620')
+      - $.instance.setHieraValue( 'gerritbot_password', 'P@ssw0rd')
+      - $.instance.setHieraValue( 'gerritbot_ssh_rsa_key_contents', 'gerritbot_ssh_rsa_key_contents')
+      - $.instance.setHieraValue( 'gerritbot_ssh_rsa_pubkey_contents', 'gerritbot_ssh_rsa_pubkey_contents')
+      # - $.instance.setHieraValue( 'gerrit_ssl_cert_file_contents', 'gerrit_ssl_cert_file_contents')
+      # - $.instance.setHieraValue( 'gerrit_ssl_key_file_contents', 'gerrit_ssl_key_file_contents')
+      # - $.instance.setHieraValue( 'gerrit_ssl_chain_file_contents', 'gerrit_ssl_chain_file_contents')
+      - $.instance.setHieraValue( 'gerrit_ssh_dsa_key_contents', 'gerrit_ssh_dsa_key_contents')
+      - $.instance.setHieraValue( 'gerrit_ssh_dsa_pubkey_contents', 'gerrit_ssh_dsa_pubkey_contents')
+      - $.instance.setHieraValue( 'gerrit_ssh_rsa_key_contents', 'gerrit_ssh_rsa_key_contents')
+      - $.instance.setHieraValue( 'gerrit_ssh_rsa_pubkey_contents', 'gerrit_ssh_rsa_pubkey_contents')
+      - $.instance.setHieraValue( 'gerrit_ssh_project_rsa_key_contents', 'gerrit_ssh_project_rsa_key_contents')
+      - $.instance.setHieraValue( 'gerrit_ssh_project_rsa_pubkey_contents', 'gerrit_project_ssh_rsa_pubkey_contents')
+      - $.instance.setHieraValue( 'welcome_message_gerrit_ssh_private_key', 'welcome_message_gerrit_ssh_private_key')
+      - $.instance.setHieraValue( 'welcome_message_gerrit_ssh_public_key', 'welcome_message_gerrit_ssh_public_key')
+      - $.instance.setHieraValue( 'ssh_replication_rsa_key_contents', '')
+      - $.instance.setHieraValue( 'gerrit_replication_ssh_rsa_pubkey_contents', '')
+      - $.instance.setHieraValue( 'gerrit_lp_consumer_key', 'gerrit_lp_consumer_key')
+      - $.instance.setHieraValue( 'gerrit_lp_access_token', 'gerrit_lp_access_token')
+      - $.instance.setHieraValue( 'gerrit_lp_access_secret', 'gerrit_lp_access_secret')
+      - $.instance.setHieraValue( 'gerrit_notify_impact_file', '/etc/project-config/gerrit/notify_impact.yaml')
+      - $.instance.setHieraValue( 'gerrit_contactstore_appsec', 'gerrit_contactstore_appsec')
+      - $.instance.setHieraValue( 'gerrit_contactstore_pubkey', 'gerrit_contactstore_pubkey')
+      - $.instance.setHieraValue( 'gerrit_acls_dir', '/etc/project-config/gerrit/acls')
+      - $.instance.setHieraValue( 'gerrit_db_user', 'gerrit2')
+      - $.instance.setHieraValue( 'gerrit_db_password', '12345')
+      - $.instance.setHieraValue( 'gerrit_db_root_password', 'P@ssw0rd')
+
+      - $.instance.setHieraValue( 'swift_store_user', 'swift_store_user')
+      - $.instance.setHieraValue( 'swift_store_key', 'swift_store_key')
+      - $.instance.setHieraValue( 'jeepyb_project_file', '/etc/project-config/gerrit/projects.yaml')
+      - $.instance.setHieraValue( 'project_config_config_dir', '/etc/project-config/')
+
+
+  destroy:
+    Body:
+      - $.reportDestroyed()
+      - $.setAttr(deployed, false)
