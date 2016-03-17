@@ -1,8 +1,10 @@
 Namespaces:
-  =: io.murano.apps
+  =: io.murano.opaas
   std: io.murano
   res: io.murano.resources
   sys: io.murano.system
+  opaas: io.murano.opaas
+  puppet: io.murano.opaas.puppet
 
 Name: Jenkins
 
@@ -11,12 +13,8 @@ Extends: std:Application
 Properties:
   name:
     Contract: $.string().notNull()
-  ldap:
-    Contract: $.class(OpenLDAP)
-  gerrit:
-    Contract: $.class(Gerrit)
   instance:
-    Contract: $.class(res:Instance).notNull()
+    Contract: $.class(puppet:PuppetInstance).notNull()
 
 Methods:
   initialize:
@@ -25,38 +23,28 @@ Methods:
 
   deploy:
     Body:
+      - $.super($.deploy())
       - If: not $.getAttr(deployed, false)
         Then:
-          - $._environment.reporter.report($this, 'Creating VM for Jenkins')
+          - $._environment.reporter.report($this, 'Creating security group for Jenkins')
           - $securityGroupIngress:
               - ToPort: 8080
                 FromPort: 8080
                 IpProtocol: tcp
                 External: true
           - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
+
+          - $._environment.reporter.report($this, 'Creating VM for Jenkins {0}'.format($.instance.openstackId))
           - $.instance.deploy()
+          - $._environment.reporter.report($this, 'Jenkins VM {0} created'.format($.instance.openstackId))
+
+          - $this.projectConfig: new(puppet:ProjectConfig)
+          - $this.projectConfig.installOnTheNode($this.instance)
+
           - $resources: new(sys:Resources)
           - $template: $resources.yaml('DeployJenkins.template')
           - $._environment.reporter.report($this, 'Jenkins deploying')
           - $.instance.agent.call($template, $resources)
-
-          - If: $.ldap != null
-            Then:
-              - $._environment.reporter.report($this, 'Jenkins waits OpenLDAP to be deployed...')
-              - $.ldap.deploy()
-              - $.connectLDAP()
-
-          - If: $.gerrit != null and $.ldap != null
-            Then:
-              - $._environment.reporter.report($this, 'Jenkins waits Gerrit to be deployed...')
-              - $.gerrit.deploy()
-              - $.connectGerrit()
-              - $sshKey: $.getKey()
-              - $.gerrit.putKey($sshKey)
-
-          - $.installJJB()
-          - $.configureJJB()
-          - $.createTestJob()
 
           - If: $.instance.assignFloatingIp
             Then:
@@ -66,88 +54,6 @@ Methods:
           - $._environment.reporter.report($this, 'Jenkins is available at {0}:8080'.format($host))
           - $.setAttr(deployed, true)
 
-  installJJB:
-    Body:
-      - $resources: new(sys:Resources)
-      - $._environment.reporter.report($this, 'Installing Jenkins Job Builder')
-      - $template: $resources.yaml('InstallJJB.template')
-      - $.instance.agent.call($template, $resources)
-
-  configureJJB:
-    Body:
-      - $resources: new(sys:Resources)
-      - $._environment.reporter.report($this, 'Configuring Jenkins Job Builder')
-
-      - If: $.ldap != null
-        Then:
-          - If: $.ldap.ldapUser != '' and $.ldap.ldapUser != null
-            Then:
-              - $user: $.ldap.ldapUser
-              - $password: $.ldap.ldapPass
-            Else:
-              - $user: 'jenkins'
-              - $password: 'openstack'
-        Else:
-          - $user: ''
-          - $password: ''
-
-      - $template: $resources.yaml('ConfigureJJB.template').bind(dict(
-            jenkinsip => $.instance.ipAddresses[0],
-            user => $user,
-            password => $password
-          ))
-      - $.instance.agent.call($template, $resources)
-      - $._environment.reporter.report($this, 'Jenkins Job Builder is configured!')
-
-  createTestJob:
-    Body:
-      - $resources: new(sys:Resources)
-      - $._environment.reporter.report($this, 'Creating test job via Jenkins Job Builder')
-      - $template: $resources.yaml('CreateTestJob.template')
-      - $.instance.agent.call($template, $resources)
-
-  connectLDAP:
-    Body:
-      - $.ldap.configureOpenLDAPUser($.ldap.domain, 'jenkins', 'openstack')
-      - $ldapInstance: $.ldap.instance
-      - If: $ldapInstance.assignFloatingIp
-        Then:
-          - $ldapHost: $ldapInstance.floatingIpAddress
-        Else:
-          - $ldapHost: $ldapInstance.ipAddresses[0]
-      - $resources: new(sys:Resources)
-      - $._environment.reporter.report($this, 'Connecting Jenkins to OpenLDAP server')
-      - $template: $resources.yaml('ConnectLDAP.template').bind(dict(
-            openLDAPip => $ldapHost,
-            domain => $.ldap.domain
-          ))
-      - $.instance.agent.call($template, $resources)
-      - $._environment.reporter.report($this, 'Jenkins is connected to OpenLDAP server!')
-
-  connectGerrit:
-    Body:
-      - $._environment.reporter.report($this, 'Connecting Jenkins with Gerrit')
-      - $gerritInstance: $.gerrit.instance
-      - If: $gerritInstance.assignFloatingIp
-        Then:
-          - $gerritHost: $gerritInstance.floatingIpAddress
-        Else:
-          - $gerritHost: $gerritInstance.ipAddresses[0]
-      - $resources: new(sys:Resources)
-      - $template: $resources.yaml('ConnectGerrit.template').bind(dict(
-            gerritIp => $gerritHost,
-            domain => $.ldap.domain
-          ))
-      - $.instance.agent.call($template, $resources)
-      - $._environment.reporter.report($this, 'Jenkins is connected with Gerrit!')
-
-  getKey:
-    Body:
-      - $._environment.reporter.report($this, 'Get SSH key from Jenkins')
-      - $resources: new(sys:Resources)
-      - $template: $resources.yaml('GetKey.template')
-      - $sshKey: $.instance.agent.call($template, $resources)
-      - Return: format('{0}', $sshKey)
 
   destroy:
     Body:
