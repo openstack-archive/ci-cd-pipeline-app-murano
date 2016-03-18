@@ -45,7 +45,7 @@ node default {
     acls_dir                            => hiera('gerrit_acls_dir'),
     notify_impact_file                  => hiera('gerrit_notify_impact_file'),
     projects_file                       => hiera('jeepyb_project_file'),
-    projects_config                     => hiera('jeepyb_project_file'),
+    projects_config                     => 'openstack_project/review-dev.projects.ini.erb',
     github_username                     => 'openstack-gerrit',
     github_oauth_token                  => hiera('gerrit_github_token'),
     github_project_username             => hiera('github_project_username', 'username'),
