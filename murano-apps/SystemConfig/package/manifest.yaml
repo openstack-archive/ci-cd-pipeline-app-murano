@@ -9,3 +9,5 @@ Tags: [CI]
 Classes:
  io.murano.opaas.puppet.ProjectConfig: ProjectConfig.yaml
 Logo: logo.png
+Require:
+  io.murano.opaas.puppet.Puppet:

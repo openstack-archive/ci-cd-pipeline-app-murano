@@ -10,3 +10,6 @@ Classes:
  io.murano.opaas.Gerrit: Gerrit.yaml
 UI: ui.yaml
 Logo: logo.png
+Require:
+  io.murano.opaas.puppet.ProjectConfig:
+  io.murano.opaas.puppet.Puppet:
