@@ -5,16 +5,16 @@ Name: Deploy Gerrit
 Parameters:
 
 Body: |
-  return deploy().stdout
+  deploy()
 
 Scripts:
   deploy:
     Type: Application
     Version: 1.0.0
     EntryPoint: deploy_gerrit.sh
-    Files: ['site.pp', 'database.pp', 'gen_ssl_cert.sh', 'gen_rsa_key.sh']
+    Files: ['gen_ssl_cert.sh', 'gen_rsa_key.sh', 'database.pp', 'site.pp']
     Options:
-      captureStdout: true
+      captureStdout: false
       captureStderr: true
       verifyExitcode: true
 
