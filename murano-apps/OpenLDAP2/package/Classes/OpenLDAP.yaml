@@ -16,11 +16,11 @@ Properties:
   name:
     Contract: $.string().notNull()
   domain:
-    Contract: $.string()
+    Contract: $.string().notNull()
   ldapUser:
-    Contract: $.string()
+    Contract: $.string().notNull()
   ldapPass:
-    Contract: $.string()
+    Contract: $.string().notNull()
 
 Methods:
   initialize:
@@ -56,11 +56,8 @@ Methods:
           - $.instance.agent.call($template, $resources)
           - $._environment.reporter.report($this, format('OpenLDAP is available at {0}', $.instance.floatingIpAddress))
 
-          - If: $.domain != '' and $.domain != null
-            Then:
-              - If: $.ldapUser != '' and $.ldapUser != null
-                Then:
-                  - $.configureOpenLDAPUser($.domain, $.ldapUser, $.ldapPass)
+          - $.configureOpenLDAPUser($.domain, $.ldapUser, $.ldapPass)
+
           - $.setAttr(deployed, true)
           - $._environment.reporter.report($this, 'OpenLDAP is deployed!')
 

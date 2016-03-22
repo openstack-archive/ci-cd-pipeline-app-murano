@@ -31,21 +31,18 @@ Forms:
           type: string
           label: Domain
           initial: domain.tld
-          required: false
           descriptionTitle: Domain
           description: >-
             Please, provide domain for the OpenLDAP instance
         - name: ldapUser
           type: string
           label: Username
-          required: false
           descriptionTitle: LDAP User
           description: >-
             Please, provide username
         - name: ldapPass
           type: password
           label: Password
-          required: false
           descriptionTitle: LDAP Password
           description: >-
             Please, provide password
