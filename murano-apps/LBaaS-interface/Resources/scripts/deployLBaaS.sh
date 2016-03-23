@@ -29,9 +29,6 @@ sed -i 's/#verbose = false/verbose = true/g' etc/lbaas.conf
 sed -i 's/#default_log_levels/default_log_levels/g' etc/lbaas.conf
 sed -i 's/#log_file = <None>/log_file = \/var\/log\/lbaas.log/g' etc/lbaas.conf
 
-# Configure lbaas impl.
-sed -i "s/#impl = haproxy/impl = $impl/g" etc/lbaas.conf
-
 # Configure database connection.
 mysql --user=root --password=root -e "CREATE DATABASE lbaas;"
 mysql --user=root --password=root -e "GRANT ALL ON lbaas.* TO 'root'@'localhost';"
@@ -49,8 +46,3 @@ sudo chown -R $USER:$USER /etc/lbaas
 sudo chown /var/log/lbaas.log
 
 mv etc/lbaas.conf /etc/lbaas/lbaas.conf
-
-cd ~
-
-# Start lbaas.
-lbaas-server --config-file /etc/lbaas/lbaas.conf >> lbaas.log 2>&1 &

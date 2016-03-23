@@ -1,0 +1,27 @@
+FormatVersion: 2.0.0
+Version: 1.0.0
+Name: Set Config Value
+
+Parameters:
+  section: $section
+  key: $key
+  value: $value
+
+Body: |
+  return SetConfigValue(
+      '{0} {1} {2}'.format(
+          args.section,
+          args.key,
+          args.value
+      )
+  ).stdout
+
+Scripts:
+  SetConfigValue:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: setConfigValue.sh
+    Files: []
+    Options:
+      captureStdout: true
+      captureStderr: true

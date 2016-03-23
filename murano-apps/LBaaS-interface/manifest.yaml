@@ -10,25 +10,13 @@
 #  License for the specific language governing permissions and limitations
 #  under the License.
 
-Namespaces:
-  =: io.murano.apps.lbaas
-  std: io.murano
-  sys: io.murano.system
-
-
-Name: HAProxy
-
-Extends: LBaaS
-
-Methods:
-  .init:
-    Body:
-      - $.implementation: haproxy
-
-  installLoadBalancer:
-    Body:
-      - $resources: new(sys:Resources)
-      - $template: $resources.yaml('DeployHAProxy.template')
-      - $.environment.reporter.report($this, 'Installing HAProxy...')
-      - $.instance.agent.call($template, $resources)
-      - $.environment.reporter.report($this, 'HAProxy is installed.')
+Format: 1.0
+Type: Library
+FullName: io.murano.apps.lbaas.LBaaS
+Name: LBaaS library
+Description: |
+ Load Balancing as a Service library.
+Author: 'Mirantis, Inc'
+Tags: [HTTP, TCP, Load Balancing as a Service, HAProxy]
+Classes:
+ io.murano.apps.lbaas.LBaaS: LoadBalancer.yaml

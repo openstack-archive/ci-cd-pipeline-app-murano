@@ -21,5 +21,6 @@ Description: |
 Author: 'Mirantis, Inc'
 Tags: [HTTP, TCP, Load Balancing as a Service, HAProxy]
 Classes:
- io.murano.apps.lbaas.HAProxy: HAProxy.yaml
- io.murano.apps.lbaas.LoadBalancer: LoadBalancer.yaml
+  io.murano.apps.lbaas.HAProxy: HAProxy.yaml
+Require:
+  io.murano.apps.lbaas.LBaaS:

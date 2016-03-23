@@ -4,7 +4,6 @@ Application:
   ?:
     type: io.murano.apps.lbaas.HAProxy
   name: $.appConfiguration.name
-  implementation: $.appConfiguration.LBaasImpl
   instance:
     ?:
       type: io.murano.resources.LinuxMuranoInstance
@@ -25,22 +24,12 @@ Forms:
           description: >-
             Enter a desired name for the application. Just A-Z, a-z, 0-9, dash and
             underline are allowed
-        - name: LBaasImpl
-          label: Load Balancer implementation.
-          type: string
-          description: >-
-             Specify Load balancer implementation for this current LBaaS. Only 'haproxy' is available now.
-          initial: haproxy
-          regexpValidator: '^haproxy$'
-          errorMessages:
-            invalid: Only 'haproxy' is available now.
-          required: true
         - name: assignFloatingIP
           type: boolean
           label: Assign Floating IP
           description: >-
              Select to true to assign floating IP automatically
-          initial: false
+          initial: true
           required: false
           widgetMedia:
             css: {all: ['muranodashboard/css/checkbox.css']}
