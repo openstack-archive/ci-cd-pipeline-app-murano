@@ -25,6 +25,8 @@ Properties:
   assignFloatingIp:
     Contract: $.bool().notNull()
     Default: true
+  gerritUrl:
+    Contract: $.string().notNull()
 
 Methods:
   .init:
@@ -47,7 +49,6 @@ Methods:
           keyname => $.keyname,
           availabilityZone => $.availabilityZone,
           assignFloatingIp => $.assignFloatingIp)
-
       - $this.ldap: new(opaas:OpenLDAP, $._environment,
           name => 'OpenLDAP',
           instance => $ldapInstance,
@@ -66,7 +67,11 @@ Methods:
           keyname => $.keyname,
           availabilityZone => $.availabilityZone,
           assignFloatingIp => $.assignFloatingIp)
-      - $this.gerrit: new(opaas:Gerrit, $this, name => 'Gerrit', instance => $gerritInstance)
+      - $this.gerrit: new(opaas:Gerrit, $this,
+          name => 'Gerrit',
+          warUrl => $.gerritUrl,
+          instance => $gerritInstance,
+          ldap => $this.ldap)
 
       # Jenkins
       - $._environment.reporter.report($this,

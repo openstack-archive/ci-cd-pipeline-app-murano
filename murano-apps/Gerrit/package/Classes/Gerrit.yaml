@@ -17,6 +17,9 @@ Properties:
     Contract: $.string().notNull()
   warUrl:
     Contract: $.string().notNull()
+  ldap:
+    Contract: $.class(opaas:OpenLDAP)
+
 Methods:
   initialize:
     Body:
@@ -28,23 +31,28 @@ Methods:
       - If: $.getAttr(deployed, false)
         Then:
           Return:
+
+      - If: $.ldap != null
+        Then:
+          - $.ldap.deploy()
+
       - $securityGroupIngress:
-          - ToPort: 80
-            FromPort: 80
-            IpProtocol: tcp
-            External: true
-          - ToPort: 443
-            FromPort: 443
-            IpProtocol: tcp
-            External: true
-          - ToPort: 8081
-            FromPort: 8081
-            IpProtocol: tcp
-            External: true
-          - ToPort: 29418
-            FromPort: 29418
-            IpProtocol: tcp
-            External: true
+        - ToPort: 80
+          FromPort: 80
+          IpProtocol: tcp
+          External: true
+        - ToPort: 443
+          FromPort: 443
+          IpProtocol: tcp
+          External: true
+        - ToPort: 8081
+          FromPort: 8081
+          IpProtocol: tcp
+          External: true
+        - ToPort: 29418
+          FromPort: 29418
+          IpProtocol: tcp
+          External: true
 
       - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
       - $._environment.reporter.report($this, 'Creating VM for Gerrit {0}'.format($.instance.openstackId))
@@ -65,8 +73,25 @@ Methods:
       - $._environment.reporter.report($this, format('Gerrit is available at {0}:80 or {1}:8081',
           $.instance.floatingIpAddress, $.instance.floatingIpAddress))
 
+  createLdapConfiguration:
+    Body:
+      - $ldapInstance: $.ldap.instance
+      - If: $ldapInstance.assignFloatingIp
+        Then:
+          - $ldapHost: $ldapInstance.floatingIpAddress
+        Else:
+          - $ldapHost: $ldapInstance.ipAddresses[0]
+
+      - $.instance.setHieraValue('ldap_ip', $ldapHost)
+      - $.instance.setHieraValue('ldap_domain', $.ldap.domain)
+      - $.instance.setHieraValue('ldap_root_user', $.ldap.ldapRootUser)
+      - $.instance.setHieraValue('ldap_root_password', $.ldap.ldapRootPass)
+
   createConfiguration:
     Body:
+      - If: $this.ldap != null
+        Then:
+          - $.createLdapConfiguration()
       - $.instance.setHieraValue( 'gerrit_war_url', $this.warUrl)
       - $.instance.setHieraValue( 'project_config_repo', 'https://review.fuel-infra.org/open-paas/project-config')
       - $.instance.setHieraValue( 'gerrit_github_token', 'f84013d50c69e60e902f748ea75c611695f35ef2')

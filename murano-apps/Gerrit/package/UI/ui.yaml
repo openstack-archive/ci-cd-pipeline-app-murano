@@ -40,6 +40,11 @@ Forms:
           description: >-
             Enter the war version from Gerrit's site
             http://gerrit-releases.storage.googleapis.com/index.html
+        - name: OpenLDAP
+          type: io.murano.opaas.OpenLDAP
+          required: false
+          description: >-
+            Specify OpenLDAP domain for authentication
   - instanceConfiguration:
       fields:
         - name: title
