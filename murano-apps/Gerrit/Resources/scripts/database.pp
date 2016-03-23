@@ -8,6 +8,6 @@ node default {
     user     => hiera('gerrit_db_user'),
     password => hiera('gerrit_db_password'),
     host     => 'localhost',
-    grant    => ['SELECT', 'UPDATE', 'CREATE', 'INSERT'],
+    grant    => ['all'],
   }
 }
