@@ -1,7 +1,5 @@
 #!/bin/bash
 
-impl=$1
-
 sudo apt-get update
 
 sudo debconf-set-selections <<< 'mysql-server mysql-server/root_password password root'
@@ -11,38 +9,36 @@ sudo apt-get install -y python-dev python-pip git;
 
 sudo apt-get install -y -q mysql-server libmysqlclient-dev
 
+# TODO(nmakhotkin): It should be removed in the future after fixing the bug:
+# TODO(nmakhotkin): https://bugs.launchpad.net/murano/+bug/1561522
+# TODO(nmakhotkin): Here should be used pure tar.gz archive instead of base64-encoded.
+base64 --decode lbaas.tar.gz.bs64 > lbaas.tar.gz
+
 # Installing LBaaS API.
-git clone https://github.com/nmakhotkin/lbaas_api.git
+sudo pip install lbaas.tar.gz
 
-cd lbaas_api
-
-sudo pip install .
 sudo pip install mysql-python
 
-# Configure LBaaS.
-cp etc/lbaas.conf.sample etc/lbaas.conf
+sudo mkdir /etc/lbaas
+sudo chown -R $USER:$USER /etc/lbaas
+sudo chown /var/log/lbaas.log
 
-sudo chmod -R a+rw /var/log
+# Moving config to another place.
+cp lbaas.conf.sample /etc/lbaas/lbaas.conf
 
 # Configure lbaas logging.
-sed -i 's/#verbose = false/verbose = true/g' etc/lbaas.conf
-sed -i 's/#default_log_levels/default_log_levels/g' etc/lbaas.conf
-sed -i 's/#log_file = <None>/log_file = \/var\/log\/lbaas.log/g' etc/lbaas.conf
+sudo chmod -R a+rw /var/log
+sed -i 's/#verbose = false/verbose = true/g' /etc/lbaas/lbaas.conf
+sed -i 's/#default_log_levels/default_log_levels/g' /etc/lbaas/lbaas.conf
+sed -i 's/#log_file = <None>/log_file = \/var\/log\/lbaas.log/g' /etc/lbaas/lbaas.conf
 
 # Configure database connection.
 mysql --user=root --password=root -e "CREATE DATABASE lbaas;"
 mysql --user=root --password=root -e "GRANT ALL ON lbaas.* TO 'root'@'localhost';"
 
-sed -i 's/#connection = <None>/connection = mysql:\/\/root:root@localhost:3306\/lbaas/g' etc/lbaas.conf
-sed -i 's/#max_overflow = <None>/max_overflow = -1/g' etc/lbaas.conf
-sed -i 's/#max_pool_size = <None>/max_pool_size = 1000/g' etc/lbaas.conf
+sed -i 's/#connection = <None>/connection = mysql:\/\/root:root@localhost:3306\/lbaas/g' /etc/lbaas/lbaas.conf
+sed -i 's/#max_overflow = <None>/max_overflow = -1/g' /etc/lbaas/lbaas.conf
+sed -i 's/#max_pool_size = <None>/max_pool_size = 1000/g' /etc/lbaas/lbaas.conf
 
 # Upgrade database.
-lbaas-db-manage --config-file etc/lbaas.conf upgrade head
-
-# Moving config to another place.
-sudo mkdir /etc/lbaas
-sudo chown -R $USER:$USER /etc/lbaas
-sudo chown /var/log/lbaas.log
-
-mv etc/lbaas.conf /etc/lbaas/lbaas.conf
+lbaas-db-manage --config-file /etc/lbaas/lbaas.conf upgrade head
