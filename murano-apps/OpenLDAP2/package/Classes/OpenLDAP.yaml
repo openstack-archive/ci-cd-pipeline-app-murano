@@ -17,13 +17,17 @@ Properties:
     Contract: $.string().notNull()
   domain:
     Contract: $.string().notNull()
+  ldapRootUser:
+    Contract: $.string().notNull()
+  ldapRootPass:
+    Contract: $.string().notNull()
   ldapUser:
-    Contract: $.string().notNull()
+    Contract: $.string()
   ldapPass:
-    Contract: $.string().notNull()
+    Contract: $.string()
 
 Methods:
-  initialize:
+  .init:
     Body:
       - $._environment: $.find(std:Environment).require()
 
@@ -49,14 +53,19 @@ Methods:
 
           - $.createConfiguration()
 
-
           - $resources: new(sys:Resources)
           - $template: $resources.yaml('DeployOpenLDAP.template')
           - $._environment.reporter.report($this, 'OpenLDAP deploying')
           - $.instance.agent.call($template, $resources)
           - $._environment.reporter.report($this, format('OpenLDAP is available at {0}', $.instance.floatingIpAddress))
 
-          - $.configureOpenLDAPUser($.domain, $.ldapUser, $.ldapPass)
+          - $._environment.reporter.report($this, format('Configuring root LDAP user'))
+          - $.configureOpenLDAPRootUser()
+
+          - If: $.ldapUser != '' and $.ldapUser != null
+            Then:
+              - $._environment.reporter.report($this, format('Configuring base non-admin LDAP user'))
+              - $.configureOpenLDAPUser($.ldapUser, $.ldapPass)
 
           - $.setAttr(deployed, true)
           - $._environment.reporter.report($this, 'OpenLDAP is deployed!')
@@ -65,11 +74,13 @@ Methods:
     Body:
       - $.instance.setHieraValue('ldap_domain', $.domain)
       - $.instance.setHieraValue('ldap_dc', $.domain.split('.')[0])
+      - $.instance.setHieraValue('ldap_root_user', $.ldapRootUser)
+      - $.instance.setHieraValue('ldap_root_password', $.ldapRootPass)
       - $.instance.setHieraValue('ldap_user', $.ldapUser)
       - $.instance.setHieraValue('ldap_password', $.ldapPass)
 
       - !yaql "$.instance.setHieraValue('ldap::client::uri', 'localhost')"
-      - !yaql "$.instance.setHieraValue('ldap::server::rootpw', $.ldapPass)"
+      - !yaql "$.instance.setHieraValue('ldap::server::rootpw', $.ldapRootPass)"
       - !yaql "$.instance.setHieraValue('ldap::client::ssl_cert', '')"
 
       #
@@ -78,29 +89,40 @@ Methods:
       #- !yaql "$.instance.setHieraValue('ldap::client::base', 'dc=example,dc=com')"
       #- !yaql "$.instance.setHieraValue('ldap::client::ssl', 'false')"
       #- !yaql "$.instance.setHieraValue('ldap::server::suffix', 'dc=example,dc=com')"
-      #- !yaql "$.instance.setHieraValue('ldap::server::rootdn', 'cn=admin,dc=example,dc=com')"
+      #- !yaql "$.instance.setHieraValue('ldap::server::rootdn', format('cn={0},dc=example,dc=com', $.ldapRootUser))"
       #- !yaql "$.instance.setHieraValue('ldap::server::ssl', false)"
       #- !yaql "$.instance.setHieraValue('ldap::server::ssl_cacert', '')"
       #- !yaql "$.instance.setHieraValue('ldap::server::ssl_cert', '')"
       #- !yaql "$.instance.setHieraValue('ldap::server::ssl_key', '')"
 
+  configureOpenLDAPRootUser:
+    Body:
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('ConfigureOpenLDAPUser.template').bind(dict(
+            domain => $this.domain,
+            rootUser => $this.ldapRootUser,
+            rootPass => $this.ldapRootPass,
+            user => '',
+            password => ''
+          ))
+      - $.instance.agent.call($template, $resources)
+
   configureOpenLDAPUser:
     Arguments:
-      - domain:
+      - user:
           Contract: $.string().notNull()
-      - ldapUser:
-          Contract: $.string().notNull()
-      - ldapPass:
+      - password:
           Contract: $.string().notNull()
     Body:
       - $resources: new(sys:Resources)
       - $template: $resources.yaml('ConfigureOpenLDAPUser.template').bind(dict(
-            domain => $domain,
-            ldapUser => $ldapUser,
-            ldapPass => $ldapPass
+            domain => $this.domain,
+            rootUser => $this.ldapRootUser,
+            rootPass => $this.ldapRootPass,
+            user => $user,
+            password => $password
           ))
       - $.instance.agent.call($template, $resources)
-      - $._environment.reporter.report($this, 'OpenLDAP user {0} is added'.format($ldapUser))
 
   destroy:
     Body:

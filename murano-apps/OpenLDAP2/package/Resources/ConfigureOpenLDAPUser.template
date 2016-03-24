@@ -4,11 +4,19 @@ Name: Configure OpenLDAP
 
 Parameters:
   domain: $domain
-  ldapUser: $ldapUser
-  ldapPass: $ldapPass
+  rootUser: $rootUser
+  rootPass: $rootPass
+  user: $user
+  password: $password
 
 Body: |
-  return configure('{0} {1} {2}'.format(args.domain, args.ldapUser, args.ldapPass)).stdout
+  return configure(
+      '{0} {1} {2} {3} {4}'.format(
+          args.domain,
+          args.rootUser,
+          args.rootPass,
+          args.user,
+          args.password)).stdout
 
 Scripts:
   configure:

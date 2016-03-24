@@ -5,6 +5,8 @@ Application:
     type: io.murano.opaas.OpenLDAP
   name: $.appConfiguration.name
   domain: $.appConfiguration.domain
+  ldapRootUser: $.appConfiguration.ldapRootUser
+  ldapRootPass: $.appConfiguration.ldapRootPass
   ldapUser: $.appConfiguration.ldapUser
   ldapPass: $.appConfiguration.ldapPass
   instance:
@@ -34,15 +36,30 @@ Forms:
           descriptionTitle: Domain
           description: >-
             Please, provide domain for the OpenLDAP instance
+        - name: ldapRootUser
+          type: string
+          label: Root Username
+          initial: admin
+          descriptionTitle: LDAP Root User
+          description: >-
+            Please, provide admin username
+        - name: ldapRootPass
+          type: password
+          label: Root Password
+          descriptionTitle: LDAP Root Password
+          description: >-
+            Please, provide admin password
         - name: ldapUser
           type: string
           label: Username
+          required: false
           descriptionTitle: LDAP User
           description: >-
             Please, provide username
         - name: ldapPass
           type: password
           label: Password
+          required: false
           descriptionTitle: LDAP Password
           description: >-
             Please, provide password
