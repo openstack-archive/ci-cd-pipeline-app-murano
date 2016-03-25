@@ -4,6 +4,7 @@ Application:
   ?:
     type: io.murano.opaas.Jenkins
   name: $.appConfiguration.name
+  ldap: $.appConfiguration.OpenLDAP
   instance:
     ?:
       type: io.murano.opaas.puppet.PuppetInstance
@@ -31,6 +32,11 @@ Forms:
              Select to true to assign floating IP automatically
           initial: true
           required: false
+        - name: OpenLDAP
+          type: io.murano.opaas.OpenLDAP
+          required: false
+          description: >-
+            Specify OpenLDAP domain for authentication
   - instanceConfiguration:
       fields:
         - name: title
