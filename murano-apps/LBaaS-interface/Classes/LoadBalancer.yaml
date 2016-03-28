@@ -118,9 +118,7 @@ Methods:
           Contract: $.string().notNull()
     Body:
       - $resources: new(sys:Resources)
-      - $template: $resources.yaml('DeployLBaaS.template').bind(dict(
-                impl => $.implementation
-              ))
+      - $template: $resources.yaml('DeployLBaaS.template')
       - $.environment.reporter.report($this, 'Installing LBaaS...')
       - $.instance.agent.call($template, $resources)
       - $.setConfigValue('lbaas', 'impl', $.implementation)
