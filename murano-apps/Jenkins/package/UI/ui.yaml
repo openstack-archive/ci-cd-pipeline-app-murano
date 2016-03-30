@@ -5,6 +5,7 @@ Application:
     type: io.murano.opaas.Jenkins
   name: $.appConfiguration.name
   ldap: $.appConfiguration.OpenLDAP
+  cfplugin: $.appConfiguration.cfplugin
   instance:
     ?:
       type: io.murano.opaas.puppet.PuppetInstance
@@ -25,6 +26,13 @@ Forms:
           description: >-
             Enter a desired name for the application. Just A-Z, a-z, 0-9, dash and
             underline are allowed
+        - name: cfplugin
+          type: boolean
+          label: Cloud Foundry Plugin
+          description: >-
+             Select to true to install CF Plugin automatically
+          initial: false
+          required: false
         - name: assignFloatingIP
           type: boolean
           label: Assign Floating IP

@@ -17,6 +17,9 @@ Properties:
     Contract: $.class(OpenLDAP)
   instance:
     Contract: $.class(puppet:PuppetInstance).notNull()
+  cfplugin:
+    Contract: $.bool()
+    Default: false
 
 Methods:
   initialize:
@@ -53,6 +56,13 @@ Methods:
               - $._environment.reporter.report($this, 'Jenkins waits OpenLDAP to be deployed...')
               - $.ldap.deploy()
               - $.connectLDAP()
+
+          - If: $.cfplugin
+            Then:
+              - $._environment.reporter.report($this, 'Installing CF plugin...')
+              - $template: $resources.yaml('InstallCFPlugin.template')
+              - $.instance.agent.call($template, $resources)
+
 
           - If: $.instance.assignFloatingIp
             Then:
