@@ -1,0 +1,18 @@
+FormatVersion: 2.0.0
+Version: 1.0.0
+Name: Deploy F5 Driver
+
+Body: |
+  return F5DriverDeploy().stdout
+
+Scripts:
+  F5DriverDeploy:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: deployF5Driver.sh
+    Files:
+      - <f5-lbaas-driver.tar.gz.bs64>
+      - f5-lbaas-append.conf.sample
+    Options:
+      captureStdout: true
+      captureStderr: true

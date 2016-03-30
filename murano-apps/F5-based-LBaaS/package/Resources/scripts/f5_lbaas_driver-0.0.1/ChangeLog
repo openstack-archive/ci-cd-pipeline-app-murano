@@ -1,0 +1,8 @@
+CHANGES
+=======
+
+* Fixing issues
+* Restrict requirements.txt
+* Added AUTHORS and ChangeLog
+* Initial version of F5 BIG LTM driver for LBaaS API
+* Initial commit
