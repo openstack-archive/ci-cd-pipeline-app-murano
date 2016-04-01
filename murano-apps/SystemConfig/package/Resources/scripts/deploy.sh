@@ -2,7 +2,7 @@
 
 logger Cloning openstack-ci system-config
 
-git clone https://github.com/mirademo/system-config.git
+git clone https://review.fuel-infra.org/open-paas/system-config
 
 logger Installing openstack-ci system-config
 
