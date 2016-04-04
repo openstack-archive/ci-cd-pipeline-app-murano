@@ -1,0 +1,93 @@
+Namespaces:
+  =: io.murano.opaas
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+  opaas: io.murano.opaas
+  puppet: io.murano.opaas.puppet
+
+Name: CiCdEnvironment
+
+Extends: std:Application
+
+Properties:
+  instance_name:
+    Contract: $.string().notNull()
+  flavor:
+    Contract: $.string().notNull()
+  image:
+    Contract: $.string().notNull()
+  keyname:
+    Contract: $.string().notNull()
+  availabilityZone:
+    Contract: $.string().notNull()
+    Default: nova
+  assignFloatingIp:
+    Contract: $.bool().notNull()
+    Default: true
+
+Methods:
+  .init:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - $._environment.reporter.report($this, format('Deploying CI/CD'))
+
+      - $user: 'user'
+      - $password: 'P@ssw0rd'
+
+      # OpenLDAP
+      - $ldapInstanceName: concat($.instance_name, '-ldap')
+      - $ldapInstance: new(puppet:PuppetInstance, $._environment,
+          name => $ldapInstanceName,
+          flavor => $.flavor,
+          image => $.image,
+          keyname => $.keyname,
+          availabilityZone => $.availabilityZone,
+          assignFloatingIp => $.assignFloatingIp)
+
+      - $this.ldap: new(opaas:OpenLDAP, $._environment,
+          name => 'OpenLDAP',
+          instance => $ldapInstance,
+          domain => 'infra.local',
+          ldapRootUser => 'root',
+          ldapRootPass => 'openstack',
+          ldapUser => $user,
+          ldapPass => $password)
+
+      # Gerrit
+      - $gerritInstanceName: concat($.instance_name, '-gerrit')
+      - $gerritInstance: new(puppet:PuppetInstance, $._environment,
+          name => $gerritInstanceName,
+          flavor => $.flavor,
+          image => $.image,
+          keyname => $.keyname,
+          availabilityZone => $.availabilityZone,
+          assignFloatingIp => $.assignFloatingIp)
+      - $this.gerrit: new(opaas:Gerrit, $this, name => 'Gerrit', instance => $gerritInstance)
+
+      # Jenkins
+      - $._environment.reporter.report($this,
+          'Jenkins credentials user={0}, password={1}'.format(
+            $user, $password))
+      - $jenkinsInstanceName: concat($.instance_name, '-jenkins')
+      - $jenkinsInstance: new(puppet:PuppetInstance, $._environment,
+          name => $jenkinsInstanceName,
+          flavor => $.flavor,
+          image => $.image,
+          keyname => $.keyname,
+          availabilityZone => $.availabilityZone,
+          assignFloatingIp => $.assignFloatingIp)
+      - $this.jenkins: new(opaas:Jenkins, $._environment,
+          name => 'Jenkins',
+          instance => $jenkinsInstance,
+          ldap => $this.ldap,
+          cfplugin => false)
+
+      # Deploy all
+      - Parallel:
+        - $this.ldap.deploy()
+        - $this.gerrit.deploy()
+        - $this.jenkins.deploy()
