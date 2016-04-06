@@ -36,11 +36,8 @@ Methods:
       - $.implementation: f5ltm
 
   installLBaaS:
-    Arguments:
-      - implementation:
-          Contract: $.string().notNull()
     Body:
-      - $lbaas: $.super($.installLBaaS($implementation))
+      - $lbaas: $.cast(LBaaS).installLBaaS()
 
       - $resources: new(sys:Resources)
       - $template: $resources.yaml('DeployF5Driver.template')
