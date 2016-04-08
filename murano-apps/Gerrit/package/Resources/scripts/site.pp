@@ -18,11 +18,11 @@ node default {
     ssh_rsa_pubkey_contents             => hiera('gerrit_ssh_rsa_pubkey_contents'),
     ssh_project_rsa_key_contents        => hiera('gerrit_ssh_project_rsa_key_contents'),
     ssh_project_rsa_pubkey_contents     => hiera('gerrit_ssh_project_rsa_pubkey_contents'),
+
     ssh_replication_rsa_key_contents    => hiera('ssh_replication_rsa_key_contents'),
     ssh_replication_rsa_pubkey_contents => hiera('gerrit_replication_ssh_rsa_pubkey_contents'),
 
     ssh_welcome_rsa_key_contents        => hiera('welcome_message_gerrit_ssh_private_key'),
-
     ssh_welcome_rsa_pubkey_contents     => hiera('welcome_message_gerrit_ssh_public_key'),
     email                               => 'review@openstack.org',
       # 1 + 100 + 9 + 2 + 2 + 25 => 139(rounded up)
@@ -35,8 +35,7 @@ node default {
     index_threads                       => 4,
     httpd_maxqueued                     => '200',
     httpd_maxwait                       => '5000min',
-    war                                 =>
-      'http://tarballs.openstack.org/ci/gerrit/gerrit-v2.11.4.11.a14450f.war',
+    war                                 => hiera('gerrit_war_url'),
     contactstore                        => false,
     contactstore_appsec                 => '',
     contactstore_pubkey                 => '',
