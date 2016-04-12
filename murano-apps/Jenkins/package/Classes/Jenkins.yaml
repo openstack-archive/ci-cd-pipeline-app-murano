@@ -63,6 +63,7 @@ Methods:
               - $template: $resources.yaml('InstallCFPlugin.template')
               - $.instance.agent.call($template, $resources)
 
+          - $.configureZMQPlugin()
 
           - If: $.instance.assignFloatingIp
             Then:
@@ -92,6 +93,20 @@ Methods:
       - $.instance.agent.call($template, $resources)
       - $._environment.reporter.report($this, 'Jenkins is connected to OpenLDAP server!')
 
+  configureZMQPlugin:
+    Body:
+      - $._environment.reporter.report($this, 'Creating security group for ZMQ Event publisher')
+      - $securityGroupIngress:
+          - ToPort: 8888
+            FromPort: 8888
+            IpProtocol: tcp
+            External: true
+      - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
+      - $._environment.stack.push()
+      - $resources: new(sys:Resources)
+      - $._environment.reporter.report($this, 'Configure Jenkins ZMQ Event Publisher plugin...')
+      - $template: $resources.yaml('ConfigureZMQ.template')
+      - $.instance.agent.call($template, $resources)
 
   destroy:
     Body:

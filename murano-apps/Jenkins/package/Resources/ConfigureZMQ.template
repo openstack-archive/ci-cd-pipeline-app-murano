@@ -1,0 +1,19 @@
+FormatVersion: 2.1.0
+Version: 1.0.0
+Name: Configure ZMQ
+
+Body: |
+  return configureZMQ().stdout
+
+Scripts:
+  configureZMQ:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: configure_zmq.sh
+    Files:
+      - 'configure_zmq/templates/org.jenkinsci.plugins.ZMQEventPublisher.HudsonNotificationProperty.xml.erb'
+      - 'configure_zmq/manifests/init.pp'
+      - 'configure_zmq.pp'
+    Options:
+      captureStdout: true
+      captureStderr: true
