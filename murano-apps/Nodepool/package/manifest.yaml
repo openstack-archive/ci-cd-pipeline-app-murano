@@ -1,0 +1,20 @@
+Format: 1.0
+Type: Application
+FullName: io.murano.opaas.Nodepool
+Name: Nodepool
+Description: |
+ Nodepool is a system for launching single-use test nodes on demand based on
+  images built with cached data. It is designed to work with any OpenStack
+  based cloud, and is part of a suite of tools that form a comprehensive
+  test system including Jenkins and Zuul.
+Author: 'Mirantis, Inc'
+Tags: [Images, CI, Zuul, Jenkins]
+Classes:
+ io.murano.opaas.Nodepool: Nodepool.yaml
+UI: ui.yaml
+Logo: logo.png
+Require:
+  io.murano.opaas.puppet.ProjectConfig:
+  io.murano.opaas.puppet.Puppet:
+  io.murano.opaas.Jenkins:
+# TODO(nmakhotkin): Add zuul to requirements.

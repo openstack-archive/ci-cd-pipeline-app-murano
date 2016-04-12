@@ -1,0 +1,24 @@
+FormatVersion: 2.1.0
+Version: 1.0.0
+Name: Deploy Nodepool
+
+Parameters:
+
+Body: |
+  deployNodepool()
+
+Scripts:
+  deployNodepool:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: deploy_nodepool.sh
+    Files:
+      - 'gen_rsa_key.sh'
+      - 'site.pp'
+      - 'nodepool_configure/templates/nodepool.yaml.erb'
+      - 'nodepool_configure/manifests/init.pp'
+    Options:
+      captureStdout: false
+      captureStderr: true
+      verifyExitcode: true
+
