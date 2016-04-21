@@ -1,0 +1,60 @@
+script-dir: /etc/nodepool/scripts
+elements-dir: /etc/nodepool/elements
+images-dir: /opt/nodepool_dib
+
+
+cron:
+  check: '*/15 * * * *'
+  cleanup: '0 * * * *'
+  image-update: '30 * * * *'
+
+zmq-publishers:
+  - tcp://localhost:8888 # Jenkins host
+
+gearman-servers: # Zuul host
+  - host: localhost
+    port: 4730
+
+diskimages:
+- name: ubuntu-trusty
+  elements:
+    - ubuntu
+    - vm
+    - simple-init
+  release: trusty
+  env-vars:
+      DIB_IMAGE_CACHE: /opt/dib_cache
+
+labels:
+  - name: ubuntu-server
+    image: ubuntu-trusty-node
+    min-ready: 2
+    providers:
+      - name: openstack-provider
+
+providers:
+  - name: openstack-provider
+    keypair: 'nmakhotkin'
+    region-name: 'RegionOne'
+    username: 'dev-user'
+    password: 'sw0rdfish'
+    auth-url: 'http://172.16.167.137:5000/v2.0'
+    project-name: 'dev'
+    image-type: qcow2
+    max-servers: 20
+    use-neutron: true
+    networks:
+      - name: dev-net
+      #- id: uuid
+    images:
+      - name: ubuntu-trusty-node
+        diskimage: ubuntu-trusty
+        min-ram: 2048
+        private-key: /home/nodepool/.ssh/id_rsa
+        setup: prepare_node.sh
+        username: ubuntu
+
+targets:
+  - name: jenkins
+    hostname: '{label.name}-{provider.name}-{node_id}'
+    subnode-hostname: '{label.name}-{provider.name}-{node_id}-{subnode_id}'

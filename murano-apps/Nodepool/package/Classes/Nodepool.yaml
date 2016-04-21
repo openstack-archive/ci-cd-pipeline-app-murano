@@ -1,0 +1,88 @@
+Namespaces:
+  =: io.murano.opaas
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+  opaas: io.murano.opaas
+  puppet: io.murano.opaas.puppet
+
+Name: Nodepool
+
+Extends: std:Application
+
+Properties:
+  instance:
+    Contract: $.class(puppet:PuppetInstance).notNull()
+  name:
+    Contract: $.string().notNull()
+  jenkins:
+    Contract: $.class(opaas:Jenkins).notNull()
+  # TODO(nmakhotkin) Add zuul property.
+
+Methods:
+  .init:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - $.super($.deploy())
+      - If: $.getAttr(deployed, false)
+        Then:
+          Return:
+
+      - $securityGroupIngress:
+          - ToPort: 80
+            FromPort: 80
+            IpProtocol: tcp
+            External: true
+      - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
+      - $._environment.reporter.report($this, 'Creating instance for Nodepool...')
+      - $.instance.deploy()
+      - $._environment.reporter.report($this, 'Nodepool instance is created.')
+
+      - $._environment.reporter.report($this, 'Installing needed puppets for Nodepool...')
+
+      - $this.systemConfig: new(puppet:ProjectConfig)
+      - $this.systemConfig.installOnTheNode($this.instance)
+
+      - $._environment.reporter.report($this, 'Waiting while Jenkins is being deployed...')
+      - $.jenkins.deploy()
+
+      - $.createConfiguration()
+
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('DeployNodepool.template')
+      - $._environment.reporter.report($this, 'Installing Nodepool...')
+      - $.instance.agent.call($template, $resources)
+      - $._environment.reporter.report($this, 'Nodepool is installed.')
+      - $host: $.detectPrimaryIP($.instance)
+      - $._environment.reporter.report($this, 'Nodepool is available at host {}.'.format($host))
+      - $.setAttr(deployed, true)
+
+  createConfiguration:
+    Body:
+      - $.instance.setHieraValue('nodepool_mysql_password', 'nodepool')
+      - $.instance.setHieraValue('nodepool_mysql_root_password', 'root')
+      - $.instance.setHieraValue('jenkins_api_user', $.jenkins.ldap.ldapRootUser)
+      - $.instance.setHieraValue('jenkins_api_key', $.jenkins.ldap.ldapRootPass)
+      - $jenkinsHost: $.detectPrimaryIP($.jenkins.instance)
+      - $.instance.setHieraValue('jenkins_host', $jenkinsHost)
+
+
+  detectPrimaryIP:
+    Arguments:
+      - instance:
+          Contract: $.class(res:Instance).notNull()
+    Body:
+      - If: $instance.assignFloatingIp
+        Then:
+          - $host: $instance.floatingIpAddress
+        Else:
+          - $host: $instance.ipAddresses[0]
+      - Return: $host
+
+  destroy:
+    Body:
+      - $.reportDestroyed()
+      - $.setAttr(deployed, false)
