@@ -108,6 +108,21 @@ Methods:
       - $template: $resources.yaml('ConfigureZMQ.template')
       - $.instance.agent.call($template, $resources)
 
+  configureGearmanPlugin:
+    Arguments:
+      - host:
+          Contract: $.string().notNull()
+      - port:
+          Contract: $.int()
+          Default: 4730
+    Body:
+      - $.instance.setHieraValue('gearman_host', $host)
+      - $.instance.setHieraValue('gearman_port', $port)
+      - $resources: new(sys:Resources)
+      - $._environment.reporter.report($this, 'Configure Jenkins Gearman plugin...')
+      - $template: $resources.yaml('ConfigureGearman.template')
+      - $.instance.agent.call($template, $resources)
+
   destroy:
     Body:
       - $.reportDestroyed()

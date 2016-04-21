@@ -1,0 +1,19 @@
+FormatVersion: 2.1.0
+Version: 1.0.0
+Name: Configure Gearman
+
+Body: |
+  return configureGearman().stdout
+
+Scripts:
+  configureGearman:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: configure_gearman.sh
+    Files:
+      - 'configure_gearman/templates/hudson.plugins.gearman.GearmanPluginConfig.xml.erb'
+      - 'configure_gearman/manifests/init.pp'
+      - 'configure_gearman.pp'
+    Options:
+      captureStdout: true
+      captureStderr: true
