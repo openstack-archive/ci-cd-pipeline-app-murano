@@ -195,6 +195,17 @@ Methods:
       - $template: $resources.yaml('ConfigureGerritPlugin.template')
       - $.instance.agent.call($template, $resources)
 
+  configureCredentials:
+    Body:
+      - $._environment.reporter.report($this, 'Configuring standard SSH credentials for jenkins slaves...')
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('ConfigureCredentials.template')
+      - $.instance.agent.call($template, $resources)
+
+      # Return current credentials id. (see scripts/configure_credentials/files/credentials.xml)
+      - $._environment.reporter.report($this, 'SSH Credentials are configured.')
+      - Return: '8039f3e0-1eb6-4505-81bc-c616a31fd7d1'
+
   destroy:
     Body:
       - $.reportDestroyed()
