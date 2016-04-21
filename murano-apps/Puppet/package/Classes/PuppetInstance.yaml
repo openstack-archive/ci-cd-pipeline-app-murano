@@ -111,3 +111,14 @@ Methods:
           key => $key,
           value => $value))
       - $.agent.call($template, $resources)
+
+  getHieraValue:
+    Arguments:
+      - key:
+          Contract: $.string().notNull()
+    Body:
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('getHieraData.template').bind(dict(
+          key => $key))
+      - $value: $.agent.call($template, $resources)
+      - Return: $value
