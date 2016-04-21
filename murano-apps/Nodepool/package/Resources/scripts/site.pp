@@ -18,22 +18,55 @@ node default {
     revision                      => 'master',
     vhost_name                    => $::fqdn,
     statsd_host                   => '',
+    elements_dir                  => '/etc/project-config/nodepool/elements',
+    scripts_dir                   => '/etc/project-config/nodepool/scripts',
     image_log_document_root       => '/var/log/nodepool/image',
     image_log_periodic_cleanup    => true,
     enable_image_log_via_http     => true,
-    environment                   => {},
+    environment                   => {
+      'NODEPOOL_SSH_KEY' => hiera('nodepool_ssh_pubkey')
+    },
     jenkins_masters               => [
       {
         name        => 'jenkins',
         url         => sprintf('http://%s:8080', hiera('jenkins_host')),
         user        => hiera('jenkins_api_user', 'username'),
-        apikey      => hiera('jenkins_api_key')
+        apikey      => hiera('jenkins_api_key'),
+        credentials => hiera('jenkins_credentials_id')
       }
-    ]
+    ],
+    require                       => Class['project_config']
   }
+
+  $nodepool_ssh_pubkey = hiera('nodepool_ssh_pubkey')
+  $os_auth_url = hiera('os_auth_url')
+  $os_tenant_name = hiera('os_tenant_name')
+  $os_username = hiera('os_username')
+  $os_password = hiera('os_password')
 
   class { 'nodepool_configure':
     jenkins_host => hiera('jenkins_host'),
-    require => Class['nodepool']
+    jenkins_user => hiera('jenkins_api_user'),
+    zuul_host    => hiera('zuul_host'),
+    net_id       => hiera('nodepool_network_uuid'),
+    require      => Class['nodepool']
+  }
+
+  exec { 'start_nodepool' :
+    command     => 'service nodepool start',
+    path        => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+    require     => [
+      Class['nodepool'],
+      Class['nodepool_configure'],
+    ]
+  }
+
+  exec { 'start_nodepool_builder' :
+    command     => 'service nodepool-builder start',
+    path        => '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',
+    require     => [
+      Class['nodepool'],
+      Class['nodepool_configure'],
+    ]
   }
 }
