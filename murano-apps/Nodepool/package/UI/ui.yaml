@@ -5,6 +5,11 @@ Application:
     type: org.openstack.ci_cd_pipeline_murano_app.Nodepool
   name: $.appConfiguration.name
   jenkins: $.appConfiguration.Jenkins
+  zuul: $.appConfiguration.Zuul
+  authUrl: $.openstackConfiguration.authUrl
+  username: $.openstackConfiguration.username
+  tenant: $.openstackConfiguration.tenant
+  password: $.openstackConfiguration.password
   instance:
     ?:
       type: org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetInstance
@@ -34,9 +39,39 @@ Forms:
           required: false
         - name: Jenkins
           type: org.openstack.ci_cd_pipeline_murano_app.Jenkins
+          label: Jenkins
           required: true
           description: >-
             Specify Jenkins.
+        - name: Zuul
+          type: io.murano.opaas.Zuul
+          label: Zuul
+          required: true
+          description: >-
+            Specify Zuul.
+
+  - openstackConfiguration:
+      fields:
+        - name: authUrl
+          type: string
+          label: Keystone Auth URL
+          description: Provide Keystone Auth URL.
+          initial: http://192.168.0.2:5000/v2.0
+        - name: username
+          type: string
+          label: Keystone username
+          description: Provide Keystone username.
+          initial: admin
+        - name: tenant
+          type: string
+          label: Keystone tenant
+          description: Provide Keystone tenant name.
+          initial: admin
+        - name: password
+          type: string
+          description: Provide Keystone password.
+          label: Keystone password
+          initial: secret
 
   - instanceConfiguration:
       fields:

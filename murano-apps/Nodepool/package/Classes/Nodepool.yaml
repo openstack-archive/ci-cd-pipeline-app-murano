@@ -5,6 +5,7 @@ Namespaces:
   sys: io.murano.system
   ci_cd_pipeline_murano_app: org.openstack.ci_cd_pipeline_murano_app
   puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
+  conf: io.murano.configuration
 
 Name: Nodepool
 
@@ -17,7 +18,17 @@ Properties:
     Contract: $.string().notNull()
   jenkins:
     Contract: $.class(ci_cd_pipeline_murano_app:Jenkins).notNull()
-  # TODO(nmakhotkin) Add zuul property.
+  zuul:
+    Contract: $.class(ci_cd_pipeline_murano_app:Zuul).notNull()
+  # Openstack credentials.
+  authUrl:
+    Contract: $.string().notNull()
+  username:
+    Contract: $.string().notNull()
+  tenant:
+    Contract: $.string().notNull()
+  password:
+    Contract: $.string().notNull()
 
 Methods:
   .init:
@@ -48,7 +59,16 @@ Methods:
 
       - $._environment.reporter.report($this, 'Waiting while Jenkins is being deployed...')
       - $.jenkins.deploy()
+      - $._environment.reporter.report($this, 'Waiting while Zuul is being deployed...')
+      - $.zuul.deploy()
 
+      - $._environment.reporter.report($this, 'Configure Jenkins gearman plugin...')
+      - $.jenkins.configureGearmanPlugin($.detectPrimaryIP($.zuul.instance))
+      - $._environment.reporter.report($this, 'Gearman plugin is configured.')
+
+      - $credentialsId: $.jenkins.configureCredentials()
+      - $._environment.reporter.report($this, 'Loading configuration data for nodepool...')
+      - $.instance.setHieraValue('jenkins_credentials_id', $credentialsId)
       - $.createConfiguration()
 
       - $resources: new(sys:Resources)
@@ -62,12 +82,43 @@ Methods:
 
   createConfiguration:
     Body:
+      - $jenkinsKey: $.jenkins.instance.getHieraValue('jenkins_ssh_private_key_contents')
+      - $.instance.setHieraValue(
+          'nodepool_ssh_private_key',
+          $jenkinsKey
+          )
+      - $jenkinsPubKey: $.jenkins.instance.getHieraValue('jenkins_ssh_pubkey_contents')
+      # Extract only the key itself without 'ssh-rsa' and 'username@fqdn'.
+      - $jenkinsPubKey: $jenkinsPubKey.split(' ')[1]
+
+      - $.instance.setHieraValue('nodepool_ssh_pubkey', $jenkinsPubKey)
       - $.instance.setHieraValue('nodepool_mysql_password', 'nodepool')
       - $.instance.setHieraValue('nodepool_mysql_root_password', 'root')
       - $.instance.setHieraValue('jenkins_api_user', $.jenkins.ldap.ldapRootUser)
-      - $.instance.setHieraValue('jenkins_api_key', $.jenkins.ldap.ldapRootPass)
+      - $.instance.setHieraValue('zuul_host', $.detectPrimaryIP($.zuul.instance))
+
+      - $.instance.setHieraValue('os_auth_url', $.authUrl)
+      - $.instance.setHieraValue('os_tenant_name', $.tenant)
+      - $.instance.setHieraValue('os_username', $.username)
+      - $.instance.setHieraValue('os_password', $.password)
+
       - $jenkinsHost: $.detectPrimaryIP($.jenkins.instance)
+
       - $.instance.setHieraValue('jenkins_host', $jenkinsHost)
+
+      - $netInfo: $._environment.defaultNetworks.environment.describe()
+      - $.instance.setHieraValue('nodepool_network_uuid', $netInfo.netId)
+
+      # Command to retrieve Jenkins API Token.
+      - $linux: new(conf:Linux)
+      - $resource: new(sys:Resources)
+      - $replacements:
+          "%USERNAME%": $.jenkins.ldap.ldapRootUser
+          "%PASSWORD%": $.jenkins.ldap.ldapRootPass
+          "%JENKINS_HOST%": $jenkinsHost
+      - $script: $resource.string('getAPIToken.sh').replace($replacements)
+      - $apiKey: $linux.runCommand($.instance.agent, $script).stdout
+      - $.instance.setHieraValue('jenkins_api_key', $apiKey)
 
   detectPrimaryIP:
     Arguments:
