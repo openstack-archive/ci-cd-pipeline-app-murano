@@ -13,10 +13,9 @@ Scripts:
     Version: 1.0.0
     EntryPoint: deploy_nodepool.sh
     Files:
-      - 'gen_rsa_key.sh'
-      - 'site.pp'
-      - 'nodepool_configure/templates/nodepool.yaml.erb'
-      - 'nodepool_configure/manifests/init.pp'
+      - site.pp
+      - nodepool_configure/templates/nodepool.yaml.erb
+      - nodepool_configure/manifests/init.pp
     Options:
       captureStdout: false
       captureStderr: true
