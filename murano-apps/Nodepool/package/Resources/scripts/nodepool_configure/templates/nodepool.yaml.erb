@@ -5,54 +5,60 @@ images-dir: /opt/nodepool_dib
 
 cron:
   check: '*/15 * * * *'
-  cleanup: '0 * * * *'
-  image-update: '30 * * * *'
+  cleanup: '*/1 * * * *'
+  image-update: '14 14 * * *'
 
 zmq-publishers:
-  - tcp://localhost:8888 # Jenkins host
+  - tcp://<%= @jenkins_host %>:8888 # Jenkins host
 
 gearman-servers: # Zuul host
-  - host: localhost
+  - host: <%= @zuul_host %>
     port: 4730
 
 diskimages:
-- name: ubuntu-trusty
-  elements:
-    - ubuntu
-    - vm
-    - simple-init
-  release: trusty
-  env-vars:
+  - name: ubuntu-trusty
+    elements:
+      - ubuntu
+      - vm
+      - growroot
+      - infra-package-needs
+      - jenkins-slave
+    release: trusty
+    env-vars:
+      TMPDIR: /opt/dib_tmp
       DIB_IMAGE_CACHE: /opt/dib_cache
+      DIB_APT_LOCAL_CACHE: '0'
+      DIB_DISABLE_APT_CLEANUP: '1'
+      NODEPOOL_SSH_KEY: <%= @nodepool_ssh_pubkey %>
+      NODEPOOL_PRIVATE_SSH_KEY: |
+      <%= @nodepool_ssh_private_key %>
 
 labels:
-  - name: ubuntu-server
-    image: ubuntu-trusty-node
+  - name: ubuntu-trusty
+    image: ubuntu-trusty
     min-ready: 2
     providers:
       - name: openstack-provider
 
 providers:
   - name: openstack-provider
-    keypair: 'nmakhotkin'
     region-name: 'RegionOne'
-    username: 'dev-user'
-    password: 'sw0rdfish'
-    auth-url: 'http://172.16.167.137:5000/v2.0'
-    project-name: 'dev'
+    username: <%= @os_username %>
+    password: <%= @os_password %>
+    auth-url: <%= @os_auth_url %>
+    project-name: <%= @os_tenant_name %>
     image-type: qcow2
     max-servers: 20
     use-neutron: true
     networks:
-      - name: dev-net
-      #- id: uuid
+      - net-id: <%= @net_id %>
     images:
-      - name: ubuntu-trusty-node
+      - name: ubuntu-trusty
         diskimage: ubuntu-trusty
         min-ram: 2048
         private-key: /home/nodepool/.ssh/id_rsa
         setup: prepare_node.sh
-        username: ubuntu
+        username: jenkins
 
 targets:
   - name: jenkins
