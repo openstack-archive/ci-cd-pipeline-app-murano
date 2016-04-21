@@ -17,4 +17,4 @@ Require:
   io.murano.opaas.puppet.SystemConfig:
   io.murano.opaas.puppet.Puppet:
   io.murano.opaas.Jenkins:
-# TODO(nmakhotkin): Add zuul to requirements.
+  io.murano.opaas.Zuul:
