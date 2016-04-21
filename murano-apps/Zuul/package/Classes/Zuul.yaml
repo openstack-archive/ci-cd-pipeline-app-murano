@@ -1,0 +1,86 @@
+Namespaces:
+  =: io.murano.opaas
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+  opaas: io.murano.opaas
+  puppet: io.murano.opaas.puppet
+
+Name: Zuul
+
+Extends: std:Application
+
+Properties:
+  name:
+    Contract: $.string()
+    Default: ZuulApp
+  instance:
+    Contract: $.class(puppet:PuppetInstance).notNull()
+  gerrit_server:
+    Contract: $.string().notNull()
+  gerrit_user:
+    Contract: $.string().notNull()
+
+  #nodepool_server:
+  #  Contract: $.string().notNull()
+  #jenkins_server:
+  #  Contract: $.string().notNull()
+
+Methods:
+  .init:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - $.super($.deploy())
+      - If: not $.getAttr(deployed, false)
+        Then:
+          - $._environment.reporter.report($this, 'Creating security group for Zuul')
+          - $securityGroupIngress:
+              - ToPort: 80
+                FromPort: 80
+                IpProtocol: tcp
+                External: true
+              - ToPort: 443
+                FromPort: 443
+                IpProtocol: tcp
+                External: true
+              - ToPort: 4730
+                FromPort: 4730
+                IpProtocol: tcp
+                External: true
+          - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
+
+          - $._environment.reporter.report($this, 'Creating VM for Zuul {0}'.format($.instance.openstackId))
+          - $.instance.deploy()
+          - $._environment.reporter.report($this, 'Zuul VM {0} is created'.format($.instance.openstackId))
+
+          - $this.projectConfig: new(puppet:ProjectConfig)
+          - $this.projectConfig.installOnTheNode($this.instance)
+
+          - $.instance.setHieraValue('project_config_repo', 'https://review.fuel-infra.org/open-paas/project-config')
+          - $.instance.setHieraValue('gerrit_server', $.gerrit_server)
+          - $.instance.setHieraValue('gerrit_user', $.gerrit_user)
+          #- $.instance.setHieraValue('nodepool_server', $.nodepool_server)
+          #- $.instance.setHieraValue('jenkins_server', $.jenkins_server)
+          - $.instance.setHieraValue('gerrit_ssh_rsa_pubkey_contents', 'gerrit_ssh_rsa_pubkey_contents')
+          - $.instance.setHieraValue('zuul_ssh_private_key_contents', 'zuul_ssh_private_key_contents')
+
+          - $resources: new(sys:Resources)
+          - $template: $resources.yaml('DeployZuul.template')
+          - $._environment.reporter.report($this, 'Zuul is deploying')
+          - $.instance.agent.call($template, $resources)
+
+          - If: $.instance.assignFloatingIp
+            Then:
+              - $host: $.instance.floatingIpAddress
+            Else:
+              - $host: $.instance.ipAddresses[0]
+          - $._environment.reporter.report($this, 'Zuul is available at {0}:8080'.format($host))
+          - $.setAttr(deployed, true)
+
+  destroy:
+    Body:
+      - $.reportDestroyed()
+      - $.setAttr(deployed, false)
