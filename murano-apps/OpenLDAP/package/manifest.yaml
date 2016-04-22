@@ -1,7 +1,7 @@
 Format: 1.0
 Type: Application
 FullName: io.murano.opaas.OpenLDAP
-Name: OpenLDAP-Puppet
+Name: OpenLDAP
 Description: |
  OpenLDAP is an open source implementation of the Lightweight Directory Access Protocol.
 Author: 'Mirantis, Inc'
@@ -11,5 +11,4 @@ Classes:
 UI: ui.yaml
 Logo: logo.png
 Require:
-  io.murano.opaas.puppet.ProjectConfig:
   io.murano.opaas.puppet.Puppet:
