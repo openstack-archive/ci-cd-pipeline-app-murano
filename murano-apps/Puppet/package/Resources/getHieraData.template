@@ -1,0 +1,19 @@
+FormatVersion: 2.1.0
+Version: 1.0.0
+Name: Get value from hiera
+
+Parameters:
+  key: $key
+
+Body:
+  return get_value('{0}'.format(args.key)).stdout
+
+Scripts:
+  get_value:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: getHieraData.sh
+    Files: []
+    Options:
+      captureStdout: true
+      captureStderr: true
