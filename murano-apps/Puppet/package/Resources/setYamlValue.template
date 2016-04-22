@@ -8,7 +8,7 @@ Parameters:
   value: $value
 
 Body: |
-  return putHieraData('{0} {1} {2}'.format(args.path, args.key, args.value)).stdout
+  return putHieraData('"{0}" "{1}" "{2}"'.format(args.path, args.key, args.value)).stdout
 
 Scripts:
   putHieraData:
