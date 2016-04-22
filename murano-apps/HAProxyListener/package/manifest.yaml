@@ -1,4 +1,4 @@
-#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  licensed under the Apache License, Version 2.0 (the "License"); you may
 #  not use this file except in compliance with the License. You may obtain
 #  a copy of the License at
 #
@@ -12,16 +12,16 @@
 
 Format: 1.0
 Type: Application
-FullName: io.murano.apps.lbaas.HAProxy
-Name: HAProxy based LBaaS
+FullName: org.openstack.murano.lbaas.HAProxyListener
+Name: HAProxy based Listener
 Description: |
  HAProxy is a free, very fast and reliable solution offering high
  availability, load balancing, and proxying for TCP and HTTP-based
  applications.
- Deprecated: use org.openstack.murano.lbaas.HAProxy package instead
 Author: 'Mirantis, Inc'
 Tags: [HTTP, TCP, Load Balancing as a Service, HAProxy]
 Classes:
-  io.murano.apps.lbaas.HAProxy: HAProxy.yaml
+  org.openstack.murano.lbaas.HAProxyListener: HAProxyListener.yaml
 Require:
-  io.murano.apps.lbaas.LBaaS:
+  org.openstack.murano.lbaas:
+  org.openstack.murano.lbaas.HAProxy:
