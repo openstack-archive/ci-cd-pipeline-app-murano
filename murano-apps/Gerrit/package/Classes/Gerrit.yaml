@@ -94,7 +94,7 @@ Methods:
           - $.createLdapConfiguration()
       - $.instance.setHieraValue( 'gerrit_war_url', $this.warUrl)
       - $.instance.setHieraValue( 'project_config_repo', 'https://review.fuel-infra.org/open-paas/project-config')
-      - $.instance.setHieraValue( 'gerrit_github_token', 'f84013d50c69e60e902f748ea75c611695f35ef2')
+      - $.instance.setHieraValue( 'gerrit_github_token', '')
       - $.instance.setHieraValue( 'github_project_username', 'mirademo')
       - $.instance.setHieraValue( 'github_project_password', 'github_project_password')
       - $.instance.setHieraValue( 'gerrit_mysql_host', 'localhost')
