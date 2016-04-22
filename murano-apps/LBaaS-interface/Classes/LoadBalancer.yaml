@@ -64,7 +64,7 @@ Methods:
       - $.environment.reporter.report($this, 'Instance is created.')
       - $resources: new(sys:Resources)
       - $.installLoadBalancer()
-      - $lbaas: $.installLBaaS($.implementation)
+      - $lbaas: $.installLBaaS()
       - $.configureLBaaS()
       - $.startLBaaS()
       - If: $.instance.assignFloatingIp
@@ -113,9 +113,6 @@ Methods:
 
   installLBaaS:
   # Installs LBaaS itself and its drivers on an instance.
-    Arguments:
-      - implementation:
-          Contract: $.string().notNull()
     Body:
       - $resources: new(sys:Resources)
       - $template: $resources.yaml('DeployLBaaS.template')
