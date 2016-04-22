@@ -1,0 +1,57 @@
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+
+Namespaces:
+  =: org.openstack.murano.lbaas
+  std: io.murano
+
+Name: LoadBalancer
+
+Properties:
+
+  listeners:
+    Usage: InOut
+    Contract:
+      - $.class(Listener).notNull()
+
+Methods:
+  .init:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+
+  addListener:
+    Arguments:
+      - listener:
+          Contract: $.class(Listener).notNull()
+
+    Body:
+      - If: len(list($this.listeners.where($.name = $listener.name))) = 0
+        Then:
+           - $.listeners.append($listener)
+        Else:
+          - $msg: 'Listener with provided name already exists'
+          - $._environment.reporter.report_error($this, $msg)
+          - Throw: ConflictNameException
+            Message: $msg
+      - Return: $.listeners
+
+  deleteListener:
+    Arguments:
+      - name:
+          Contract: $.string().notNull()
+    Body:
+      - $.listeners: $.listeners.where($.name != $name)
+      - Return: $.listeners
+
+  getEndpoint:
