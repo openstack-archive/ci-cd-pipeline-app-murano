@@ -1,0 +1,49 @@
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+
+Version: 2.2
+
+Application:
+  ?:
+    type: org.openstack.murano.lbaas.HAProxyListener
+  address: $.appConfiguration.address
+  algorithm: $.appConfiguration.algorithm
+  port: $.appConfiguration.port
+  protocol: $.appConfiguration.protocol
+  loadBalancer: $.appConfiguration.loadBalancer
+
+Forms:
+  - appConfiguration:
+      fields:
+        - name: title
+          type: string
+          required: false
+          hidden: true
+          description: Specify some instance parameters on which the application would be created
+        - name: address
+          type: string
+          initial: '*'
+          label: Listener address
+          required: false
+        - name: algorithm 
+          type: string
+          label: Algorithm of balancing
+          initial: 'roundrobin'
+        - name: port
+          type: integer
+          label: Port
+        - name: protocol
+          type: string
+          label: Protocol
+        - name: loadBalancer
+          type: org.openstack.murano.lbaas.HAProxy
+          label: Load Balancer 

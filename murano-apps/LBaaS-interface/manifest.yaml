@@ -16,6 +16,7 @@ FullName: io.murano.apps.lbaas.LBaaS
 Name: LBaaS library
 Description: |
  Load Balancing as a Service library.
+ Deprecated: use org.openstack.murano.lbaas package instead
 Author: 'Mirantis, Inc'
 Tags: [HTTP, TCP, Load Balancing as a Service, HAProxy]
 Classes:
