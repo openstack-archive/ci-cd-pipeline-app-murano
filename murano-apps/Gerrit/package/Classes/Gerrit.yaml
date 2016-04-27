@@ -16,7 +16,8 @@ Properties:
   name:
     Contract: $.string().notNull()
   warUrl:
-    Contract: $.string().notNull()
+    Contract: $.string()
+    Default: 'https://goo.gl/aK183z?/gerrit-2.11.8.war'
   ldap:
     Contract: $.class(opaas:OpenLDAP)
 

@@ -25,8 +25,6 @@ Properties:
   assignFloatingIp:
     Contract: $.bool().notNull()
     Default: true
-  gerritUrl:
-    Contract: $.string().notNull()
 
 Methods:
   .init:
@@ -69,7 +67,6 @@ Methods:
           assignFloatingIp => $.assignFloatingIp)
       - $this.gerrit: new(opaas:Gerrit, $this,
           name => 'Gerrit',
-          warUrl => $.gerritUrl,
           instance => $gerritInstance,
           ldap => $this.ldap)
 

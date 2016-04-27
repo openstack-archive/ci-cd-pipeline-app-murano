@@ -9,16 +9,9 @@ Application:
   image: $.instanceConfiguration.osImage
   keyname: $.instanceConfiguration.keyPair
   availabilityZone: $.instanceConfiguration.availabilityZone
-  gerritUrl: $.repoConfiguration.gerritUrl
   assignFloatingIp: true
 
 Forms:
-  - repoConfiguration:
-      fields:
-        - name: gerritUrl
-          type: string
-          required: true
-          description: Specify the address to download Gerrit binaries
   - instanceConfiguration:
       fields:
         - name: title
