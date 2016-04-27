@@ -61,7 +61,7 @@ Methods:
 
       - $._environment.reporter.report($this, 'Deploying Gerrit')
 
-      - $this.systemConfig: new(puppet:ProjectConfig)
+      - $this.systemConfig: new(puppet:SystemСonfig)
       - $this.systemConfig.installOnTheNode($this.instance)
 
       - $.createConfiguration()

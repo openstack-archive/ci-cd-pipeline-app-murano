@@ -56,8 +56,8 @@ Methods:
           - $.instance.deploy()
           - $._environment.reporter.report($this, 'Zuul VM {0} is created'.format($.instance.openstackId))
 
-          - $this.projectConfig: new(puppet:ProjectConfig)
-          - $this.projectConfig.installOnTheNode($this.instance)
+          - $this.systemСonfig: new(puppet:SystemСonfig)
+          - $this.systemСonfig.installOnTheNode($this.instance)
 
           - $.instance.setHieraValue('project_config_repo', 'https://review.fuel-infra.org/open-paas/project-config')
           - $.instance.setHieraValue('gerrit_server', $.gerrit_server)
