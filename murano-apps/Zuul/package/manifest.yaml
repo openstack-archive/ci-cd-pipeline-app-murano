@@ -11,4 +11,4 @@ Classes:
 UI: ui.yaml
 Require:
   io.murano.opaas.puppet.Puppet:
-  io.murano.opaas.puppet.ProjectConfig:
+  io.murano.opaas.puppet.SystemСonfig:

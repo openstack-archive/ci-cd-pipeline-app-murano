@@ -43,8 +43,8 @@ Methods:
           - $.instance.deploy()
           - $._environment.reporter.report($this, 'Jenkins VM {0} created'.format($.instance.openstackId))
 
-          - $this.projectConfig: new(puppet:ProjectConfig)
-          - $this.projectConfig.installOnTheNode($this.instance)
+          - $this.systemСonfig: new(puppet:SystemСonfig)
+          - $this.systemСonfig.installOnTheNode($this.instance)
 
           - $resources: new(sys:Resources)
           - $template: $resources.yaml('DeployJenkins.template')
