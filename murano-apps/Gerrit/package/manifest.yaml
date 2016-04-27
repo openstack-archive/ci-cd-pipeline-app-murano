@@ -1,7 +1,7 @@
 Format: 1.0
 Type: Application
 FullName: io.murano.opaas.Gerrit
-Name: Gerrit-Puppet
+Name: Gerrit
 Description: |
   Gerrit provides web based code review and repository management for the Git version control system.
 Author: 'Mirantis, Inc'
