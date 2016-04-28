@@ -43,7 +43,7 @@ Methods:
 
       - $._environment.reporter.report($this, 'Installing needed puppets for Nodepool...')
 
-      - $this.systemConfig: new(puppet:SystemСonfig)
+      - $this.systemConfig: new(puppet:SystemConfig)
       - $this.systemConfig.installOnTheNode($this.instance)
 
       - $._environment.reporter.report($this, 'Waiting while Jenkins is being deployed...')

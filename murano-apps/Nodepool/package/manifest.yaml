@@ -14,7 +14,7 @@ Classes:
 UI: ui.yaml
 Logo: logo.png
 Require:
-  io.murano.opaas.puppet.SystemСonfig:
+  io.murano.opaas.puppet.SystemConfig:
   io.murano.opaas.puppet.Puppet:
   io.murano.opaas.Jenkins:
 # TODO(nmakhotkin): Add zuul to requirements.
