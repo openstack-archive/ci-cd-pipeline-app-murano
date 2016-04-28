@@ -11,6 +11,16 @@ Name: CiCdEnvironment
 Extends: std:Application
 
 Properties:
+  ldap:
+    Contract: $.class(opaas:OpenLDAP)
+    Usage: Out
+  gerrit:
+    Contract: $.class(opaas:Gerrit)
+    Usage: Out
+  jenkins:
+    Contract: $.class(opaas:Jenkins)
+    Usage: Out
+
   instance_name:
     Contract: $.string().notNull()
   flavor:
