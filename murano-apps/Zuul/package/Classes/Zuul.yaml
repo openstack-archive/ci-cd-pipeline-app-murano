@@ -5,6 +5,7 @@ Namespaces:
   sys: io.murano.system
   opaas: io.murano.opaas
   puppet: io.murano.opaas.puppet
+  conf: io.murano.configuration
 
 Name: Zuul
 
@@ -13,18 +14,11 @@ Extends: std:Application
 Properties:
   name:
     Contract: $.string()
-    Default: ZuulApp
+    Default: Zuul
   instance:
     Contract: $.class(puppet:PuppetInstance).notNull()
-  gerrit_server:
-    Contract: $.string().notNull()
-  gerrit_user:
-    Contract: $.string().notNull()
-
-  #nodepool_server:
-  #  Contract: $.string().notNull()
-  #jenkins_server:
-  #  Contract: $.string().notNull()
+  gerrit:
+    Contract: $.class(Gerrit)
 
 Methods:
   .init:
@@ -56,29 +50,46 @@ Methods:
           - $.instance.deploy()
           - $._environment.reporter.report($this, 'Zuul VM {0} is created'.format($.instance.openstackId))
 
-          - $this.systemСonfig: new(puppet:SystemСonfig)
-          - $this.systemСonfig.installOnTheNode($this.instance)
+          - $this.systemConfig: new(puppet:SystemConfig)
+          - $this.systemConfig.installOnTheNode($this.instance)
 
-          - $.instance.setHieraValue('project_config_repo', 'https://review.fuel-infra.org/open-paas/project-config')
-          - $.instance.setHieraValue('gerrit_server', $.gerrit_server)
-          - $.instance.setHieraValue('gerrit_user', $.gerrit_user)
-          #- $.instance.setHieraValue('nodepool_server', $.nodepool_server)
-          #- $.instance.setHieraValue('jenkins_server', $.jenkins_server)
-          - $.instance.setHieraValue('gerrit_ssh_rsa_pubkey_contents', 'gerrit_ssh_rsa_pubkey_contents')
-          - $.instance.setHieraValue('zuul_ssh_private_key_contents', 'zuul_ssh_private_key_contents')
+          - $.gerrit.deploy()
+
+          - $.createConfiguration()
 
           - $resources: new(sys:Resources)
           - $template: $resources.yaml('DeployZuul.template')
           - $._environment.reporter.report($this, 'Zuul is deploying')
           - $.instance.agent.call($template, $resources)
 
+          - $._environment.reporter.report($this, 'Creating Zuul user in Gerrit')
+          - $zuul_pubkey: $.instance.getHieraValue('zuul_ssh_pubkey_contents')
+          - $.gerrit.createAccount('Non-Interactive Users', 'Zuul', 'zuul@lists.openstack.org', $zuul_pubkey, 'zuul')
+
+          - $linux: new(conf:Linux)
+          - $linux.runCommand($.instance.agent, 'service zuul start')
+
           - If: $.instance.assignFloatingIp
             Then:
               - $host: $.instance.floatingIpAddress
             Else:
               - $host: $.instance.ipAddresses[0]
-          - $._environment.reporter.report($this, 'Zuul is available at {0}:8080'.format($host))
+          - $._environment.reporter.report($this, 'Zuul is available at {0}:80'.format($host))
           - $.setAttr(deployed, true)
+
+  createConfiguration:
+    Body:
+      - $gerritInstance: $.gerrit.instance
+      - If: $gerritInstance.assignFloatingIp
+        Then:
+          - $gerritHost: $gerritInstance.floatingIpAddress
+        Else:
+          - $gerritHost: $gerritInstance.ipAddresses[0]
+
+      - $.instance.setHieraValue('project_config_repo', 'https://review.fuel-infra.org/open-paas/project-config')
+      - $.instance.setHieraValue('gerrit_server', $gerritHost)
+      - $.instance.setHieraValue('gerrit_user', 'zuul')
+      - $.instance.setHieraValue('gerrit_ssh_host_key', $.gerrit.instance.getHieraValue('gerrit_ssh_rsa_pubkey_contents'))
 
   destroy:
     Body:

@@ -4,10 +4,7 @@ Application:
   ?:
     type: io.murano.opaas.Zuul
   name: $.appConfiguration.name
-  gerrit_server: $.appConfiguration.GerritServer
-  gerrit_user: $.appConfiguration.GerritUser
-#  nodepool_server: $.appConfiguration.NodepoolServer
-#  jenkins_server: $.appConfiguration.JenkinsServer
+  gerrit: $.appConfiguration.Gerrit
   instance:
     ?:
       type: io.murano.opaas.puppet.PuppetInstance
@@ -24,23 +21,10 @@ Forms:
         - name: name
           type: string
           label: Application Name
-          initial: ZuulApp
-        - name: GerritServer
-          type: string
-          label: Gerrit Server
+          initial: Zuul
+        - name: Gerrit
+          type: io.murano.opaas.Gerrit
           description: Gerrit Server
-        - name: GerritUser
-          type: string
-          label: Gerrit User
-          description: Gerrit User
-#        - name: NodepoolServer
-#          type: string
-#          label: Nodepool Server
-#          description: Nodepool Server
-#        - name: JenkinsServer
-#          type: string
-#          label: Jenkins Server
-#          description: Jenkins Server
         - name: assignFloatingIP
           type: boolean
           label: Assign Floating IP

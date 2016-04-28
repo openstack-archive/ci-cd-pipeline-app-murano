@@ -61,7 +61,7 @@ Methods:
 
       - $._environment.reporter.report($this, 'Deploying Gerrit')
 
-      - $this.systemConfig: new(puppet:SystemСonfig)
+      - $this.systemConfig: new(puppet:SystemConfig)
       - $this.systemConfig.installOnTheNode($this.instance)
 
       - $.createConfiguration()
@@ -132,6 +132,29 @@ Methods:
       - $.instance.setHieraValue( 'jeepyb_project_file', '/etc/project-config/gerrit/projects.yaml')
       - $.instance.setHieraValue( 'project_config_config_dir', '/etc/project-config/')
 
+  #NOTE: this method doesn't work without ldap
+  createAccount:
+    Arguments:
+      - group:
+          Contract: $.string().notNull()
+      - fullName:
+          Contract: $.string().notNull()
+      - email:
+          Contract: $.string().notNull()
+      - sshKey:
+          Contract: $.string().notNull()
+      - name:
+          Contract: $.string().notNull()
+    Body:
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('CreateAccount.template').bind(dict(
+          gerritUser => $.ldap.ldapRootUser,
+          group      => $group,
+          fullName   => $fullName,
+          email      => $email,
+          sshKey     => $sshKey,
+          name       => $name))
+      - $.instance.agent.call($template, $resources)
 
   destroy:
     Body:

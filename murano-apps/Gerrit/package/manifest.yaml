@@ -12,5 +12,5 @@ UI: ui.yaml
 Logo: logo.png
 Require:
   io.murano.opaas.OpenLDAP:
-  io.murano.opaas.puppet.SystemСonfig:
+  io.murano.opaas.puppet.SystemConfig:
   io.murano.opaas.puppet.Puppet:

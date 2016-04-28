@@ -8,6 +8,7 @@ $project_user_id    = 99
 $project_user_key   = hiera('gerrit_ssh_project_rsa_pubkey_contents')
 $project_user_email = "${$project_user}@${fqdn}"
 
+
 file {'gerrit_gitconfig':
     ensure  => file,
     path    => '/home/gerrit2/.gitconfig',
