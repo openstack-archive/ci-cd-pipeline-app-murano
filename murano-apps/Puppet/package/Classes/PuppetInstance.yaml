@@ -74,17 +74,6 @@ Methods:
       - $._environment.reporter.report($this,
         'Puppet module {0} installed on {1}'.format( $module, $.openstackId))
 
-  setHieraValue:
-    Arguments:
-      - key:
-          Contract: $.string().notNull()
-      - value:
-          Contract: $.string().notNull()
-    Body:
-      - $._environment.reporter.report($this,
-        'Put value {0} = {1}'.format( $key, $value))
-      - $.setYamlValue('/etc/puppet/hieradata/murano.yaml', $key, $value)
-
   setHieraConfigValue:
     Arguments:
       - key:
@@ -122,3 +111,14 @@ Methods:
           key => $key))
       - $value: $.agent.call($template, $resources)
       - Return: $value
+
+  setHieraValue:
+    Arguments:
+      - key:
+          Contract: $.string().notNull()
+      - value:
+          Contract: $.string().notNull()
+    Body:
+      - $._environment.reporter.report($this,
+        'Put value {0} = {1}'.format( $key, $value))
+      - $.setYamlValue('/etc/puppet/hieradata/murano.yaml', $key, $value)

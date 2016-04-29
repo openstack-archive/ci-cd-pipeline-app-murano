@@ -127,3 +127,13 @@ Methods:
     Body:
       - $.reportDestroyed()
       - $.setAttr(deployed, false)
+
+  configureUser:
+    Arguments:
+      - key:
+          Contract: $.string().notNull()
+    Body:
+      - $this.instance.setHieraValue('gerrit_ssh_rsa_key_contents', $key)
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('JenkinsUser.template')
+      - $.instance.agent.call($template, $resources, 100)
