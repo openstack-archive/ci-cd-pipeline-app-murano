@@ -43,60 +43,66 @@ Methods:
 
   deploy:
     Body:
-      - $._environment.reporter.report($this, format('Deploying CI/CD'))
+      - $._environment.reporter.report($this, 'Deploying CI/CD')
 
       - $user: 'user'
       - $password: 'P@ssw0rd'
 
       # OpenLDAP
-      - $ldapInstanceName: concat($.instance_name, '-ldap')
-      - $ldapInstance: new(puppet:PuppetInstance, $._environment,
-          name => $ldapInstanceName,
-          flavor => $.flavor,
-          image => $.image,
-          keyname => $.keyname,
-          availabilityZone => $.availabilityZone,
-          assignFloatingIp => $.assignFloatingIp)
-      - $this.ldap: new(opaas:OpenLDAP, $._environment,
-          name => 'OpenLDAP',
-          instance => $ldapInstance,
-          domain => 'infra.local',
-          ldapRootUser => 'root',
-          ldapRootPass => 'openstack',
-          ldapUser => $user,
-          ldapPass => $password)
+      - If: $this.ldap = null
+        Then:
+          - $ldapInstanceName: concat($.instance_name, '-ldap')
+          - $ldapInstance: new(puppet:PuppetInstance, $._environment,
+              name => $ldapInstanceName,
+              flavor => $.flavor,
+              image => $.image,
+              keyname => $.keyname,
+              availabilityZone => $.availabilityZone,
+              assignFloatingIp => $.assignFloatingIp)
+          - $this.ldap: new(opaas:OpenLDAP, $._environment,
+              name => 'OpenLDAP',
+              instance => $ldapInstance,
+              domain => 'infra.local',
+              ldapRootUser => 'root',
+              ldapRootPass => 'openstack',
+              ldapUser => $user,
+              ldapPass => $password)
 
       # Gerrit
-      - $gerritInstanceName: concat($.instance_name, '-gerrit')
-      - $gerritInstance: new(puppet:PuppetInstance, $._environment,
-          name => $gerritInstanceName,
-          flavor => $.flavor,
-          image => $.image,
-          keyname => $.keyname,
-          availabilityZone => $.availabilityZone,
-          assignFloatingIp => $.assignFloatingIp)
-      - $this.gerrit: new(opaas:Gerrit, $this,
-          name => 'Gerrit',
-          instance => $gerritInstance,
-          ldap => $this.ldap)
+      - If: $this.gerrit = null
+        Then:
+          - $gerritInstanceName: concat($.instance_name, '-gerrit')
+          - $gerritInstance: new(puppet:PuppetInstance, $._environment,
+              name => $gerritInstanceName,
+              flavor => $.flavor,
+              image => $.image,
+              keyname => $.keyname,
+              availabilityZone => $.availabilityZone,
+              assignFloatingIp => $.assignFloatingIp)
+          - $this.gerrit: new(opaas:Gerrit, $this,
+              name => 'Gerrit',
+              instance => $gerritInstance,
+              ldap => $this.ldap)
 
       # Jenkins
-      - $._environment.reporter.report($this,
-          'Jenkins credentials user={0}, password={1}'.format(
-            $user, $password))
-      - $jenkinsInstanceName: concat($.instance_name, '-jenkins')
-      - $jenkinsInstance: new(puppet:PuppetInstance, $._environment,
-          name => $jenkinsInstanceName,
-          flavor => $.flavor,
-          image => $.image,
-          keyname => $.keyname,
-          availabilityZone => $.availabilityZone,
-          assignFloatingIp => $.assignFloatingIp)
-      - $this.jenkins: new(opaas:Jenkins, $._environment,
-          name => 'Jenkins',
-          instance => $jenkinsInstance,
-          ldap => $this.ldap,
-          cfplugin => false)
+      - If: $this.jenkins = null
+        Then:
+          - $._environment.reporter.report($this,
+              'Jenkins credentials user={0}, password={1}'.format(
+                $user, $password))
+          - $jenkinsInstanceName: concat($.instance_name, '-jenkins')
+          - $jenkinsInstance: new(puppet:PuppetInstance, $._environment,
+              name => $jenkinsInstanceName,
+              flavor => $.flavor,
+              image => $.image,
+              keyname => $.keyname,
+              availabilityZone => $.availabilityZone,
+              assignFloatingIp => $.assignFloatingIp)
+          - $this.jenkins: new(opaas:Jenkins, $._environment,
+              name => 'Jenkins',
+              instance => $jenkinsInstance,
+              ldap => $this.ldap,
+              cfplugin => false)
 
       # Deploy all
       - Parallel:
