@@ -5,6 +5,12 @@ node default {
   $ldap_dn = domain2dn(hiera("ldap_domain"))
   $ldap_ip = hiera('ldap_ip')
 
+  if ! defined(Class['project_config']) {
+    class { 'project_config':
+      url  => hiera('project_config_repo'),
+    }
+  }
+
   class { 'openstack_project::server':
     iptables_public_tcp_ports => [80, 443, 8081, 29418],
     sysadmins                 => hiera('sysadmins', []),
@@ -86,10 +92,4 @@ node default {
   #   user => "puppet",
   #
   # }
-
-  if ! defined(Class['project_config']) {
-    class { 'project_config':
-      url  => hiera('project_config_repo'),
-    }
-  }
 }

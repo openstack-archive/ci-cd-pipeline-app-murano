@@ -4,6 +4,12 @@ node default {
     iptables_public_tcp_ports => [80],
   }
 
+  if ! defined(Class['project_config']) {
+    class { 'project_config':
+      url  => hiera('project_config_repo'),
+    }
+  }
+
   class { 'nodepool':
     mysql_root_password           => hiera('nodepool_mysql_root_password'),
     mysql_password                => hiera('nodepool_mysql_password'),

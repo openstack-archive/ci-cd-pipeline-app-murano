@@ -19,7 +19,6 @@ Properties:
     Contract: $.class(puppet:PuppetInstance).notNull()
   gerrit:
     Contract: $.class(Gerrit)
-
 Methods:
   .init:
     Body:
@@ -86,7 +85,6 @@ Methods:
         Else:
           - $gerritHost: $gerritInstance.ipAddresses[0]
 
-      - $.instance.setHieraValue('project_config_repo', 'https://review.fuel-infra.org/open-paas/project-config')
       - $.instance.setHieraValue('gerrit_server', $gerritHost)
       - $.instance.setHieraValue('gerrit_user', 'zuul')
       - $.instance.setHieraValue('gerrit_ssh_host_key', $.gerrit.instance.getHieraValue('gerrit_ssh_rsa_pubkey_contents'))

@@ -1,4 +1,11 @@
 node default {
+
+  if ! defined(Class['project_config']) {
+    class { 'project_config':
+      url  => hiera('project_config_repo'),
+    }
+  }
+
   class { 'openstack_project::jenkins':
     jenkins_password        => '',
     jenkins_ssh_private_key => '',

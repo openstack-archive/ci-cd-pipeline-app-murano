@@ -69,7 +69,6 @@ Methods:
       - $jenkinsHost: $.detectPrimaryIP($.jenkins.instance)
       - $.instance.setHieraValue('jenkins_host', $jenkinsHost)
 
-
   detectPrimaryIP:
     Arguments:
       - instance:

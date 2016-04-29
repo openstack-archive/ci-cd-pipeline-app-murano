@@ -11,10 +11,6 @@ cd system-config
 
 cp -r modules/ /etc/puppet/
 
-
-git clone https://review.fuel-infra.org/open-paas/project-config
-cp -r project-config/ /etc/
-
 # Should be installed on the each node to use
 # domain2dn function
 puppet module install datacentred-ldap
