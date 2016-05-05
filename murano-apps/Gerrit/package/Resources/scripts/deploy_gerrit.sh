@@ -1,5 +1,8 @@
 #!/bin/bash
 
+logger Install dev packages
+apt-get update && apt-get install -y build-essential libssl-dev libffi-dev python-dev
+
 logger Deploy Gerrit
 
 #TODO add this template to system-config
