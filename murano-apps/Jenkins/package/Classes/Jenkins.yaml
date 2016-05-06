@@ -20,6 +20,10 @@ Properties:
   cfplugin:
     Contract: $.bool()
     Default: false
+  gitUser:
+    Contract: $.string()
+  gitEmail:
+    Contract: $.string()
 
 Methods:
   initialize:
@@ -64,6 +68,7 @@ Methods:
               - $.instance.agent.call($template, $resources)
 
           - $.configureZMQPlugin()
+          - $.configureGitPlugin($.gitUser, $.gitEmail)
 
           - If: $.instance.assignFloatingIp
             Then:
@@ -121,6 +126,33 @@ Methods:
       - $resources: new(sys:Resources)
       - $._environment.reporter.report($this, 'Configure Jenkins Gearman plugin...')
       - $template: $resources.yaml('ConfigureGearman.template')
+      - $.instance.agent.call($template, $resources)
+
+  configureGitPlugin:
+    Arguments:
+      - gitUser:
+          Contract: $.string()
+      - gitEmail:
+          Contract: $.string()
+    Body:
+      # Set defaults if not provided.
+      - If: $gitUser in ['', null]
+        Then:
+          - $gitUsername: 'user'
+        Else:
+          - $gitUsername: $gitUser
+
+      - If: $gitEmail in ['', null]
+        Then:
+          - $gitUserEmail: 'user@mirantis.test'
+        Else:
+          - $gitUserEmail: $gitEmail
+
+      - $.instance.setHieraValue('git_user', $gitUsername)
+      - $.instance.setHieraValue('git_user_email', $gitUserEmail)
+      - $resources: new(sys:Resources)
+      - $._environment.reporter.report($this, 'Configure Jenkins Git plugin...')
+      - $template: $resources.yaml('ConfigureGit.template')
       - $.instance.agent.call($template, $resources)
 
   destroy:

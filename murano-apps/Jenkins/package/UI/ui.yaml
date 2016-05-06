@@ -6,6 +6,8 @@ Application:
   name: $.appConfiguration.name
   ldap: $.appConfiguration.OpenLDAP
   cfplugin: $.appConfiguration.cfplugin
+  gitUser: $.appConfiguration.gitUser
+  gitEmail: $.appConfiguration.gitEmail
   instance:
     ?:
       type: io.murano.opaas.puppet.PuppetInstance
@@ -45,6 +47,20 @@ Forms:
           required: false
           description: >-
             Specify OpenLDAP domain for authentication
+        - name: gitUser
+          type: string
+          label: Git username
+          required: false
+          regexpValidator: '^[-_\w]+$'
+          description: >-
+            Enter a desired name for git user
+        - name: gitEmail
+          type: string
+          label: Git user email
+          required: false
+          regexpValidator: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+          description: >-
+            Enter a desired email for git user
   - instanceConfiguration:
       fields:
         - name: title

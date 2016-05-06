@@ -1,0 +1,19 @@
+FormatVersion: 2.1.0
+Version: 1.0.0
+Name: Configure Git
+
+Body: |
+  return configureGit().stdout
+
+Scripts:
+  configureGit:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: configure_git.sh
+    Files:
+      - configure_git/templates/hudson.plugins.git.GitSCM.xml.erb
+      - configure_git/manifests/init.pp
+      - configure_git.pp
+    Options:
+      captureStdout: true
+      captureStderr: true
