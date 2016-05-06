@@ -69,6 +69,7 @@ Methods:
 
           - $.configureZMQPlugin()
           - $.configureGitPlugin($.gitUser, $.gitEmail)
+          - $.configureMavenPlugin()
 
           - If: $.instance.assignFloatingIp
             Then:
@@ -153,6 +154,13 @@ Methods:
       - $resources: new(sys:Resources)
       - $._environment.reporter.report($this, 'Configure Jenkins Git plugin...')
       - $template: $resources.yaml('ConfigureGit.template')
+      - $.instance.agent.call($template, $resources)
+
+  configureMavenPlugin:
+    Body:
+      - $resources: new(sys:Resources)
+      - $._environment.reporter.report($this, 'Configure Jenkins Maven plugin...')
+      - $template: $resources.yaml('ConfigureMaven.template')
       - $.instance.agent.call($template, $resources)
 
   destroy:
