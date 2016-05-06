@@ -4,6 +4,7 @@ ADMIN_USERNAME="$2"
 ADMIN_PASSWORD="$3"
 USERNAME="$4"
 PASSWORD="$5"
+EMAIL="$6"
 
 DOMAIN_PASSWORD="$ADMIN_PASSWORD"
 
@@ -14,7 +15,7 @@ TLD="`echo "$DOMAIN" | cut -d. -f2`"
 # script will create just admin user
 
 if [ -z $USERNAME ];
-  then 
+  then
     USERNAME="$ADMIN_USERNAME";
     PASSWORD="$ADMIN_PASSWORD";
 fi
@@ -23,11 +24,12 @@ fi
 ldapadd -x -w $DOMAIN_PASSWORD -D "cn=${ADMIN_USERNAME},dc=${NAME},dc=${TLD}" << USER
 dn: uid=${USERNAME},ou=users,dc=${NAME},dc=${TLD}
 objectClass: top
-objectClass: account
 objectClass: posixAccount
 objectClass: shadowAccount
+objectclass: iNetOrgPerson
 cn: ${USERNAME}
 uid: ${USERNAME}
+sn: ${USERNAME}
 uidNumber: 1001
 gidNumber: 1001
 homeDirectory: /home/${USERNAME}
@@ -37,6 +39,7 @@ userPassword: {crypt}x
 shadowLastChange: 0
 shadowMax: 0
 shadowWarning: 0
+mail: ${EMAIL}
 USER
 
 ldappasswd -w $DOMAIN_PASSWORD -s ${PASSWORD} -D "cn=${ADMIN_USERNAME},dc=${NAME},dc=${TLD}" -x uid=${USERNAME},ou=users,dc=${NAME},dc=${TLD}

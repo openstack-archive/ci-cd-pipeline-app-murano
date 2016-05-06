@@ -7,8 +7,10 @@ Application:
   domain: $.appConfiguration.domain
   ldapRootUser: $.appConfiguration.ldapRootUser
   ldapRootPass: $.appConfiguration.ldapRootPass
+  ldapRootEmail: $.appConfiguration.ldapRootEmail
   ldapUser: $.appConfiguration.ldapUser
   ldapPass: $.appConfiguration.ldapPass
+  ldapEmail: $.appConfiguration.ldapEmail
   instance:
     ?:
       type: io.murano.opaas.puppet.PuppetInstance
@@ -49,20 +51,39 @@ Forms:
           descriptionTitle: LDAP Root Password
           description: >-
             Please, provide admin password
+        - name: ldapRootEmail
+          type: string
+          regexpValidator: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+          errorMessages:
+            invalid: Please provide valid email address.
+          label: Root User Email
+          descriptionTitle: LDAP Root User Email
+          description: >-
+            Please, provide admin user email
         - name: ldapUser
           type: string
           label: Username
           required: false
-          descriptionTitle: LDAP User
+          descriptionTitle: LDAP regular user
           description: >-
-            Please, provide username
+            Please, provide name for regular user
         - name: ldapPass
           type: password
           label: Password
           required: false
-          descriptionTitle: LDAP Password
+          descriptionTitle: LDAP password for regular user
           description: >-
-            Please, provide password
+            Please, provide password for regular user
+        - name: ldapEmail
+          type: string
+          regexpValidator: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+          errorMessages:
+            invalid: Please provide valid email address.
+          label: Email
+          required: false
+          descriptionTitle: LDAP Email
+          description: >-
+            Please, provide regular user email
         - name: assignFloatingIP
           type: boolean
           label: Assign Floating IP

@@ -47,6 +47,7 @@ Methods:
 
       - $user: 'user'
       - $password: 'P@ssw0rd'
+      - $mail: 'user@mail.com'
 
       # OpenLDAP
       - If: $this.ldap = null
@@ -65,8 +66,10 @@ Methods:
               domain => 'infra.local',
               ldapRootUser => 'root',
               ldapRootPass => 'openstack',
+              ldapRootEmail => 'root@mail.com',
               ldapUser => $user,
-              ldapPass => $password)
+              ldapPass => $password,
+              ldapEmail => $mail)
 
       # Gerrit
       - If: $this.gerrit = null

@@ -61,6 +61,7 @@ node default {
     ldap_password                       => $ldap_password,
     ldap_accountfullname                => 'cn',
     ldap_account_pattern                => '(cn=${username})',
+    ldap_account_email_address          => 'mail',
     mysql_host                          => hiera('gerrit_mysql_host', 'localhost'),
     mysql_password                      => hiera('gerrit_db_password'),
     email_private_key                   => hiera('gerrit_email_private_key'),

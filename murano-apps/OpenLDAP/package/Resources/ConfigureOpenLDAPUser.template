@@ -8,15 +8,17 @@ Parameters:
   rootPass: $rootPass
   user: $user
   password: $password
+  email: $email
 
 Body: |
   return configure(
-      '{0} {1} {2} {3} {4}'.format(
+      '"{0}" "{1}" "{2}" "{3}" "{4}" "{5}"'.format(
           args.domain,
           args.rootUser,
           args.rootPass,
           args.user,
-          args.password)).stdout
+          args.password,
+          args.email)).stdout
 
 Scripts:
   configure:

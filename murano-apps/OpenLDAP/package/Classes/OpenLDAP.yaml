@@ -21,9 +21,13 @@ Properties:
     Contract: $.string().notNull()
   ldapRootPass:
     Contract: $.string().notNull()
+  ldapRootEmail:
+    Contract: $.string().notNull()
   ldapUser:
     Contract: $.string()
   ldapPass:
+    Contract: $.string()
+  ldapEmail:
     Contract: $.string()
 
 Methods:
@@ -65,7 +69,7 @@ Methods:
           - If: $.ldapUser != '' and $.ldapUser != null
             Then:
               - $._environment.reporter.report($this, format('Configuring base non-admin LDAP user'))
-              - $.configureOpenLDAPUser($.ldapUser, $.ldapPass)
+              - $.configureOpenLDAPUser($.ldapUser, $.ldapPass, $.ldapEmail)
 
           - $.setAttr(deployed, true)
           - $._environment.reporter.report($this, 'OpenLDAP is deployed!')
@@ -99,11 +103,12 @@ Methods:
     Body:
       - $resources: new(sys:Resources)
       - $template: $resources.yaml('ConfigureOpenLDAPUser.template').bind(dict(
-            domain => $this.domain,
+            domain   => $this.domain,
             rootUser => $this.ldapRootUser,
             rootPass => $this.ldapRootPass,
-            user => '',
-            password => ''
+            user     => '',
+            password => '',
+            email    => $this.ldapRootEmail
           ))
       - $.instance.agent.call($template, $resources)
 
@@ -113,14 +118,17 @@ Methods:
           Contract: $.string().notNull()
       - password:
           Contract: $.string().notNull()
+      - email:
+          Contract: $.string().notNull()
     Body:
       - $resources: new(sys:Resources)
       - $template: $resources.yaml('ConfigureOpenLDAPUser.template').bind(dict(
-            domain => $this.domain,
+            domain   => $this.domain,
             rootUser => $this.ldapRootUser,
             rootPass => $this.ldapRootPass,
-            user => $user,
-            password => $password
+            user     => $user,
+            password => $password,
+            email    => $email
           ))
       - $.instance.agent.call($template, $resources)
 
