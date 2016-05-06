@@ -97,6 +97,7 @@ Forms:
           required: false
         - name: unitNamingPattern
           type: string
+          initial: jenkins
           label: Instance Naming Pattern
           required: false
           maxLength: 200

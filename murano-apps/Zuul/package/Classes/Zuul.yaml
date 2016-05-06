@@ -46,9 +46,9 @@ Methods:
                 External: true
           - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
 
-          - $._environment.reporter.report($this, 'Creating VM for Zuul {0}'.format($.instance.openstackId))
+          - $._environment.reporter.report($this, 'Creating VM for Zuul "{0}"'.format($.instance.name))
           - $.instance.deploy()
-          - $._environment.reporter.report($this, 'Zuul VM {0} is created'.format($.instance.openstackId))
+          - $._environment.reporter.report($this, 'Zuul VM "{0}" with id {1} created'.format($.instance.name, $.instance.openstackId))
 
           - $this.systemConfig: new(puppet:SystemConfig)
           - $this.systemConfig.installOnTheNode($this.instance)

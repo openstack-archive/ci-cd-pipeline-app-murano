@@ -37,9 +37,9 @@ Methods:
             IpProtocol: tcp
             External: true
       - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
-      - $._environment.reporter.report($this, 'Creating instance for Nodepool...')
+      - $._environment.reporter.report($this, 'Creating instance for Nodepool "{0}"'.format($.instance.name))
       - $.instance.deploy()
-      - $._environment.reporter.report($this, 'Nodepool instance is created.')
+      - $._environment.reporter.report($this, 'Nodepool instance "{0}" with id {1} created.'.format($.instance.name, $.instance.openstackId))
 
       - $._environment.reporter.report($this, 'Installing needed puppets for Nodepool...')
 

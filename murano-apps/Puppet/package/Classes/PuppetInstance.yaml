@@ -43,7 +43,7 @@ Methods:
   installPuppet:
     Body:
       - $._environment.reporter.report($this,
-        'Install puppet on instance {0}'.format($.openstackId))
+        'Install puppet on instance "{0}" with id {1}'.format($.name, $.openstackId))
       - $resources: new(sys:Resources)
       - $template: $resources.yaml('InstallPuppet.template')
       - $.agent.call($template, $resources)

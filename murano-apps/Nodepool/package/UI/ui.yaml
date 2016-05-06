@@ -74,6 +74,7 @@ Forms:
           required: false
         - name: unitNamingPattern
           type: string
+          initial: nodepool
           label: Instance Naming Pattern
           required: false
           maxLength: 200

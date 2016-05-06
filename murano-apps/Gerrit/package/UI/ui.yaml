@@ -82,6 +82,7 @@ Forms:
         - name: unitNamingPattern
           type: string
           label: Instance Naming Pattern
+          initial: gerrit
           required: false
           maxLength: 200
           regexpValidator: '^[-_\w]+$'
