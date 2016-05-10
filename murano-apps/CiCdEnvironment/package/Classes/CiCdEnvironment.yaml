@@ -113,5 +113,5 @@ Methods:
         - $this.gerrit.deploy()
         - $this.jenkins.deploy()
 
-      - $ssh_private_key: $gerritInstance.getHieraValue('gerrit_ssh_rsa_key_contents')
+      - $ssh_private_key: $gerrit.instance.getHieraValue('gerrit_ssh_rsa_key_contents')
       - $this.jenkins.configureUser($ssh_private_key)
