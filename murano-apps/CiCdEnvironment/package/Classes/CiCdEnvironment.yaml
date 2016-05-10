@@ -88,6 +88,7 @@ Methods:
               ldap => $this.ldap)
 
       # Jenkins
+      # set user and mail for accessing to Gerrit from Jenkins
       - If: $this.jenkins = null
         Then:
           - $._environment.reporter.report($this,
@@ -105,7 +106,9 @@ Methods:
               name => 'Jenkins',
               instance => $jenkinsInstance,
               ldap => $this.ldap,
-              cfplugin => false)
+              cfplugin => false,
+              gitUser => $user,
+              gitEmail => $mail)
 
       # Deploy all
       - Parallel:
