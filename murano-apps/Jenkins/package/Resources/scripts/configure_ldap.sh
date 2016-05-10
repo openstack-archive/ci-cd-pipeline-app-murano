@@ -1,10 +1,11 @@
 #!/bin/bash
 
-mkdir /etc/puppet/modules/configure_ldap
-mkdir /etc/puppet/modules/configure_ldap/manifests/
-mkdir /etc/puppet/modules/configure_ldap/templates/
+# No error if already exists.
+mkdir -p /etc/puppet/modules/configure_ldap
+mkdir -p /etc/puppet/modules/configure_ldap/manifests/
+mkdir -p /etc/puppet/modules/configure_ldap/templates/
 
 cp configure_ldap/manifests/init.pp /etc/puppet/modules/configure_ldap/manifests/
 cp configure_ldap/templates/config.erb /etc/puppet/modules/configure_ldap/templates/
 
-puppet apply ldap_init.pp
+puppet apply configure_ldap.pp

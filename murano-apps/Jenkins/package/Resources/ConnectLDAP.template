@@ -13,7 +13,7 @@ Scripts:
     Files:
       - 'configure_ldap/templates/config.erb'
       - 'configure_ldap/manifests/init.pp'
-      - 'ldap_init.pp'
+      - 'configure_ldap.pp'
     Options:
       captureStdout: true
       captureStderr: true
