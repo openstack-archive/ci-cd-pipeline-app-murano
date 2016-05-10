@@ -71,7 +71,7 @@ Methods:
       - $template: $resources.yaml('DeployGerrit.template')
       - $.instance.agent.call($template, $resources)
       - $.setAttr(deployed, true)
-      - $._environment.reporter.report($this, format('Gerrit is available at {0}:80 or {1}:8081',
+      - $._environment.reporter.report($this, format('Gerrit is available at http://{0}:80 or http://{1}:8081',
           $.instance.floatingIpAddress, $.instance.floatingIpAddress))
 
   createLdapConfiguration:

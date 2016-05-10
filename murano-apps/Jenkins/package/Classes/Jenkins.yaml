@@ -77,7 +77,7 @@ Methods:
               - $host: $.instance.floatingIpAddress
             Else:
               - $host: $.instance.ipAddresses[0]
-          - $._environment.reporter.report($this, 'Jenkins is available at {0}:8080'.format($host))
+          - $._environment.reporter.report($this, 'Jenkins is available at http://{0}:8080'.format($host))
           - $.setAttr(deployed, true)
 
   connectLDAP:

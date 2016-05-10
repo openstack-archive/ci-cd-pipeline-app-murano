@@ -73,7 +73,7 @@ Methods:
               - $host: $.instance.floatingIpAddress
             Else:
               - $host: $.instance.ipAddresses[0]
-          - $._environment.reporter.report($this, 'Zuul is available at {0}:80'.format($host))
+          - $._environment.reporter.report($this, 'Zuul is available at http://{0}:80'.format($host))
           - $.setAttr(deployed, true)
 
   createConfiguration:
