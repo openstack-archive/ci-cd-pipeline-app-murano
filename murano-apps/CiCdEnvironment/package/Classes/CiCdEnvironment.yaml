@@ -21,6 +21,19 @@ Properties:
     Contract: $.class(opaas:Jenkins)
     Usage: Out
 
+  ldapRootUser:
+    Contract: $.string().notNull()
+  ldapRootPass:
+    Contract: $.string().notNull()
+  ldapRootEmail:
+    Contract: $.string().notNull()
+  ldapUser:
+    Contract: $.string()
+  ldapPass:
+    Contract: $.string()
+  ldapEmail:
+    Contract: $.string()
+
   instance_name:
     Contract: $.string().notNull()
   flavor:
@@ -45,10 +58,6 @@ Methods:
     Body:
       - $._environment.reporter.report($this, 'Deploying CI/CD')
 
-      - $user: 'user'
-      - $password: 'P@ssw0rd'
-      - $mail: 'user@mail.com'
-
       # OpenLDAP
       - If: $this.ldap = null
         Then:
@@ -64,12 +73,12 @@ Methods:
               name => 'OpenLDAP',
               instance => $ldapInstance,
               domain => 'infra.local',
-              ldapRootUser => 'root',
-              ldapRootPass => 'openstack',
-              ldapRootEmail => 'root@mail.com',
-              ldapUser => $user,
-              ldapPass => $password,
-              ldapEmail => $mail)
+              ldapRootUser => $.ldapRootUser,
+              ldapRootPass => $.ldapRootPass,
+              ldapRootEmail => $.ldapRootEmail,
+              ldapUser => $.ldapUser,
+              ldapPass => $.ldapPass,
+              ldapEmail => $.ldapEmail)
 
       # Gerrit
       - If: $this.gerrit = null
@@ -93,7 +102,7 @@ Methods:
         Then:
           - $._environment.reporter.report($this,
               'Jenkins credentials user={0}, password={1}'.format(
-                $user, $password))
+                $.ldapUser, $.ldapPass))
           - $jenkinsInstanceName: concat($.instance_name, '-jenkins')
           - $jenkinsInstance: new(puppet:PuppetInstance, $._environment,
               name => $jenkinsInstanceName,
@@ -108,8 +117,8 @@ Methods:
               ldap => $this.ldap,
               gerrit => $this.gerrit,
               cfplugin => false,
-              gitUser => $user,
-              gitEmail => $mail)
+              gitUser => $.ldapUser,
+              gitEmail => $.ldapEmail)
 
       # Deploy all
       - Parallel:

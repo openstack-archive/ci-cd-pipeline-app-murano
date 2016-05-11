@@ -4,6 +4,12 @@ Application:
   ?:
     type: io.murano.opaas.CiCdEnvironment
   name: 'CI/CD'
+  ldapRootUser: $.appConfiguration.ldapRootUser
+  ldapRootPass: $.appConfiguration.ldapRootPass
+  ldapRootEmail: $.appConfiguration.ldapRootEmail
+  ldapUser: $.appConfiguration.ldapUser
+  ldapPass: $.appConfiguration.ldapPass
+  ldapEmail: $.appConfiguration.ldapEmail
   instance_name: generateHostname($.instanceConfiguration.unitNamingPattern, 1)
   flavor: $.instanceConfiguration.flavor
   image: $.instanceConfiguration.osImage
@@ -12,6 +18,59 @@ Application:
   assignFloatingIp: true
 
 Forms:
+  - appConfiguration:
+      fields:
+        - name: ldapRootUser
+          type: string
+          initial: root
+          label: Root Username
+          descriptionTitle: Root Username
+          description: >-
+            Please, provide name for root user
+        - name: ldapRootPass
+          type: password
+          initial: Openst@ck0
+          label: Root Password
+          descriptionTitle: Root Password
+          description: >-
+            Please, provide password for root user
+        - name: ldapRootEmail
+          type: string
+          initial: root@mail.com
+          regexpValidator: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+          errorMessages:
+            invalid: Please provide valid email address.
+          label: Root User Email
+          descriptionTitle: Root User Email
+          description: >-
+            Please, provide email for root user
+        - name: ldapUser
+          type: string
+          initial: user
+          label: Username
+          required: false
+          descriptionTitle: Regular User Name
+          description: >-
+            Please, provide name for regular user
+        - name: ldapPass
+          type: password
+          initial: P@ssw0rd
+          label: Password
+          required: false
+          descriptionTitle: Regular User Password
+          description: >-
+            Please, provide password for regular user
+        - name: ldapEmail
+          type: string
+          initial: user@mail.com
+          regexpValidator: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+          errorMessages:
+            invalid: Please provide valid email address.
+          label: Email
+          required: false
+          descriptionTitle: Regular user Email
+          description: >-
+            Please, provide regular user email
   - instanceConfiguration:
       fields:
         - name: title
