@@ -69,8 +69,11 @@ Methods:
               - $template: $resources.yaml('InstallCFPlugin.template')
               - $.instance.agent.call($template, $resources)
 
+          - If: $.gitUser != null and $.gitEmail != null
+            Then:
+              - $.configureGitPlugin($.gitUser, $.gitEmail)
+
           - $.configureZMQPlugin()
-          - $.configureGitPlugin($.gitUser, $.gitEmail)
           - $.configureMavenPlugin()
 
           - If: $.gerrit != null
@@ -149,9 +152,9 @@ Methods:
   configureGitPlugin:
     Arguments:
       - gitUser:
-          Contract: $.string()
+          Contract: $.string().notNull()
       - gitEmail:
-          Contract: $.string()
+          Contract: $.string().notNull()
     Body:
       - $.instance.setHieraValue('git_user', $gitUser)
       - $.instance.setHieraValue('git_user_email', $gitEmail)
