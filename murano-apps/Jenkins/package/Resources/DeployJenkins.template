@@ -11,7 +11,9 @@ Scripts:
     Type: Application
     Version: 1.0.0
     EntryPoint: deploy.sh
-    Files: ['site.pp']
+    Files:
+      - site.pp
+      - gen_rsa_key.sh
     Options:
       captureStdout: true
       captureStderr: true

@@ -5,6 +5,7 @@ Application:
     type: io.murano.opaas.Jenkins
   name: $.appConfiguration.name
   ldap: $.appConfiguration.OpenLDAP
+  gerrit: $.appConfiguration.Gerrit
   cfplugin: $.appConfiguration.cfplugin
   gitUser: $.appConfiguration.gitUser
   gitEmail: $.appConfiguration.gitEmail
@@ -47,6 +48,11 @@ Forms:
           required: false
           description: >-
             Specify OpenLDAP domain for authentication
+        - name: Gerrit
+          type: io.murano.opaas.Gerrit
+          required: false
+          description: >-
+            Specify Gerrit app for auto user configuration.
         - name: gitUser
           type: string
           label: Git username

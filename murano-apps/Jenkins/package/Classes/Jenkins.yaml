@@ -15,6 +15,8 @@ Properties:
     Contract: $.string().notNull()
   ldap:
     Contract: $.class(OpenLDAP)
+  gerrit:
+    Contract: $.class(opaas:Gerrit)
   instance:
     Contract: $.class(puppet:PuppetInstance).notNull()
   cfplugin:
@@ -52,7 +54,7 @@ Methods:
 
           - $resources: new(sys:Resources)
           - $template: $resources.yaml('DeployJenkins.template')
-          - $._environment.reporter.report($this, 'Jenkins deploying')
+          - $._environment.reporter.report($this, 'Jenkins is deploying...')
           - $.instance.agent.call($template, $resources)
 
           - If: $.ldap != null
@@ -70,7 +72,16 @@ Methods:
           - $.configureZMQPlugin()
           - $.configureGitPlugin($.gitUser, $.gitEmail)
           - $.configureMavenPlugin()
-          - $.installGerritPlugin()
+
+          - If: $.gerrit != null
+            Then:
+              - $.installGerritPlugin()
+              - $._environment.reporter.report($this, 'Wait while Gerrit is being deployed...')
+              - $.gerrit.deploy()
+              - $._environment.reporter.report($this, 'Creating jenkins account in gerrit...')
+              - $.createGerritAccount()
+
+          - $.configureUser()
 
           - If: $.instance.assignFloatingIp
             Then:
@@ -99,6 +110,11 @@ Methods:
       - $template: $resources.yaml('ConnectLDAP.template')
       - $.instance.agent.call($template, $resources)
       - $._environment.reporter.report($this, 'Jenkins is connected to OpenLDAP server!')
+
+  createGerritAccount:
+    Body:
+      - $key: $.instance.getHieraValue('jenkins_ssh_pubkey_contents')
+      - $.gerrit.createAccount('Non-Interactive Users', 'jenkins', 'jenkins@mail.com', $key, 'jenkins')
 
   configureZMQPlugin:
     Body:
@@ -164,11 +180,7 @@ Methods:
       - $.setAttr(deployed, false)
 
   configureUser:
-    Arguments:
-      - key:
-          Contract: $.string().notNull()
     Body:
-      - $this.instance.setHieraValue('gerrit_ssh_rsa_key_contents', $key)
       - $resources: new(sys:Resources)
       - $template: $resources.yaml('JenkinsUser.template')
       - $.instance.agent.call($template, $resources, 100)
