@@ -1,4 +1,4 @@
 [gerrit]
-host=gerrit.mirantis.com
+host=review.openstack.org
 port=29418
-project=open-paas/open-paas.git
+project=openstack/ci-cd-pipeline-app-murano
