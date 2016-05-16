@@ -1,7 +1,3 @@
-FormatVersion: 2.1.0
-Version: 1.0.0
-Name: Deploy Gerrit
-
 Parameters:
 
 Body: |
@@ -12,7 +8,15 @@ Scripts:
     Type: Application
     Version: 1.0.0
     EntryPoint: deploy_gerrit.sh
-    Files: ['gen_ssl_cert.sh', 'gen_rsa_key.sh', 'database.pp', 'site.pp', 'create_projects.pp', 'gerrit_gitconfig.erb']
+    Files: [
+      'gen_ssl_cert.sh',
+      'gen_rsa_key.sh',
+      'database.pp',
+      'site.pp',
+      'create_projects.pp',
+      'gerrit_gitconfig.erb',
+      'create_projects.sh'
+    ]
     Options:
       captureStdout: false
       captureStderr: true
