@@ -68,11 +68,9 @@ Methods:
 
       - $.createConfiguration()
 
-      - $resources: new(sys:Resources)
-      - $template: $resources.yaml('DeployGerrit.template')
+      - $._execDeployGerrit()
+      - $._reInitProjectConfig()
 
-      - $._environment.reporter.report($this, 'Deploying Gerrit...')
-      - $.instance.agent.call($template, $resources)
 
       - $._environment.reporter.report($this, 'Gerrit is deployed.')
       - $.setAttr(deployed, true)
@@ -135,7 +133,23 @@ Methods:
       - $.instance.setHieraValue( 'swift_store_user', 'swift_store_user')
       - $.instance.setHieraValue( 'swift_store_key', 'swift_store_key')
       - $.instance.setHieraValue( 'jeepyb_project_file', '/etc/project-config/gerrit/projects.yaml')
+      - $.instance.setHieraValue( 'project_config_config_dir', '/etc/project-config-init/')
+
+  getProjectConfigRepo:
+    Body:
+      - Return: !yaql "format('https://{0}/open-paas/project-config', $this.instance.ipAddresses[0])"
+
+  # Switch to newly created project-config repo
+  _reInitProjectConfig:
+    Body:
       - $.instance.setHieraValue( 'project_config_config_dir', '/etc/project-config/')
+      - $.instance.setHieraValue( 'project_config_repo', $.getProjectConfigRepo())
+
+  _execDeployGerrit:
+    Body:
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('DeployGerrit.template')
+      - $.instance.agent.call($template, $resources)
 
   #NOTE: this method doesn't work without ldap
   createAccount:
