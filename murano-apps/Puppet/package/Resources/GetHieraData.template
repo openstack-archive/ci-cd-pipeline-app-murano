@@ -12,7 +12,7 @@ Scripts:
   get_value:
     Type: Application
     Version: 1.0.0
-    EntryPoint: getHieraData.sh
+    EntryPoint: get_hiera_data.sh
     Files: []
     Options:
       captureStdout: true
