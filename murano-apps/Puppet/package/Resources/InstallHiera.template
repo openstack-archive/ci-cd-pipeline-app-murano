@@ -11,7 +11,7 @@ Scripts:
   installHiera:
     Type: Application
     Version: 1.0.0
-    EntryPoint: installHiera.sh
+    EntryPoint: install_hiera.sh
     Files: ['hiera.yaml', 'murano.yaml']
     Options:
       captureStdout: true
