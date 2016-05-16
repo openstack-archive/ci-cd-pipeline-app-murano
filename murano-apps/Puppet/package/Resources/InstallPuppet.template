@@ -11,7 +11,7 @@ Scripts:
   installPuppet:
     Type: Application
     Version: 1.0.0
-    EntryPoint: installPuppet.sh
+    EntryPoint: install_puppet.sh
     Files: []
     Options:
       captureStdout: true
