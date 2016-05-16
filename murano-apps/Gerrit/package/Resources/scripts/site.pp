@@ -75,10 +75,9 @@ node default {
     swift_username                      => hiera('swift_store_user', 'username'),
     swift_password                      => hiera('swift_store_key'),
     replication_force_update            => true,
-    replication                         => [
-    ],
+    replication                         => [],
     require => [
-	      Class['project_config'],
+      Class['project_config'],
     ],
   }
   gerrit::plugin { 'javamelody':
@@ -86,6 +85,17 @@ node default {
   }
   class { 'gerrit::remotes':
     ensure => absent,
+  }
+
+  cron { "puppet":
+    user    => 'root',
+    ensure  => present,
+    command => "/usr/local/bin/create_projects_periodic.sh",
+    hour    => '*',
+    minute  => '*/5',
+    require => [
+      Class['openstack_project::gerrit'],
+    ],
   }
 
   # exec { "/usr/xpg4/bin/id >/tmp/puppet-id-test 2>&1",

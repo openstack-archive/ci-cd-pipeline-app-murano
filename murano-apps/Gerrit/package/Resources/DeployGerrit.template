@@ -5,14 +5,22 @@ Name: Deploy Gerrit
 Parameters:
 
 Body: |
-  deploy()
+  deploy_gerrit()
 
 Scripts:
-  deploy:
+  deploy_gerrit:
     Type: Application
     Version: 1.0.0
     EntryPoint: deploy_gerrit.sh
-    Files: ['gen_ssl_cert.sh', 'gen_rsa_key.sh', 'database.pp', 'site.pp', 'create_projects.pp', 'gerrit_gitconfig.erb']
+    Files: [
+      'gen_ssl_cert.sh',
+      'gen_rsa_key.sh',
+      'database.pp',
+      'site.pp',
+      'create_projects.pp',
+      'gerrit_gitconfig.erb',
+      'create_projects_periodic.sh'
+    ]
     Options:
       captureStdout: false
       captureStderr: true
