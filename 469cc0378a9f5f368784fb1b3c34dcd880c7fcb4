@@ -1,0 +1,9 @@
+Code-Review+2: Sergey Kraynev <skraynev@mirantis.com>
+Code-Review+2: Artem Silenkov <asilenkov@mirantis.com>
+Workflow+1: Artem Silenkov <asilenkov@mirantis.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Mon, 16 May 2016 08:27:36 +0000
+Reviewed-on: https://review.openstack.org/316204
+Project: openstack/ci-cd-pipeline-app-murano
+Branch: refs/heads/master
