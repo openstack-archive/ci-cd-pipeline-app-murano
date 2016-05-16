@@ -20,10 +20,15 @@ Name: PuppetInstance
 
 Extends: res:LinuxMuranoInstance
 
+Properties:
+  hiera:
+   Contract: $.class(Hiera)
+
 Methods:
-  initialize:
+  .init:
     Body:
       - $._environment: $.find(std:Environment).require()
+      - $.hiera: new(Hiera)
 
   deploy:
     Body:
@@ -36,8 +41,7 @@ Methods:
 
       - $.installPuppet()
       - $.installHiera()
-      - $.installPuppetModule('reidmv/yamlfile')
-      - !yaql "$.setHieraConfigValue(':hierarchy', 'murano')"
+      - $.hiera.syncronize($this)
       - $.setAttr(hostDeployed, true)
 
   installPuppet:
@@ -74,44 +78,8 @@ Methods:
       - $._environment.reporter.report($this,
         'Puppet module {0} installed on {1}'.format( $module, $.openstackId))
 
-  setHieraConfigValue:
-    Arguments:
-      - key:
-          Contract: $.string().notNull()
-      - value:
-          Contract: $.string().notNull()
-    Body:
-      - $._environment.reporter.report($this,
-        'setHieraConfigValue {0}={1}'.format( $key, $value))
-      - $.setYamlValue('/etc/puppet/hiera.yaml', $key, $value)
-
-  setYamlValue:
-    Arguments:
-      - path:
-          Contract: $.string().notNull()
-      - key:
-          Contract: $.string().notNull()
-      - value:
-          Contract: $.string().notNull()
-    Body:
-      - $resources: new(sys:Resources)
-      - $template: $resources.yaml('setYamlValue.template').bind(dict(
-          path => $path,
-          key => $key,
-          value => $value))
-      - $.agent.call($template, $resources)
-
-  getHieraValue:
-    Arguments:
-      - key:
-          Contract: $.string().notNull()
-    Body:
-      - $resources: new(sys:Resources)
-      - $template: $resources.yaml('getHieraData.template').bind(dict(
-          key => $key))
-      - $value: $.agent.call($template, $resources)
-      - Return: $value
-
+  # Deprecated
+  # use PuppetInstance.putHieraData()
   setHieraValue:
     Arguments:
       - key:
@@ -120,5 +88,26 @@ Methods:
           Contract: $.string().notNull()
     Body:
       - $._environment.reporter.report($this,
-        'Put value {0} = {1}'.format( $key, $value))
-      - $.setYamlValue('/etc/puppet/hieradata/murano.yaml', $key, $value)
+        'Put value {0} = {1}'.format($key, $value))
+      - $data: dict($key => $value)
+      - $.hiera.putData($data)
+      - $.hiera.syncronize($this)
+
+  getHieraValue:
+    Arguments:
+      - key:
+          Contract: $.string().notNull()
+    Body:
+      - Return: $this.hiera.getValue()
+
+  syncHieraData:
+    Body:
+      - $.hiera.syncronize($this)
+
+  putHieraData:
+    Arguments:
+      data:
+        Contract: {}
+    Body:
+      - $.hiera.putData($data)
+
