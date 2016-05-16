@@ -33,10 +33,6 @@ Methods:
         Then:
           Return:
 
-      - If: $.ldap != null
-        Then:
-          - $.ldap.deploy()
-
       - $securityGroupIngress:
         - ToPort: 80
           FromPort: 80
@@ -60,16 +56,25 @@ Methods:
       - $.instance.deploy()
       - $._environment.reporter.report($this, 'Gerrit VM "{0}" with id {1} created'.format($.instance.name, $.instance.openstackId))
 
-      - $._environment.reporter.report($this, 'Deploying Gerrit')
+      - $._environment.reporter.report($this, 'Installing puppet modules...')
 
       - $this.systemConfig: new(puppet:SystemConfig)
       - $this.systemConfig.installOnTheNode($this.instance)
+
+      - If: $.ldap != null
+        Then:
+          - $._environment.reporter.report($this, 'Waiting while LDAP is being deployed...')
+          - $.ldap.deploy()
 
       - $.createConfiguration()
 
       - $resources: new(sys:Resources)
       - $template: $resources.yaml('DeployGerrit.template')
+
+      - $._environment.reporter.report($this, 'Deploying Gerrit...')
       - $.instance.agent.call($template, $resources)
+
+      - $._environment.reporter.report($this, 'Gerrit is deployed.')
       - $.setAttr(deployed, true)
       - $._environment.reporter.report($this, format('Gerrit is available at http://{0}:80 or http://{1}:8081',
           $.instance.floatingIpAddress, $.instance.floatingIpAddress))
