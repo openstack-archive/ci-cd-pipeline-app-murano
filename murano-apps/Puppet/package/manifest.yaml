@@ -10,3 +10,6 @@ Author: 'Mirantis, Inc'
 Tags: [Server, Puppet]
 Classes:
  io.murano.opaas.puppet.PuppetInstance: PuppetInstance.yaml
+ io.murano.opaas.puppet.Hiera: Hiera.yaml
+ io.murano.opaas.puppet.YamlTool: YamlTool.yaml
+ io.murano.opaas.puppet.YamlFile: YamlFile.yaml
