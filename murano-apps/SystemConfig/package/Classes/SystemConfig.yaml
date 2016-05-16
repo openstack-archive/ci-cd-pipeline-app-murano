@@ -20,3 +20,4 @@ Methods:
       - $template: $resources.yaml('SystemConfig.template')
       - $instance.agent.call($template, $resources)
       - $instance.setHieraValue( 'project_config_repo', $this.projectConfigRepo)
+      - $.instance.installPuppetModule('reidmv/yamlfile')
