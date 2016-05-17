@@ -16,3 +16,11 @@ HOSTNAME="`hostname -f`"
 
 su gerrit2 -c "ssh -p 29418 -i /home/gerrit2/review_site/etc/ssh_project_rsa_key project-creator@$HOSTNAME "`
  `"gerrit create-account --group \'${GROUP}\' --full-name \'${FULL_NAME}\' --email $EMAIL --ssh-key \'${SSHKEY}\' $NAME"
+
+code=$?
+
+if [ $code -ne 0 ]; then
+  # Do not create account but set related properties.
+  su gerrit2 -c "ssh -p 29418 -i /home/gerrit2/review_site/etc/ssh_project_rsa_key project-creator@$HOSTNAME \
+  gerrit set-account --full-name \'${FULL_NAME}\' --preferred-email $EMAIL --add-ssh-key \'${SSHKEY}\' $NAME"
+fi
