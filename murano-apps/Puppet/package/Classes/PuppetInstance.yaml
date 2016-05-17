@@ -124,3 +124,18 @@ Methods:
     Body:
       - $.hiera.putData($data)
 
+  #
+  # Apply puppet manifest to the particular instance
+  # Known issues:
+  #  * do not use " inside the code parameter
+  #
+  executeInline:
+    Arguments:
+      - code:
+          Contract: $.string().notNull()
+    Body:
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('PuppetExecuteInline.template').bind(dict(
+              code => $code
+            ))
+      - Return: $.agent.call($template, $resources)
