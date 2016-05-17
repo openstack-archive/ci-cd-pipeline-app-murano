@@ -83,6 +83,7 @@ Methods:
               - $.gerrit.deploy()
               - $._environment.reporter.report($this, 'Creating jenkins account in gerrit...')
               - $.createGerritAccount()
+              - $.configureGerritPlugin($.gerrit)
 
           - $.configureUser()
 
@@ -175,6 +176,23 @@ Methods:
       - $resources: new(sys:Resources)
       - $._environment.reporter.report($this, 'Installing gerrit-trigger plugin...')
       - $template: $resources.yaml('InstallGerritPlugin.template')
+      - $.instance.agent.call($template, $resources)
+
+  configureGerritPlugin:
+    Arguments:
+      - gerrit:
+          Contract: $.class(opaas:Gerrit).notNull()
+    Body:
+      - If: $gerrit.instance.assignFloatingIp
+        Then:
+          - $host: $gerrit.instance.floatingIpAddress
+        Else:
+          - $host: $gerrit.instance.ipAddresses[0]
+      # Set gerrit related properties.
+      - $.instance.setHieraValue('gerrit_host', $host)
+      - $resources: new(sys:Resources)
+      - $._environment.reporter.report($this, 'Configure Jenkins Gerrit Trigger plugin...')
+      - $template: $resources.yaml('ConfigureGerritPlugin.template')
       - $.instance.agent.call($template, $resources)
 
   destroy:
