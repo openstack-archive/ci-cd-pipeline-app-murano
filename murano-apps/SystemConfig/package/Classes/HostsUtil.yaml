@@ -1,0 +1,65 @@
+Namespaces:
+  =: io.murano.opaas.puppet
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+  puppet: io.murano.opaas.puppet
+
+Name: HostsUtil
+Properties:
+  # The list of entries to be added to /etc/hosts
+  hosts:
+    Contract:
+      [{}]
+
+Methods:
+  # Add new entry to be put into /etc/hosts
+  addHost:
+    Arguments:
+      hostname:
+        Contract: $.string().notNull()
+      ip:
+        Contract: $.string().notNull()
+      aliases:
+        Contract: $.string().notNull()
+    Body:
+      - $entry: dict()
+      - $entry['host']: dict()
+      - $entry['host']['name']: $hostname
+      - $entry['host']['ip']: $ip
+      - $entry['host']['aliases']: $aliases
+      - $$this.hosts.append(): $entry
+
+  getHostName:
+    Argumnets:
+      instance:
+        Contract: $.class(res:LinuxMuranoInstance).notNull()
+    Body:
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('GetHostName.template')
+      - Return: $instance.agent.call($template, $resources)
+
+  addHost:
+    Argumnets:
+      instance:
+        Contract: $.class(res:LinuxMuranoInstance).notNull()
+      aliases:
+        Contract: $.string()
+    Body:
+      - $hostame: $this.getHostName($instance)
+      - $ip: $.instance.ipAddresses[0]
+      - $this.addHost($hostname, $ip, $aliases)
+
+  # Put all of the hosts to the particular instance
+  # All of the data will be added to the hiera
+  # and then puppet scenario will generate hosts entries
+  applyTo:
+    Arguments:
+      instance:
+        Contract: $.class(puppet:PuppetInstance)
+    Body:
+      - $instance.putHieraData( $this.hosts)
+
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('Hosts.template')
+      - $instance.agent.call($template, $resources)
