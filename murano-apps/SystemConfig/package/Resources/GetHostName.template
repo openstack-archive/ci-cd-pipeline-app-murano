@@ -1,0 +1,11 @@
+FormatVersion: 2.1.0
+Version: 1.0.0
+Name: Put values to etc/hosts
+
+Parameters:
+
+Body: |
+  import socket
+  return( socket.gethostname())
+
+Scripts: {}

@@ -125,3 +125,13 @@ Methods:
         - $this.ldap.deploy()
         - $this.gerrit.deploy()
         - $this.jenkins.deploy()
+
+      - $hosts: new(HostsUtil)
+
+      - $hosts.addHost($this.jenkins.instance)
+      - $hosts.addHost($this.gerrit.instance)
+      - $hosts.addHost($this.ldap.instance)
+
+      - $hosts.applyTo($this.jenkins.instance)
+      - $hosts.applyTo($this.gerrit.instance)
+      - $hosts.applyTo($this.ldap.instance)

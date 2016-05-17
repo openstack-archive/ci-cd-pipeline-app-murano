@@ -1,0 +1,21 @@
+FormatVersion: 2.1.0
+Version: 1.0.0
+Name: Put values to etc/hosts
+
+Parameters:
+
+Body: |
+  return deploy().stdout
+
+Scripts:
+  deploy:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: hosts.sh
+    Files: [
+      'hosts.sh',
+      'hosts.pp'
+      ]
+    Options:
+      captureStdout: true
+      captureStderr: true
