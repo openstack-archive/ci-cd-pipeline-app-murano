@@ -1,0 +1,19 @@
+FormatVersion: 2.1.0
+Version: 1.0.0
+Name: Configure Gerrit Trigger Plugin
+
+Body: |
+  return configureGerritPlugin().stdout
+
+Scripts:
+  configureGerritPlugin:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: configure_gerrit_plugin.sh
+    Files:
+      - configure_gerrit_plugin/templates/gerrit-trigger.xml.erb
+      - configure_gerrit_plugin/manifests/init.pp
+      - configure_gerrit_plugin.pp
+    Options:
+      captureStdout: true
+      captureStderr: true
