@@ -5,6 +5,7 @@ Namespaces:
   sys: io.murano.system
   ci_cd_pipeline_murano_app: org.openstack.ci_cd_pipeline_murano_app
   puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
+  net: org.openstack.ci_cd_pipeline_murano_app.utils.net
 
 Name: CiCdEnvironment
 
@@ -125,3 +126,13 @@ Methods:
         - $this.ldap.deploy()
         - $this.gerrit.deploy()
         - $this.jenkins.deploy()
+
+      - $._environment.reporter.report($this, 'Adding hosts...')
+
+      - $hosts: new(net:Hosts)
+
+      - $apps: [$.jenkins, $.gerrit, $.ldap]
+      - $apps.select($hosts.addHostByInstance($.instance))
+      - $apps.select($hosts.applyTo($.instance))
+
+      - $._environment.reporter.report($this, 'Hosts added.')
