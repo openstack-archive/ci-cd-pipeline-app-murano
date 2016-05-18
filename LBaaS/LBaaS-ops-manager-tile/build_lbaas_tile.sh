@@ -1,3 +1,6 @@
+# Stop the script if an error occurs.
+set -e
+
 # Pack jobs and packages.
 cd releases/jobs;
 
@@ -12,6 +15,16 @@ pushd delete-lbaas
 popd
 
 cd ../packages;
+
+pushd python/python
+  aptitude download binutils build-essential cpp cpp-4.8 dpkg-dev fakeroot g++-4.8 gcc gcc-4.8 libalgorithm-diff-perl \
+  libalgorithm-diff-xs-perl libalgorithm-merge-perl libasan0 libatomic1 libc6-dev libc-dev-bin libcloog-isl4 \
+  libdpkg-perl libfakeroot libffi6 libffi-dev libfile-fcntllock-perl libgcc-4.8-dev libgmp10 libgomp1 libisl10 \
+  libitm1 libmpc3 libmpfr4 libquadmath0 libssl-dev libssl-doc libstdc++-4.8-dev libtsan0 linux-libc-dev make \
+  manpages-dev manpages zlib1g-dev
+
+  wget https://www.python.org/ftp/python/3.5.0/Python-3.5.0.tgz
+popd
 
 pushd python
   tar zcvf python.tgz *;
@@ -31,7 +44,11 @@ mkdir tmp/releases/packages
 mv releases/jobs/lbaas-config.tgz tmp/releases/jobs/
 mv releases/jobs/delete-lbaas.tgz tmp/releases/jobs/
 mv releases/packages/python.tgz tmp/releases/packages/
+
+# In this case cp returns exit code 1 (it copies only files without nested directories).
+set +e
 cp releases/* tmp/releases/
+set -e
 
 # Put correct sha1 to release.MF
 if [ "$(uname -s)" == "Darwin" ]; then
@@ -69,3 +86,8 @@ mv tmp/lbaas-tile.zip .
 
 # Delete temp directory.
 rm -rf tmp
+
+# Delete downloaded debs and Python.
+set +e
+rm releases/packages/python/python/*.deb
+rm releases/packages/python/python/Python-3.5.0.tgz
