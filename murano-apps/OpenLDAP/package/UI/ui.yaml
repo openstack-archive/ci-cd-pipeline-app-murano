@@ -2,7 +2,7 @@ Version: 2
 
 Application:
   ?:
-    type: io.murano.opaas.OpenLDAP
+    type: org.openstack.cicd.OpenLDAP
   name: $.appConfiguration.name
   domain: $.appConfiguration.domain
   ldapRootUser: $.appConfiguration.ldapRootUser
@@ -13,7 +13,7 @@ Application:
   ldapEmail: $.appConfiguration.ldapEmail
   instance:
     ?:
-      type: io.murano.opaas.puppet.PuppetInstance
+      type: org.openstack.cicd.puppet.PuppetInstance
     name: generateHostname($.instanceConfiguration.unitNamingPattern, 1)
     flavor: $.instanceConfiguration.flavor
     image: $.instanceConfiguration.osImage

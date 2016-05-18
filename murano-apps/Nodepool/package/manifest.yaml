@@ -1,6 +1,6 @@
 Format: 1.0
 Type: Application
-FullName: io.murano.opaas.Nodepool
+FullName: org.openstack.cicd.Nodepool
 Name: Nodepool
 Description: |
  Nodepool is a system for launching single-use test nodes on demand based on
@@ -10,11 +10,11 @@ Description: |
 Author: 'Mirantis, Inc'
 Tags: [Images, CI, Zuul, Jenkins]
 Classes:
- io.murano.opaas.Nodepool: Nodepool.yaml
+ org.openstack.cicd.Nodepool: Nodepool.yaml
 UI: ui.yaml
 Logo: logo.png
 Require:
-  io.murano.opaas.puppet.SystemConfig:
-  io.murano.opaas.puppet.Puppet:
-  io.murano.opaas.Jenkins:
+  org.openstack.cicd.puppet.SystemConfig:
+  org.openstack.cicd.puppet.Puppet:
+  org.openstack.cicd.Jenkins:
 # TODO(nmakhotkin): Add zuul to requirements.

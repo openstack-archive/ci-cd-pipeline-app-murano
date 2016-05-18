@@ -2,7 +2,7 @@ Version: 2
 
 Application:
   ?:
-    type: io.murano.opaas.Jenkins
+    type: org.openstack.cicd.Jenkins
   name: $.appConfiguration.name
   ldap: $.appConfiguration.OpenLDAP
   gerrit: $.appConfiguration.Gerrit
@@ -11,7 +11,7 @@ Application:
   gitEmail: $.appConfiguration.gitEmail
   instance:
     ?:
-      type: io.murano.opaas.puppet.PuppetInstance
+      type: org.openstack.cicd.puppet.PuppetInstance
     name: generateHostname($.instanceConfiguration.unitNamingPattern, 1)
     flavor: $.instanceConfiguration.flavor
     image: $.instanceConfiguration.osImage
@@ -44,12 +44,12 @@ Forms:
           initial: true
           required: false
         - name: OpenLDAP
-          type: io.murano.opaas.OpenLDAP
+          type: org.openstack.cicd.OpenLDAP
           required: false
           description: >-
             Specify OpenLDAP domain for authentication
         - name: Gerrit
-          type: io.murano.opaas.Gerrit
+          type: org.openstack.cicd.Gerrit
           required: false
           description: >-
             Specify Gerrit app for auto user configuration.

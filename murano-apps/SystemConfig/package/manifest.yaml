@@ -1,13 +1,13 @@
 Format: 1.0
 Type: Library
-FullName: io.murano.opaas.puppet.SystemConfig
+FullName: org.openstack.cicd.puppet.SystemConfig
 Name: SystemConfig
 Description: |
  Openstack-CI utilities
 Author: 'Mirantis, Inc'
 Tags: [CI]
 Classes:
- io.murano.opaas.puppet.SystemConfig: SystemConfig.yaml
+ org.openstack.cicd.puppet.SystemConfig: SystemConfig.yaml
 Logo: logo.png
 Require:
-  io.murano.opaas.puppet.Puppet:
+  org.openstack.cicd.puppet.Puppet:
