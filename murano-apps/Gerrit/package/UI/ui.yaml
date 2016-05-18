@@ -2,13 +2,13 @@ Version: 2
 
 Application:
   ?:
-    type: io.murano.opaas.Gerrit
+    type: org.openstack.cicd.Gerrit
   name: $.appConfiguration.name
   warUrl: $.appConfiguration.warUrl
   ldap: $.appConfiguration.OpenLDAP
   instance:
     ?:
-      type: io.murano.opaas.puppet.PuppetInstance
+      type: org.openstack.cicd.puppet.PuppetInstance
     name: generateHostname($.instanceConfiguration.unitNamingPattern, 1)
     flavor: $.instanceConfiguration.flavor
     image: $.instanceConfiguration.osImage
@@ -41,7 +41,7 @@ Forms:
             Enter the war version from Gerrit's site
             http://gerrit-releases.storage.googleapis.com/index.html
         - name: OpenLDAP
-          type: io.murano.opaas.OpenLDAP
+          type: org.openstack.cicd.OpenLDAP
           required: false
           description: >-
             Specify OpenLDAP domain for authentication
