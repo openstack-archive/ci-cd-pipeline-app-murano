@@ -1,15 +1,15 @@
 Format: 1.0
 Type: Application
-FullName: io.murano.opaas.Zuul
+FullName: org.openstack.ci-cd-pipeline-app-murano.Zuul
 Name: Zuul
 Description: |
  Zuul is a pipeline oriented project gating and automation system.
 Author: 'Mirantis, Inc'
 Tags: [CI, Zuul]
 Classes:
- io.murano.opaas.Zuul: Zuul.yaml
+ org.openstack.ci-cd-pipeline-app-murano.Zuul: Zuul.yaml
 UI: ui.yaml
 Require:
-  io.murano.opaas.puppet.Puppet:
-  io.murano.opaas.puppet.SystemConfig:
-  io.murano.opaas.Gerrit:
+  org.openstack.ci-cd-pipeline-app-murano.puppet.Puppet:
+  org.openstack.ci-cd-pipeline-app-murano.puppet.SystemConfig:
+  org.openstack.ci-cd-pipeline-app-murano.Gerrit:

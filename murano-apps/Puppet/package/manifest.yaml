@@ -1,6 +1,6 @@
 Format: 1.0
 Type: Library
-FullName: io.murano.opaas.puppet.Puppet
+FullName: org.openstack.ci-cd-pipeline-app-murano.puppet.Puppet
 Name: Puppet
 Description: |
  Puppet is an open-source configuration management tool. It runs on many
@@ -9,4 +9,4 @@ Description: |
 Author: 'Mirantis, Inc'
 Tags: [Server, Puppet]
 Classes:
- io.murano.opaas.puppet.PuppetInstance: PuppetInstance.yaml
+ org.openstack.ci-cd-pipeline-app-murano.puppet.PuppetInstance: PuppetInstance.yaml
