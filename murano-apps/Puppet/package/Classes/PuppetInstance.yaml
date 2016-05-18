@@ -11,7 +11,7 @@
 #  under the License.
 
 Namespaces:
-    =: io.murano.opaas.puppet
+    =: org.openstack.ci_cd.puppet
     res: io.murano.resources
     std: io.murano
     sys: io.murano.system

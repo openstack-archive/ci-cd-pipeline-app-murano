@@ -2,7 +2,7 @@ Version: 2
 
 Application:
   ?:
-    type: io.murano.opaas.CiCdEnvironment
+    type: org.openstack.ci_cd.CiCdEnvironment
   name: 'CI/CD'
   ldapRootUser: $.appConfiguration.ldapRootUser
   ldapRootPass: $.appConfiguration.ldapRootPass

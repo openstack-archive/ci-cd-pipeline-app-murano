@@ -1,17 +1,17 @@
 Format: 1.0
 Type: Application
-FullName: io.murano.opaas.CiCdEnvironment
+FullName: org.openstack.ci_cd.CiCdEnvironment
 Name: CI/CD
 Description: |
  The One-click CI/CD installer
 Author: 'Mirantis, Inc'
 Tags: [CI]
 Classes:
-  io.murano.opaas.CiCdEnvironment: CiCdEnvironment.yaml
+  org.openstack.ci_cd.CiCdEnvironment: CiCdEnvironment.yaml
 UI: ui.yaml
 Logo: logo.png
 Require:
-  io.murano.opaas.OpenLDAP:
-  io.murano.opaas.Jenkins:
-  io.murano.opaas.Gerrit:
-  io.murano.opaas.puppet.Puppet:
+  org.openstack.ci_cd.OpenLDAP:
+  org.openstack.ci_cd.Jenkins:
+  org.openstack.ci_cd.Gerrit:
+  org.openstack.ci_cd.puppet.Puppet:

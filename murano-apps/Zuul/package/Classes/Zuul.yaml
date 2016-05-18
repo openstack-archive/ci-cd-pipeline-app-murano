@@ -1,10 +1,10 @@
 Namespaces:
-  =: io.murano.opaas
+  =: org.openstack.ci_cd
   std: io.murano
   res: io.murano.resources
   sys: io.murano.system
-  opaas: io.murano.opaas
-  puppet: io.murano.opaas.puppet
+  opaas: org.openstack.ci_cd
+  puppet: org.openstack.ci_cd.puppet
   conf: io.murano.configuration
 
 Name: Zuul
