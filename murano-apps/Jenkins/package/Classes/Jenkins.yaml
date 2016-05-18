@@ -1,10 +1,10 @@
 Namespaces:
-  =: io.murano.opaas
+  =: org.openstack.cicd
   std: io.murano
   res: io.murano.resources
   sys: io.murano.system
-  opaas: io.murano.opaas
-  puppet: io.murano.opaas.puppet
+  cicd: org.openstack.cicd
+  puppet: org.openstack.cicd.puppet
 
 Name: Jenkins
 
@@ -16,7 +16,7 @@ Properties:
   ldap:
     Contract: $.class(OpenLDAP)
   gerrit:
-    Contract: $.class(opaas:Gerrit)
+    Contract: $.class(cicd:Gerrit)
   instance:
     Contract: $.class(puppet:PuppetInstance).notNull()
   cfplugin:
@@ -181,7 +181,7 @@ Methods:
   configureGerritPlugin:
     Arguments:
       - gerrit:
-          Contract: $.class(opaas:Gerrit).notNull()
+          Contract: $.class(cicd:Gerrit).notNull()
     Body:
       - If: $gerrit.instance.assignFloatingIp
         Then:

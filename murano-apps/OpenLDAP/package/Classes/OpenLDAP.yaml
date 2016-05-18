@@ -1,9 +1,9 @@
 Namespaces:
-  =: io.murano.opaas
+  =: org.openstack.cicd
   std: io.murano
   res: io.murano.resources
   sys: io.murano.system
-  puppet: io.murano.opaas.puppet
+  puppet: org.openstack.cicd.puppet
 
 
 Name: OpenLDAP
