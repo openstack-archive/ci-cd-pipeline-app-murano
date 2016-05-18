@@ -1,17 +1,17 @@
 Format: 1.0
 Type: Application
-FullName: io.murano.opaas.Jenkins
+FullName: org.openstack.ci_cd_pipeline_murano_app.Jenkins
 Name: Jenkins
 Description: |
  Jenkins is an open source continuous integration tool written in Java.
 Author: 'Mirantis, Inc'
 Tags: [Server, Java, CI, Jenkins]
 Classes:
- io.murano.opaas.Jenkins: Jenkins.yaml
+ org.openstack.ci_cd_pipeline_murano_app.Jenkins: Jenkins.yaml
 UI: ui.yaml
 Logo: logo.png
 Require:
-  io.murano.opaas.puppet.SystemConfig:
-  io.murano.opaas.puppet.Puppet:
-  io.murano.opaas.OpenLDAP:
-  io.murano.opaas.Gerrit:
+  org.openstack.ci_cd_pipeline_murano_app.puppet.SystemConfig:
+  org.openstack.ci_cd_pipeline_murano_app.puppet.Puppet:
+  org.openstack.ci_cd_pipeline_murano_app.OpenLDAP:
+  org.openstack.ci_cd_pipeline_murano_app.Gerrit:
