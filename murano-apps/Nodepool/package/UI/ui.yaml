@@ -2,12 +2,12 @@ Version: 2
 
 Application:
   ?:
-    type: io.murano.opaas.Nodepool
+    type: org.openstack.ci-cd-pipeline-app-murano.Nodepool
   name: $.appConfiguration.name
   jenkins: $.appConfiguration.Jenkins
   instance:
     ?:
-      type: io.murano.opaas.puppet.PuppetInstance
+      type: org.openstack.ci-cd-pipeline-app-murano.puppet.PuppetInstance
     name: generateHostname($.instanceConfiguration.unitNamingPattern, 1)
     flavor: $.instanceConfiguration.flavor
     image: $.instanceConfiguration.osImage
@@ -33,7 +33,7 @@ Forms:
           initial: true
           required: false
         - name: Jenkins
-          type: io.murano.opaas.Jenkins
+          type: org.openstack.ci-cd-pipeline-app-murano.Jenkins
           required: true
           description: >-
             Specify Jenkins.

@@ -2,12 +2,12 @@ Version: 2
 
 Application:
   ?:
-    type: io.murano.opaas.Zuul
+    type: org.openstack.ci-cd-pipeline-app-murano.Zuul
   name: $.appConfiguration.name
   gerrit: $.appConfiguration.Gerrit
   instance:
     ?:
-      type: io.murano.opaas.puppet.PuppetInstance
+      type: org.openstack.ci-cd-pipeline-app-murano.puppet.PuppetInstance
     name: generateHostname($.instanceConfiguration.unitNamingPattern, 1)
     flavor: $.instanceConfiguration.flavor
     image: $.instanceConfiguration.osImage
@@ -23,7 +23,7 @@ Forms:
           label: Application Name
           initial: Zuul
         - name: Gerrit
-          type: io.murano.opaas.Gerrit
+          type: org.openstack.ci-cd-pipeline-app-murano.Gerrit
           description: Gerrit Server
         - name: assignFloatingIP
           type: boolean

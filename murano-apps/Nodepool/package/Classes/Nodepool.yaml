@@ -1,10 +1,10 @@
 Namespaces:
-  =: io.murano.opaas
+  =: org.openstack.ci-cd-pipeline-app-murano
   std: io.murano
   res: io.murano.resources
   sys: io.murano.system
-  opaas: io.murano.opaas
-  puppet: io.murano.opaas.puppet
+  opaas: org.openstack.ci-cd-pipeline-app-murano
+  puppet: org.openstack.ci-cd-pipeline-app-murano.puppet
 
 Name: Nodepool
 
