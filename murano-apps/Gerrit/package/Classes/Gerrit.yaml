@@ -17,7 +17,7 @@ Properties:
     Contract: $.string().notNull()
   warUrl:
     Contract: $.string()
-    Default: 'https://goo.gl/aK183z?/gerrit-2.11.8.war'
+    Default: 'http://tarballs.openstack.org/ci/test/gerrit-v2.11.4.13.cb9800e.war'
   ldap:
     Contract: $.class(opaas:OpenLDAP)
 
@@ -133,7 +133,7 @@ Methods:
       - $.instance.setHieraValue( 'swift_store_user', 'swift_store_user')
       - $.instance.setHieraValue( 'swift_store_key', 'swift_store_key')
       - $.instance.setHieraValue( 'jeepyb_project_file', '/etc/project-config/gerrit/projects.yaml')
-      - $.instance.setHieraValue( 'project_config_config_dir', '/etc/project-config-init/')
+      - $.instance.setHieraValue( 'project_config_config_dir', '/etc/project-config/')
 
   getProjectConfigRepo:
     Body:
@@ -142,7 +142,6 @@ Methods:
   # Switch to newly created project-config repo
   _reInitProjectConfig:
     Body:
-      - $.instance.setHieraValue( 'project_config_config_dir', '/etc/project-config/')
       - $.instance.setHieraValue( 'project_config_repo', $.getProjectConfigRepo())
 
   _execDeployGerrit:

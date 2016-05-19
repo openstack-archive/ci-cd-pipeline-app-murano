@@ -177,8 +177,8 @@ EOF
     rm $puppet_deb
 
     apt-get update
-    DEBIAN_FRONTEND=noninteractive apt-get --option 'Dpkg::Options::=--force-confold' \
-        --assume-yes dist-upgrade
+    # DEBIAN_FRONTEND=noninteractive apt-get --option 'Dpkg::Options::=--force-confold' \
+    #    --assume-yes dist-upgrade
     DEBIAN_FRONTEND=noninteractive apt-get --option 'Dpkg::Options::=--force-confold' \
         --assume-yes install -y --force-yes puppet git $rubypkg
     # Wipe out templatedir so we don't get warnings about it
