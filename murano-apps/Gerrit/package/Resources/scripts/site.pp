@@ -87,17 +87,6 @@ node default {
     ensure => absent,
   }
 
-  cron { "puppet":
-    user    => 'root',
-    ensure  => present,
-    command => "/usr/local/bin/create_projects_periodic.sh",
-    hour    => '*',
-    minute  => '*/5',
-    require => [
-      Class['openstack_project::gerrit'],
-    ],
-  }
-
   # exec { "/usr/xpg4/bin/id >/tmp/puppet-id-test 2>&1",
   #   user => "puppet",
   #
