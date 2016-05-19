@@ -5,6 +5,7 @@ Namespaces:
   sys: io.murano.system
   opaas: io.murano.opaas
   puppet: io.murano.opaas.puppet
+  conf: io.murano.configuration
 
 Name: Jenkins
 
@@ -84,6 +85,7 @@ Methods:
               - $._environment.reporter.report($this, 'Creating jenkins account in gerrit...')
               - $.createGerritAccount()
               - $.configureGerritPlugin($.gerrit)
+              - $.upgradeGitPlugin()
 
           - $.configureUser()
 
@@ -194,6 +196,13 @@ Methods:
       - $._environment.reporter.report($this, 'Configure Jenkins Gerrit Trigger plugin...')
       - $template: $resources.yaml('ConfigureGerritPlugin.template')
       - $.instance.agent.call($template, $resources)
+
+  upgradeGitPlugin:
+    Body:
+      - $linux: new(conf:Linux)
+      - $resource: new(sys:Resources)
+      - $script: $resource.string('upgrade_git_plugin.sh')
+      - $linux.runCommand($.instance.agent, $script)
 
   destroy:
     Body:
