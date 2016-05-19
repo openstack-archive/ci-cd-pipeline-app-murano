@@ -50,6 +50,13 @@ INSERT INTO account_ssh_keys (ssh_public_key, valid, account_id, seq) VALUES ( \
 INSERT INTO account_external_ids (account_id, email_address, external_id) VALUES ( ${project_user_id}, \'${project_user_email}\', \'username:${project_user}\');
 EOF",
     refreshonly => true,
+    notify      => Exec['restart_gerrit'],
+}
+
+exec { 'restart_gerrit':
+    command     => "/home/gerrit2/review_site/bin/gerrit.sh restart",
+    cwd         => ["/home/gerrit2/review_site"],
+    timeout     => 1800,
     notify      => Exec['upload_gerrit_projects'],
 }
 
@@ -57,7 +64,8 @@ exec { 'upload_gerrit_projects':
     user        => 'gerrit2',
     environment => ["HOME=/home/gerrit2"],
     command     => "/usr/local/bin/manage-projects -v -d -l /var/log/manage_projects.log",
-    timeout     => 1800,
+    try_sleep   => 60,
+    tries       => 20,
     refreshonly => true,
     require     => [
             File['gerrit_gitconfig'],
