@@ -78,3 +78,14 @@ logrotate::file { 'manage_projects.log':
     ],
     require => Exec['upload_gerrit_projects'],
 }
+
+cron { "puppet":
+    user    => 'root',
+    ensure  => present,
+    command => "/usr/local/bin/projects_periodic.sh",
+    hour    => '*',
+    minute  => '*/5',
+    require => [
+      Exec['upload_gerrit_projects']
+    ]
+}

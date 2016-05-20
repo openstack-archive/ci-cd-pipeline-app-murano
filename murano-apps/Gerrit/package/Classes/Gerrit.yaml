@@ -67,6 +67,7 @@ Methods:
           - $.ldap.deploy()
 
       - $.createConfiguration()
+      - $.copyCreateProjects()
 
       - $resources: new(sys:Resources)
       - $template: $resources.yaml('DeployGerrit.template')
@@ -160,6 +161,13 @@ Methods:
           sshKey     => $sshKey,
           name       => $name))
       - $.instance.agent.call($template, $resources)
+
+  copyCreateProjects:
+    Body:
+      - $linux: new(conf:Linux)
+      - $resource: new(sys:Resources)
+      - $script: $resource.string('projects_periodic.sh')
+      - $linux.putFile($.instance.agent, $script, '/usr/local/bin/projects-periodic.sh')
 
   destroy:
     Body:
