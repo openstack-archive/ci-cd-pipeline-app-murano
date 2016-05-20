@@ -5,6 +5,7 @@ Namespaces:
   sys: io.murano.system
   opaas: io.murano.opaas
   puppet: io.murano.opaas.puppet
+  conf: io.murano.configuration
 
 Name: Gerrit
 
@@ -67,6 +68,7 @@ Methods:
           - $.ldap.deploy()
 
       - $.createConfiguration()
+      - $.copyCreateProjects()
 
       - $resources: new(sys:Resources)
       - $template: $resources.yaml('DeployGerrit.template')
@@ -160,6 +162,15 @@ Methods:
           sshKey     => $sshKey,
           name       => $name))
       - $.instance.agent.call($template, $resources)
+
+  copyCreateProjects:
+    Body:
+      - $._environment.reporter.report($this, 'Putting projects_periodic file...')
+      - $linux: new(conf:Linux)
+      - $resource: new(sys:Resources)
+      - $script: $resource.string('projects_periodic.sh')
+      - $linux.putFile($.instance.agent, $script, '/usr/local/bin/projects_periodic.sh')
+      - $linux.runCommand($.instance.agent, 'chmod +x /usr/local/bin/projects_periodic.sh')
 
   destroy:
     Body:
