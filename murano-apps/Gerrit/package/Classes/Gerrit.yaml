@@ -17,7 +17,7 @@ Properties:
     Contract: $.string().notNull()
   warUrl:
     Contract: $.string()
-    Default: 'https://goo.gl/aK183z?/gerrit-2.11.8.war'
+    Default: 'http://tarballs.openstack.org/ci/test/gerrit-v2.11.4.13.cb9800e.war'
   ldap:
     Contract: $.class(opaas:OpenLDAP)
 
