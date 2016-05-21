@@ -4,6 +4,7 @@ node default {
   $ldap_domain   = hiera('ldap_domain')
   $ldap_dn = domain2dn(hiera("ldap_domain"))
   $ldap_ip = hiera('ldap_ip')
+  $project_config_repo = hiera('project_config_repo')
 
   if ! defined(Class['project_config']) {
     class { 'project_config':
@@ -86,6 +87,14 @@ node default {
   }
   class { 'gerrit::remotes':
     ensure => absent,
+  }
+
+  exec { 'openstack_project::gerrit':
+    command     => "/usr/bin/git remote set-url origin $project_config_repo",
+    cwd         => "/etc/project-config/",
+    require     => [
+	      Class['project_config'],
+    ],
   }
 
   # exec { "/usr/xpg4/bin/id >/tmp/puppet-id-test 2>&1",

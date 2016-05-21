@@ -53,11 +53,16 @@ EOF",
     notify      => Exec['upload_gerrit_projects'],
 }
 
+#
+# Create projects from initially cloned project config
+# it contains project config itself also
+# wait for gerrit being restarted and up
 exec { 'upload_gerrit_projects':
     user        => 'gerrit2',
     environment => ["HOME=/home/gerrit2"],
     command     => "/usr/local/bin/manage-projects -v -d -l /var/log/manage_projects.log",
-    timeout     => 1800,
+    try_sleep   => 60,
+    tries       => 20,
     refreshonly => true,
     require     => [
             File['gerrit_gitconfig'],

@@ -12,7 +12,16 @@ Scripts:
     Type: Application
     Version: 1.0.0
     EntryPoint: deploy_gerrit.sh
-    Files: ['gen_ssl_cert.sh', 'gen_rsa_key.sh', 'database.pp', 'site.pp', 'create_projects.pp', 'gerrit_gitconfig.erb']
+    Files: [
+      'gen_ssl_cert.sh',
+      'gen_rsa_key.sh',
+      'database.pp',
+      'site.pp',
+      'create_projects.pp',
+      'gerrit_gitconfig.erb',
+      'periodic_puppet.sh',
+      'post_deploy.pp',
+    ]
     Options:
       captureStdout: false
       captureStderr: true

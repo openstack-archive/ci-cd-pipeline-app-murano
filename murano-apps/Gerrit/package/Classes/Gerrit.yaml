@@ -68,16 +68,35 @@ Methods:
 
       - $.createConfiguration()
 
-      - $resources: new(sys:Resources)
-      - $template: $resources.yaml('DeployGerrit.template')
-
-      - $._environment.reporter.report($this, 'Deploying Gerrit...')
-      - $.instance.agent.call($template, $resources)
+      - $._deployGerrit()
+      - $._environment.reporter.report($this, 'Switching gerrit to a local project-config')
+      - $._switchProjectConfig()
 
       - $._environment.reporter.report($this, 'Gerrit is deployed.')
       - $.setAttr(deployed, true)
       - $._environment.reporter.report($this, format('Gerrit is available at http://{0}:80 or http://{1}:8081',
           $.instance.floatingIpAddress, $.instance.floatingIpAddress))
+
+  _deployGerrit:
+    Body:
+      - $._environment.reporter.report($this, 'Deploying Gerrit...')
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('DeployGerrit.template')
+      - $.instance.agent.call($template, $resources)
+
+  #
+  # Project-config local repo
+  #
+  getProjectConfigRepo:
+    Body:
+      - Return: !yaql "format('https://{0}/open-paas/project-config', $this.instance.ipAddresses[0])"
+
+  #
+  # Switch to newly created project-config repo
+  #
+  _switchProjectConfig:
+    Body:
+      - $.instance.setHieraValue( 'project_config_repo', $.getProjectConfigRepo())
 
   createLdapConfiguration:
     Body:
