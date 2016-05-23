@@ -62,7 +62,7 @@ Forms:
             Please, provide password for regular user
         - name: ldapEmail
           type: string
-          initial: user@mail.com
+          initial: email@example.com
           regexpValidator: '^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
           errorMessages:
             invalid: Please provide valid email address.
