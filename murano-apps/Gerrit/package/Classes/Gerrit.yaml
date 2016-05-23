@@ -5,6 +5,7 @@ Namespaces:
   sys: io.murano.system
   ci_cd_pipeline_murano_app: org.openstack.ci_cd_pipeline_murano_app
   puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
+  conf: io.murano.configuration
 
 Name: Gerrit
 
@@ -179,6 +180,16 @@ Methods:
           sshKey     => $sshKey,
           name       => $name))
       - $.instance.agent.call($template, $resources)
+
+  createLabelVerified:
+    Body:
+      - $._environment.reporter.report($this, 'Creating label "Verified" in Gerrit...')
+      - $linux: new(conf:Linux)
+      - $resource: new(sys:Resources)
+
+      - $script: $resource.string('create_verified.sh')
+      - $linux.runCommand($.instance.agent, $script)
+      - $._environment.reporter.report($this, 'Label "Verified" is successfully created.')
 
   destroy:
     Body:
