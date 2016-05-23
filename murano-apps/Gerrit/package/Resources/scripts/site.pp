@@ -8,7 +8,7 @@ node default {
 
   if ! defined(Class['project_config']) {
     class { 'project_config':
-      url  => hiera('project_config_repo'),
+      url  => $project_config_repo,
     }
   }
 
