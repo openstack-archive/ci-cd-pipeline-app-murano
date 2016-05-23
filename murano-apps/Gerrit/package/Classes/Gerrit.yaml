@@ -5,6 +5,7 @@ Namespaces:
   sys: io.murano.system
   opaas: io.murano.opaas
   puppet: io.murano.opaas.puppet
+  conf: io.murano.configuration
 
 Name: Gerrit
 
@@ -179,6 +180,15 @@ Methods:
           sshKey     => $sshKey,
           name       => $name))
       - $.instance.agent.call($template, $resources)
+
+  createLabelVerified:
+    Body:
+      - $._environment.reporter.report($this, 'Creating label "Verified" in Gerrit...')
+      - $linux: new(conf:Linux)
+      - $resource: new(sys:Resources)
+
+      - $script: $resource.string('create_verified.sh')
+      - $linux.runCommand($.instance.agent, $script)
 
   destroy:
     Body:
