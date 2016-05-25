@@ -10,3 +10,4 @@ Author: 'Mirantis, Inc'
 Tags: [Server, Puppet]
 Classes:
  io.murano.opaas.puppet.PuppetInstance: PuppetInstance.yaml
+ io.murano.opaas.puppet.PuppetApplication: PuppetApplication.yaml

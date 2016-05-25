@@ -9,72 +9,58 @@ Namespaces:
 
 Name: Zuul
 
-Extends: std:Application
+Extends: puppet:PuppetApplication
 
 Properties:
-  name:
-    Contract: $.string()
-    Default: Zuul
-  instance:
-    Contract: $.class(puppet:PuppetInstance).notNull()
   gerrit:
     Contract: $.class(Gerrit)
 Methods:
-  .init:
+  deployApplication:
     Body:
-      - $._environment: $.find(std:Environment).require()
+      - $.super($.deployApplication())
+      - $._environment.reporter.report($this, 'Creating security group for Zuul')
+      - $securityGroupIngress:
+          - ToPort: 80
+            FromPort: 80
+            IpProtocol: tcp
+            External: true
+          - ToPort: 443
+            FromPort: 443
+            IpProtocol: tcp
+            External: true
+          - ToPort: 4730
+            FromPort: 4730
+            IpProtocol: tcp
+            External: true
+      - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
 
-  deploy:
-    Body:
-      - $.super($.deploy())
-      - If: not $.getAttr(deployed, false)
+      - $._environment.stack.push()
+
+      - $this.systemConfig: new(puppet:SystemConfig)
+      - $this.systemConfig.installOnTheNode($this.instance)
+
+      - $.gerrit.deploy()
+
+      - $.createConfiguration()
+
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('DeployZuul.template')
+      - $._environment.reporter.report($this, 'Zuul is deploying')
+      - $.instance.agent.call($template, $resources)
+
+      - $._environment.reporter.report($this, 'Creating Zuul user in Gerrit')
+      - $zuul_pubkey: $.instance.getHieraValue('zuul_ssh_pubkey_contents')
+      - $.gerrit.createAccount('Non-Interactive Users', 'Zuul', 'zuul@lists.openstack.org', $zuul_pubkey, 'zuul')
+
+      - $linux: new(conf:Linux)
+      - $linux.runCommand($.instance.agent, 'service zuul start')
+
+      - If: $.instance.assignFloatingIp
         Then:
-          - $._environment.reporter.report($this, 'Creating security group for Zuul')
-          - $securityGroupIngress:
-              - ToPort: 80
-                FromPort: 80
-                IpProtocol: tcp
-                External: true
-              - ToPort: 443
-                FromPort: 443
-                IpProtocol: tcp
-                External: true
-              - ToPort: 4730
-                FromPort: 4730
-                IpProtocol: tcp
-                External: true
-          - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
-
-          - $._environment.reporter.report($this, 'Creating VM for Zuul "{0}"'.format($.instance.name))
-          - $.instance.deploy()
-          - $._environment.reporter.report($this, 'Zuul VM "{0}" with id {1} created'.format($.instance.name, $.instance.openstackId))
-
-          - $this.systemConfig: new(puppet:SystemConfig)
-          - $this.systemConfig.installOnTheNode($this.instance)
-
-          - $.gerrit.deploy()
-
-          - $.createConfiguration()
-
-          - $resources: new(sys:Resources)
-          - $template: $resources.yaml('DeployZuul.template')
-          - $._environment.reporter.report($this, 'Zuul is deploying')
-          - $.instance.agent.call($template, $resources)
-
-          - $._environment.reporter.report($this, 'Creating Zuul user in Gerrit')
-          - $zuul_pubkey: $.instance.getHieraValue('zuul_ssh_pubkey_contents')
-          - $.gerrit.createAccount('Non-Interactive Users', 'Zuul', 'zuul@lists.openstack.org', $zuul_pubkey, 'zuul')
-
-          - $linux: new(conf:Linux)
-          - $linux.runCommand($.instance.agent, 'service zuul start')
-
-          - If: $.instance.assignFloatingIp
-            Then:
-              - $host: $.instance.floatingIpAddress
-            Else:
-              - $host: $.instance.ipAddresses[0]
-          - $._environment.reporter.report($this, 'Zuul is available at http://{0}:80'.format($host))
-          - $.setAttr(deployed, true)
+          - $host: $.instance.floatingIpAddress
+        Else:
+          - $host: $.instance.ipAddresses[0]
+      - $._environment.reporter.report($this, 'Zuul is available at http://{0}:80'.format($host))
 
   createConfiguration:
     Body:
@@ -88,8 +74,3 @@ Methods:
       - $.instance.setHieraValue('gerrit_server', $gerritHost)
       - $.instance.setHieraValue('gerrit_user', 'zuul')
       - $.instance.setHieraValue('gerrit_ssh_host_key', $.gerrit.instance.getHieraValue('gerrit_ssh_rsa_pubkey_contents'))
-
-  destroy:
-    Body:
-      - $.reportDestroyed()
-      - $.setAttr(deployed, false)
