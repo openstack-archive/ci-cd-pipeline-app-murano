@@ -1,0 +1,63 @@
+Namespaces:
+  =: org.openstack.ci_cd_pipeline_murano_app.utils
+  res: io.murano.resources
+  std: io.murano
+  sys: io.murano.system
+
+Name: CombinableApplication
+
+Extends: std:Application
+
+Properties:
+  instance:
+    Contract: $.class(res:Instance).notNull()
+    Usage: InOut
+  name:
+    Contract: $.string().notNull()
+  _environment:
+    Contract: $.class(std:Environment)
+    Usage: Runtime
+
+Methods:
+  .init:
+    Body:
+      - $this._environment: $this.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - If: $this.getAttr(deployed, false)
+        Then:
+          Return:
+
+      - $this.deployInstance()
+      - $this.deployAppOnInstance($this.instance)
+
+      - $this.setAttr(deployed, true)
+      - $this._environment.reporter.report($this, '{0} is deployed!'.format($.name))
+
+  deployInstance:
+    Body:
+      - $this._environment.reporter.report($this, 'Creating VM for {0} "{1}"'.format($.name, $.instance.name))
+      - $this.instance.deploy()
+      - $this._environment.reporter.report($this, '{0} VM "{1}" with id {2} created.'.format($.name, $.instance.name, $.instance.openstackId))
+
+  deployAppOnInstance:
+    Arguments:
+      - instance:
+          Contract: $.class(res:Instance).notNull()
+    Body:
+      # Deploy instance in case it wasn't deployed before.
+      - If: $instance.openstackId in [null, '']
+        Then:
+          - $instance.deploy()
+
+      - $this.instance: $instance
+      - $this.deployApplication()
+
+  # This method should be overriden in child classes.
+  deployApplication:
+
+  destroy:
+    Body:
+      - $this.reportDestroyed()
+      - $this.setAttr(deployed, false)

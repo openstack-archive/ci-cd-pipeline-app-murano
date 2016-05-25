@@ -8,4 +8,4 @@ Description: |
 Author: 'Mirantis, Inc'
 Tags: [CI, Utils]
 Classes:
- # TBD.
+ org.openstack.ci_cd_pipeline_murano_app.utils.CombinableApplication: CombinableApplication.yaml

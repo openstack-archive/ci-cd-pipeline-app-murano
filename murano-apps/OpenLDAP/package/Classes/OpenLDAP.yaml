@@ -4,17 +4,14 @@ Namespaces:
   res: io.murano.resources
   sys: io.murano.system
   puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
+  utils: org.openstack.ci_cd_pipeline_murano_app.utils
 
 
 Name: OpenLDAP
 
-Extends: std:Application
+Extends: utils:CombinableApplication
 
 Properties:
-  instance:
-    Contract: $.class(puppet:PuppetInstance).notNull()
-  name:
-    Contract: $.string().notNull()
   domain:
     Contract: $.string().notNull()
   ldapRootUser:
@@ -31,48 +28,39 @@ Properties:
     Contract: $.string()
 
 Methods:
-  .init:
+  deployApplication:
     Body:
-      - $._environment: $.find(std:Environment).require()
+      - $.super($.deployApplication())
+      - $._environment.reporter.report($this, 'Creating security groups for OpenLDAP...')
+      - $securityGroupIngress:
+          - ToPort: 389
+            FromPort: 389
+            IpProtocol: tcp
+            External: true
+          - ToPort: 636
+            FromPort: 636
+            IpProtocol: tcp
+            External: true
+      - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
+      - $._environment.stack.push()
 
-  deploy:
-    Body:
-      - If: not $.getAttr(deployed, false)
+      - $.instance.installPuppetModule('datacentred-ldap')
+
+      - $.createConfiguration()
+
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('DeployOpenLDAP.template')
+      - $._environment.reporter.report($this, 'OpenLDAP deploying')
+      - $.instance.agent.call($template, $resources)
+      - $._environment.reporter.report($this, format('OpenLDAP is available at {0}', $.instance.floatingIpAddress))
+
+      - $._environment.reporter.report($this, format('Configuring root LDAP user'))
+      - $.configureOpenLDAPRootUser()
+
+      - If: $.ldapUser != '' and $.ldapUser != null
         Then:
-          - $securityGroupIngress:
-              - ToPort: 389
-                FromPort: 389
-                IpProtocol: tcp
-                External: true
-              - ToPort: 636
-                FromPort: 636
-                IpProtocol: tcp
-                External: true
-          - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
-          - $._environment.reporter.report($this, 'Creating VM for OpenLDAP "{0}"'.format($.instance.name))
-          - $.instance.deploy()
-          - $._environment.reporter.report($this, 'OpenLDAP VM "{0}" with id {1} created'.format($.instance.name, $.instance.openstackId))
-
-          - $.instance.installPuppetModule('datacentred-ldap')
-
-          - $.createConfiguration()
-
-          - $resources: new(sys:Resources)
-          - $template: $resources.yaml('DeployOpenLDAP.template')
-          - $._environment.reporter.report($this, 'OpenLDAP deploying')
-          - $.instance.agent.call($template, $resources)
-          - $._environment.reporter.report($this, format('OpenLDAP is available at {0}', $.instance.floatingIpAddress))
-
-          - $._environment.reporter.report($this, format('Configuring root LDAP user'))
-          - $.configureOpenLDAPRootUser()
-
-          - If: $.ldapUser != '' and $.ldapUser != null
-            Then:
-              - $._environment.reporter.report($this, format('Configuring base non-admin LDAP user'))
-              - $.configureOpenLDAPUser($.ldapUser, $.ldapPass, $.ldapEmail)
-
-          - $.setAttr(deployed, true)
-          - $._environment.reporter.report($this, 'OpenLDAP is deployed!')
+          - $._environment.reporter.report($this, format('Configuring base non-admin LDAP user'))
+          - $.configureOpenLDAPUser($.ldapUser, $.ldapPass, $.ldapEmail)
 
   createConfiguration:
     Body:
@@ -131,8 +119,3 @@ Methods:
             email    => $email
           ))
       - $.instance.agent.call($template, $resources)
-
-  destroy:
-    Body:
-      - $.reportDestroyed()
-      - $.setAttr(deployed, false)

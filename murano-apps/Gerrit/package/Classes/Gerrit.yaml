@@ -5,16 +5,13 @@ Namespaces:
   sys: io.murano.system
   ci_cd_pipeline_murano_app: org.openstack.ci_cd_pipeline_murano_app
   puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
+  utils: org.openstack.ci_cd_pipeline_murano_app.utils
 
 Name: Gerrit
 
-Extends: std:Application
+Extends: utils:CombinableApplication
 
 Properties:
-  instance:
-    Contract: $.class(puppet:PuppetInstance).notNull()
-  name:
-    Contract: $.string().notNull()
   warUrl:
     Contract: $.string()
     Default: 'http://tarballs.openstack.org/ci/test/gerrit-v2.11.9.3.eb6e48d.war'
@@ -22,16 +19,9 @@ Properties:
     Contract: $.class(ci_cd_pipeline_murano_app:OpenLDAP)
 
 Methods:
-  initialize:
+  deployApplication:
     Body:
-      - $._environment: $.find(std:Environment).require()
-
-  deploy:
-    Body:
-      - $.super($.deploy())
-      - If: $.getAttr(deployed, false)
-        Then:
-          Return:
+      - $.super($.deployApplication())
 
       - $securityGroupIngress:
         - ToPort: 80
@@ -52,9 +42,7 @@ Methods:
           External: true
 
       - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
-      - $._environment.reporter.report($this, 'Creating VM for Gerrit "{0}"'.format($.instance.name))
-      - $.instance.deploy()
-      - $._environment.reporter.report($this, 'Gerrit VM "{0}" with id {1} created'.format($.instance.name, $.instance.openstackId))
+      - $._environment.stack.push()
 
       - $._environment.reporter.report($this, 'Installing puppet modules...')
 
@@ -72,8 +60,6 @@ Methods:
       - $._environment.reporter.report($this, 'Switching gerrit to a local project-config')
       - $._switchProjectConfig()
 
-      - $._environment.reporter.report($this, 'Gerrit is deployed.')
-      - $.setAttr(deployed, true)
       - $._environment.reporter.report($this, format('Gerrit is available at http://{0}:80 or http://{1}:8081',
           $.instance.floatingIpAddress, $.instance.floatingIpAddress))
 
@@ -179,8 +165,3 @@ Methods:
           sshKey     => $sshKey,
           name       => $name))
       - $.instance.agent.call($template, $resources)
-
-  destroy:
-    Body:
-      - $.reportDestroyed()
-      - $.setAttr(deployed, false)
