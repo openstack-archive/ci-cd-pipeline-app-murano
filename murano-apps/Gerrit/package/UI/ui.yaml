@@ -22,7 +22,7 @@ Forms:
         - name: name
           type: string
           label: Application Name
-          initial: GerritPuppet
+          initial: Gerrit
           description: >-
             Enter a desired name for the application. Just A-Z, a-z, 0-9, dash and
             underline are allowed
