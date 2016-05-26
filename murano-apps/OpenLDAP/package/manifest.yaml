@@ -1,14 +1,14 @@
 Format: 1.0
 Type: Application
-FullName: io.murano.opaas.OpenLDAP
+FullName: org.openstack.ci_cd_pipeline_murano_app.OpenLDAP
 Name: OpenLDAP
 Description: |
  OpenLDAP is an open source implementation of the Lightweight Directory Access Protocol.
 Author: 'Mirantis, Inc'
 Tags: [Server, LDAP]
 Classes:
- io.murano.opaas.OpenLDAP: OpenLDAP.yaml
+ org.openstack.ci_cd_pipeline_murano_app.OpenLDAP: OpenLDAP.yaml
 UI: ui.yaml
 Logo: logo.png
 Require:
-  io.murano.opaas.puppet.Puppet:
+  org.openstack.ci_cd_pipeline_murano_app.puppet.Puppet:

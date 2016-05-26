@@ -1,10 +1,10 @@
 Namespaces:
-  =: io.murano.opaas
+  =: org.openstack.ci_cd_pipeline_murano_app
   std: io.murano
   res: io.murano.resources
   sys: io.murano.system
-  opaas: io.murano.opaas
-  puppet: io.murano.opaas.puppet
+  ci_cd_pipeline_murano_app: org.openstack.ci_cd_pipeline_murano_app
+  puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
 
 Name: Nodepool
 
@@ -16,7 +16,7 @@ Properties:
   name:
     Contract: $.string().notNull()
   jenkins:
-    Contract: $.class(opaas:Jenkins).notNull()
+    Contract: $.class(ci_cd_pipeline_murano_app:Jenkins).notNull()
   # TODO(nmakhotkin) Add zuul property.
 
 Methods:
