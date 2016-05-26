@@ -13,7 +13,7 @@ function check_dir () {
     fi
 }
 
-default_packages="Puppet SystemConfig OpenLDAP Gerrit Jenkins Zuul Nodepool CiCdEnvironment"
+default_packages="Puppet SystemConfig OpenLDAP Gerrit Jenkins Zuul Nodepool CiCdEnvironment CiCdUtils"
 source_dir="murano-apps"
 destination_dir="."
 refresh_existing_packages=false
