@@ -1,0 +1,11 @@
+Format: 1.0
+Type: Library
+FullName: org.openstack.ci_cd_pipeline_murano_app.utils.CiCdUtils
+Name: CI/CD Utils
+Description: |
+ Library containing utility classes and methods of processing
+ data needed for CI/CD application.
+Author: 'Mirantis, Inc'
+Tags: [CI, Utils]
+Classes:
+ # TBD.
