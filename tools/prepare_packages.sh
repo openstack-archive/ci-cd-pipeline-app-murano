@@ -120,7 +120,7 @@ if $build_packages ; then
     # zip necessary apps
     pushd $source_dir
         for d in ${packages[@]}; do
-            filename="$destination_dir/io.murano.opaas.$d.zip"
+            filename="$destination_dir/org.openstack.ci_cd_pipeline_murano_app.$d.zip"
             pushd $d/package
             # check that file exist and remove it or create new version
             if [ -f $filename ] ; then
@@ -147,7 +147,7 @@ if $upload ; then
     # to have ability upload one package independently we need to remove it
     # via client and then upload it without updating its dependencies
     for d in ${packages[@]}; do
-        filename="$destination_dir/io.murano.opaas.$d.zip"
+        filename="$destination_dir/org.openstack.ci_cd_pipeline_murano_app.$d.zip"
         pkg_id=`murano package-list --owned | grep $d | awk '{print $2}'`
         murano package-delete $pkg_id
         murano package-import $filename --exists-action s
