@@ -3,6 +3,9 @@ $db_root_password = hiera('gerrit_db_root_password')
 $admin_user     = hiera('ldap_root_user')
 $admin_password = hiera('ldap_root_password')
 
+$user     = hiera('ldap_user')
+$password = hiera('ldap_password')
+
 $project_user       = 'project-creator'
 $project_user_id    = 99
 $project_user_key   = hiera('gerrit_ssh_project_rsa_pubkey_contents')
@@ -28,7 +31,15 @@ exec { 'check_gerrit':
     command     => "/usr/bin/curl -s -o /dev/null -w \"%{http_code}\" -k https://${fqdn}/ | grep -q 200",
     try_sleep   => 10,
     tries       => 90,
-    notify      => Exec['first_admin_login'],
+    notify      => Exec['first_user_login'],
+}
+
+exec { 'first_user_login':
+     command     => "/usr/bin/curl -s -o /dev/null -w \"%{http_code}\" -k -X POST -d \"username=${user}\" -d \"password=${password}\" https://${fqdn}/login | grep -q 302",
+     try_sleep   => 10,
+     tries       => 6,
+     refreshonly => true,
+     notify      => Exec['first_admin_login'],
 }
 
 exec { 'first_admin_login':

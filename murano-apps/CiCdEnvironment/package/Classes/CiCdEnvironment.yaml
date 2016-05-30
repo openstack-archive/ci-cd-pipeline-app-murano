@@ -33,6 +33,8 @@ Properties:
     Contract: $.string()
   ldapEmail:
     Contract: $.string()
+  userSsh:
+    Contract: $.string()
 
   instance_name:
     Contract: $.string().notNull()
@@ -94,7 +96,8 @@ Methods:
           - $this.gerrit: new(ci_cd_pipeline_murano_app:Gerrit, $this,
               name => 'Gerrit',
               instance => $gerritInstance,
-              ldap => $this.ldap)
+              ldap => $this.ldap,
+              userSsh => $this.userSsh)
 
       # Jenkins
       # set user and mail for accessing to Gerrit from Jenkins
