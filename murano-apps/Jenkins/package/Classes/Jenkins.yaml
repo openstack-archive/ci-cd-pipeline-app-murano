@@ -23,6 +23,9 @@ Properties:
   cfplugin:
     Contract: $.bool()
     Default: false
+  dockerplugin:
+    Contract: $.bool()
+    Default: false
   gitUser:
     Contract: $.string()
   gitEmail:
@@ -68,6 +71,12 @@ Methods:
             Then:
               - $._environment.reporter.report($this, 'Installing CF plugin...')
               - $template: $resources.yaml('InstallCFPlugin.template')
+              - $.instance.agent.call($template, $resources)
+
+          - If: $.dockerplugin
+            Then:
+              - $._environment.reporter.report($this, 'Installing Docker Build and Publish plugin...')
+              - $template: $resources.yaml('InstallDockerPlugin.template')
               - $.instance.agent.call($template, $resources)
 
           - If: $.gitUser != null and $.gitEmail != null
