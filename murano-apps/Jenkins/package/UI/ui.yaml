@@ -7,6 +7,7 @@ Application:
   ldap: $.appConfiguration.OpenLDAP
   gerrit: $.appConfiguration.Gerrit
   cfplugin: $.appConfiguration.cfplugin
+  dockerplugin: $.appConfiguration.dockerplugin
   gitUser: $.appConfiguration.gitUser
   gitEmail: $.appConfiguration.gitEmail
   instance:
@@ -34,6 +35,13 @@ Forms:
           label: Cloud Foundry Plugin
           description: >-
              Select to true to install CF Plugin automatically
+          initial: false
+          required: false
+        - name: dockerplugin
+          type: boolean
+          label: CloudBees Docker Build and Publish plugin
+          description: >-
+             Select to true to install Docker Build and Publish plugin automatically
           initial: false
           required: false
         - name: assignFloatingIP
