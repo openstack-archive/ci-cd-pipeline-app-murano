@@ -10,6 +10,7 @@ Application:
   ldapUser: $.appConfiguration.ldapUser
   ldapPass: $.appConfiguration.ldapPass
   ldapEmail: $.appConfiguration.ldapEmail
+  userSSH: $.appConfiguration.userSSH
   instance_name: generateHostname($.instanceConfiguration.unitNamingPattern, 1)
   flavor: $.instanceConfiguration.flavor
   image: $.instanceConfiguration.osImage
@@ -71,6 +72,14 @@ Forms:
           descriptionTitle: Regular user Email
           description: >-
             Please, provide regular user email
+        - name: userSSH
+          type: string
+          initial: ''
+          label: User ssh key
+          required: false
+          descriptionTitle: User public ssh key
+          description: >-
+            Please, provide user public ssh key
   - instanceConfiguration:
       fields:
         - name: title
