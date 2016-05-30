@@ -14,13 +14,21 @@ NAME="$6"
 
 HOSTNAME="`hostname -f`"
 
+arguments=""
+if [ ! -z ${GROUP} ] ; then
+    arguments="--group \'${GROUP}\' "
+fi
+
+echo "${arguments[@]} --full-name \'${FULL_NAME}\' --email $EMAIL --ssh-key \'${SSHKEY}\' $NAME" >> /tmp/fff
+
 set +e
 su gerrit2 -c "ssh -p 29418 -i /home/gerrit2/review_site/etc/ssh_project_rsa_key project-creator@$HOSTNAME \
-gerrit create-account --group \'${GROUP}\' --full-name \'${FULL_NAME}\' --email $EMAIL --ssh-key \'${SSHKEY}\' $NAME"
+gerrit create-account ${arguments[@]} --full-name \'${FULL_NAME}\' --email $EMAIL --ssh-key \'${SSHKEY}\' $NAME"
 
 code=$?
 
 if [ $code -ne 0 ]; then
+  echo "${arguments[@]} --full-name \'${FULL_NAME}\' --email $EMAIL --ssh-key \'${SSHKEY}\' $NAME" >> /tmp/fff
   # Do not create account but set related properties.
   su gerrit2 -c "ssh -p 29418 -i /home/gerrit2/review_site/etc/ssh_project_rsa_key project-creator@$HOSTNAME \
   gerrit set-account --full-name \'${FULL_NAME}\' --add-email $EMAIL --add-ssh-key \'${SSHKEY}\' $NAME"
