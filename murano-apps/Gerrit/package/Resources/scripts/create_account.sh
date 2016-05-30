@@ -14,14 +14,43 @@ NAME="$6"
 
 HOSTNAME="`hostname -f`"
 
+create_args=
+set_args=
+
+# check group
+if [ ! -z ${GROUP} ] ; then
+    create_args+="--group \'${GROUP}\' "
+fi
+
+# check full name
+if [ ! -z ${FULL_NAME} ] ; then
+    create_args+="--full-name \'${FULL_NAME}\' "
+    set_args+="--full-name \'${FULL_NAME}\' "
+fi
+
+# check email
+if [ ! -z ${EMAIL} ] ; then
+    create_args+="--email $EMAIL "
+    set_args+="--add-email $EMAIL "
+fi
+
+# check ssh
+if [ ! -z ${SSHKEY} ] ; then
+    create_args+="--ssh-key \'${SSHKEY}\' "
+    set_args+="--add-ssh-key \'${SSHKEY}\' "
+fi
+
+echo "create ---  ${create_args[@]}" >> /tmp/fff
+echo "set -----  ${set_args[@]}" >> /tmp/fff
+
 set +e
 su gerrit2 -c "ssh -p 29418 -i /home/gerrit2/review_site/etc/ssh_project_rsa_key project-creator@$HOSTNAME \
-gerrit create-account --group \'${GROUP}\' --full-name \'${FULL_NAME}\' --email $EMAIL --ssh-key \'${SSHKEY}\' $NAME"
+gerrit create-account ${create_args[@]} $NAME"
 
 code=$?
 
 if [ $code -ne 0 ]; then
   # Do not create account but set related properties.
   su gerrit2 -c "ssh -p 29418 -i /home/gerrit2/review_site/etc/ssh_project_rsa_key project-creator@$HOSTNAME \
-  gerrit set-account --full-name \'${FULL_NAME}\' --add-email $EMAIL --add-ssh-key \'${SSHKEY}\' $NAME"
+  gerrit set-account ${set_args[@]} $NAME"
 fi

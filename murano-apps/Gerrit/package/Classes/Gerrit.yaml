@@ -21,6 +21,8 @@ Properties:
     Default: 'http://tarballs.openstack.org/ci/test/gerrit-v2.11.9.3.eb6e48d.war'
   ldap:
     Contract: $.class(ci_cd_pipeline_murano_app:OpenLDAP)
+  userSSH:
+    Contract: $.string()
 
 Methods:
   initialize:
@@ -72,6 +74,11 @@ Methods:
       - $._deployGerrit()
       - $._environment.reporter.report($this, 'Switching gerrit to a local project-config')
       - $._switchProjectConfig()
+      - If: $.ldap != null
+        Then:
+          - $._environment.reporter.report($this, 'Add ssh public key to user account.')
+
+          - $.createAccount('', $.ldap.ldapUser, $.ldap.ldapEmail, $.userSSH, $.ldap.ldapUser)
 
       - $._environment.reporter.report($this, 'Gerrit is deployed.')
       - $.setAttr(deployed, true)
@@ -112,6 +119,8 @@ Methods:
       - $.instance.setHieraValue('ldap_domain', $.ldap.domain)
       - $.instance.setHieraValue('ldap_root_user', $.ldap.ldapRootUser)
       - $.instance.setHieraValue('ldap_root_password', $.ldap.ldapRootPass)
+      - $.instance.setHieraValue('ldap_user', $.ldap.ldapUser)
+      - $.instance.setHieraValue('ldap_password', $.ldap.ldapPass)
 
   createConfiguration:
     Body:
@@ -161,7 +170,7 @@ Methods:
   createAccount:
     Arguments:
       - group:
-          Contract: $.string().notNull()
+          Contract: $.string()
       - fullName:
           Contract: $.string().notNull()
       - email:
