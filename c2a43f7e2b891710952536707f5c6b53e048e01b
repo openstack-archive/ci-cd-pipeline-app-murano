@@ -1,0 +1,10 @@
+Code-Review+2: Nikolay Mahotkin <nmakhotkin@mirantis.com>
+Code-Review+2: Alexey Khivin <akhivin@gmail.com>
+Code-Review+2: Anastasia Kuznetsova <akuznetsova@mirantis.com>
+Workflow+1: Anastasia Kuznetsova <akuznetsova@mirantis.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Tue, 31 May 2016 09:36:01 +0000
+Reviewed-on: https://review.openstack.org/321462
+Project: openstack/ci-cd-pipeline-app-murano
+Branch: refs/heads/master
