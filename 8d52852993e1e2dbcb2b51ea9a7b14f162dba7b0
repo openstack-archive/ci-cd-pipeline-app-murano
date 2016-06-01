@@ -1,0 +1,10 @@
+Verified+1: Sergey Kraynev <skraynev@mirantis.com>
+Code-Review+2: Alexey Khivin <akhivin@gmail.com>
+Code-Review+2: Nikolay Mahotkin <nmakhotkin@mirantis.com>
+Workflow+1: Nikolay Mahotkin <nmakhotkin@mirantis.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Wed, 01 Jun 2016 14:02:36 +0000
+Reviewed-on: https://review.openstack.org/323284
+Project: openstack/ci-cd-pipeline-app-murano
+Branch: refs/heads/master
