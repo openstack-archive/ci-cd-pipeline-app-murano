@@ -79,16 +79,24 @@ Methods:
 
           - If: $.gerrit != null
             Then:
+              - If: $.gerrit.instance.assignFloatingIp
+                Then:
+                  - $host: $.gerrit.instance.floatingIpAddress
+                Else:
+                  - $host: $.gerrit.instance.ipAddresses[0]
+              - $.instance.setHieraValue('gerrit_host', $host)
               - $.installGerritPlugin()
               - $._environment.reporter.report($this, 'Wait while Gerrit is being deployed...')
               - $.gerrit.deploy()
               - $._environment.reporter.report($this, 'Creating jenkins account in gerrit...')
               - $.createGerritAccount()
-              - $.configureGerritPlugin($.gerrit)
+              - $.configureGerritPlugin()
               - $.gerrit.createLabelVerified()
               - $._upgradeGitPlugin()
 
           - $.configureUser()
+
+          - $.installJJB()
 
           - If: $.instance.assignFloatingIp
             Then:
@@ -182,17 +190,7 @@ Methods:
       - $.instance.agent.call($template, $resources)
 
   configureGerritPlugin:
-    Arguments:
-      - gerrit:
-          Contract: $.class(ci_cd_pipeline_murano_app:Gerrit).notNull()
     Body:
-      - If: $gerrit.instance.assignFloatingIp
-        Then:
-          - $host: $gerrit.instance.floatingIpAddress
-        Else:
-          - $host: $gerrit.instance.ipAddresses[0]
-      # Set gerrit related properties.
-      - $.instance.setHieraValue('gerrit_host', $host)
       - $resources: new(sys:Resources)
       - $._environment.reporter.report($this, 'Configure Jenkins Gerrit Trigger plugin...')
       - $template: $resources.yaml('ConfigureGerritPlugin.template')
@@ -215,3 +213,20 @@ Methods:
       - $resources: new(sys:Resources)
       - $template: $resources.yaml('JenkinsUser.template')
       - $.instance.agent.call($template, $resources, 100)
+
+  installJJB:
+    Body:
+      - $resources: new(sys:Resources)
+      - $linux: new(conf:Linux)
+      - $._environment.reporter.report($this, 'Installing and configuring Jenkins Job Builder...')
+      - $script: $resources.string('scripts/update_jobs.sh')
+      - $linux.putFile($.instance.agent, $script, '/usr/local/bin/update_jobs.sh')
+      - $script: $resources.string('scripts/install_jjb.pp')
+      - $linux.putFile($.instance.agent, $script, '/usr/local/bin/install_jjb.pp')
+      - $linux.runCommand($.instance.agent, 'puppet apply /usr/local/bin/install_jjb.pp')
+      - If: $.gerrit != null
+        Then:
+          - $._environment.reporter.report($this, 'Switching to project-config from installed Gerrit...')
+          - $script: $resources.string('scripts/switch_to_local_project_config.sh')
+          - $linux.putFile($.instance.agent, $script, '/usr/local/bin/switch_to_local_project_config.sh')
+          - $linux.runCommand($.instance.agent, 'bash /usr/local/bin/switch_to_local_project_config.sh')
