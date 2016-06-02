@@ -35,6 +35,7 @@ pip-log.txt
 etc/*.conf
 tools/lintstack.head.py
 tools/pylint_exceptions
+*.zip
 
 #Linux swap file
 *.swp
