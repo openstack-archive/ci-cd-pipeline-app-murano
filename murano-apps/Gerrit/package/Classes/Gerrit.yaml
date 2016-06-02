@@ -70,7 +70,7 @@ Methods:
       - $.createConfiguration()
 
       - $._deployGerrit()
-      - $._environment.reporter.report($this, 'Switching gerrit to a local project-config')
+      - $._environment.reporter.report($this, 'Switching Gerrit to a local project-config')
       - $._switchProjectConfig()
 
       - $._environment.reporter.report($this, 'Gerrit is deployed.')
