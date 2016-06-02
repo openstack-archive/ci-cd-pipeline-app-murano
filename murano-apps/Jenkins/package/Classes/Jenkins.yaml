@@ -91,7 +91,7 @@ Methods:
               - $.installGerritPlugin()
               - $._environment.reporter.report($this, 'Wait while Gerrit is being deployed...')
               - $.gerrit.deploy()
-              - $._environment.reporter.report($this, 'Creating jenkins account in gerrit...')
+              - $._environment.reporter.report($this, 'Creating "jenkins" account in Gerrit...')
               - $.createGerritAccount()
               - $.configureGerritPlugin($.gerrit)
               - $.gerrit.createLabelVerified()
@@ -186,7 +186,7 @@ Methods:
   installGerritPlugin:
     Body:
       - $resources: new(sys:Resources)
-      - $._environment.reporter.report($this, 'Installing gerrit-trigger plugin...')
+      - $._environment.reporter.report($this, 'Installing Gerrit Trigger plugin...')
       - $template: $resources.yaml('InstallGerritPlugin.template')
       - $.instance.agent.call($template, $resources)
 

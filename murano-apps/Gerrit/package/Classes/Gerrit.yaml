@@ -72,7 +72,7 @@ Methods:
       - $.createConfiguration()
 
       - $._deployGerrit()
-      - $._environment.reporter.report($this, 'Switching gerrit to a local project-config')
+      - $._environment.reporter.report($this, 'Switching Gerrit to a local project-config')
       - $._switchProjectConfig()
       - If: $.ldap != null and not $.userSSH in [null, ''] and not $.ldap.ldapUser in [null, '']
         Then:
