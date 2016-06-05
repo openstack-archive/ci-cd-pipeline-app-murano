@@ -57,7 +57,7 @@ murano_client = None
 
 # service name , from murano-app map, and port, which should be checked
 check_map = {'org.openstack.ci_cd_pipeline_murano_app.Jenkins':
-                 {'ports': [8080, 22], 'url': 'api', 'url_port': 8080},
+                 {'ports': [8080, 22], 'url': 'api/', 'url_port': 8080},
              'org.openstack.ci_cd_pipeline_murano_app.Gerrit':
                  {'ports': [8081, 22], 'url': '#/admin/projects/',
                   'url_port': 8081},
@@ -83,9 +83,7 @@ def get_murano_client():
     except Exception as e:
         keystone = get_auth()
         murano_client = muranocl.Client('1', endpoint=murano_endpoint,
-                                        token=keystone.auth_token,
-                                        session=True
-                                        )
+                                        token=keystone.auth_token)
     return murano_client
 
 
@@ -281,16 +279,21 @@ def check_port_access(ip, port):
 
 
 def check_path(env, path, ip, port=80):
+    attempts = 5
     proto = 'http'
     if port in (443, 8443):
         proto = 'https'
-    resp = requests.get('%s://%s:%s/%s' % (proto, ip, port, path))
-    if resp.status_code == 200:
-        LOG.debug(
-            'Service path fine: %s://%s:%s/%s' % (proto, ip, port, path))
-        pass
-    else:
-        fail('Service path failed: %s://%s:%s/%s' % (proto, ip, port, path))
+    url = '%s://%s:%s/%s' % (proto, ip, port, path)
+    for i in range(attempts):
+        resp = requests.get(url)
+        i += 1
+        if resp.status_code != 200 and i >= attempts:
+            fail('Service path failed: %s Code:%s' % (url, resp.status_code))
+        elif resp.status_code == 200:
+            LOG.debug('Service path fine: %s' % url)
+            return
+        else:
+            time.sleep(5)
 
 
 def deployment_success_check(environment, ip, inst_name='jenkins', ports=[]):
@@ -387,9 +390,10 @@ if __name__ == '__main__':
                 LOG.debug('Cheking service {}'.format(app))
                 check_path(environment, check_map[app]['url'], fip_map[app],
                            port=check_map[app]['url_port'])
+        LOG.debug("Deployment finished successfully")
 
     except Exception as exc:
-            LOG.debug('Deployment error', exc)
+            LOG.exception('Deployment error %s' % exc)
             raise
     finally:
         deployment = get_last_deployment(environment)
