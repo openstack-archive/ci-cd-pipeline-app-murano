@@ -11,10 +11,10 @@ TEST_NAME=${TEST_NAME:-none}
 
 function prepare_venv() {
     echo 'LOG: Creating python venv for murano-client'
-    rm -rf ${VENV_PATH}
-    mkdir -p ${VENV_PATH}
-    virtualenv --system-site-packages  ${VENV_PATH}
-    source ${VENV_PATH}/bin/activate
+    rm -rf "${VENV_PATH}"
+    mkdir -p "${VENV_PATH}"
+    virtualenv --system-site-packages  "${VENV_PATH}"
+    source "${VENV_PATH}/bin/activate"
     #TODO install from requirments.txt ?
     pip install python-muranoclient python-heatclient
     deactivate
@@ -26,9 +26,9 @@ if [[ ("${VENV_CLEAN}" == true) || (! -f "${VENV_PATH}/bin/activate") ]]; then
 fi
 
 if [[ "${TEST_NAME}" != "none" ]] ; then
-    source ${VENV_PATH}/bin/activate
+    source "${VENV_PATH}/bin/activate"
     echo "LOG: Attempt to run test=${TEST_NAME}"
-    ./utils/jenkins/${TEST_NAME}
+    ./utils/jenkins/"${TEST_NAME}"
     deactivate
 fi
 
