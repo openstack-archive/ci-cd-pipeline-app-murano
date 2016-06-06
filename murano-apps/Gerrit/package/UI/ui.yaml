@@ -6,6 +6,7 @@ Application:
   name: $.appConfiguration.name
   warUrl: $.appConfiguration.warUrl
   ldap: $.appConfiguration.OpenLDAP
+  userSSH: $.appConfiguration.userSSH
   instance:
     ?:
       type: org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetInstance
@@ -45,6 +46,14 @@ Forms:
           required: false
           description: >-
             Specify OpenLDAP domain for authentication
+        - name: userSSH
+          type: string
+          initial: ''
+          label: User ssh key
+          required: false
+          descriptionTitle: User public ssh key
+          description: >-
+            Please, provide user public ssh key
   - instanceConfiguration:
       fields:
         - name: title
