@@ -105,8 +105,16 @@ def create_env():
     else:
         name = murano_env_name + str(BUILD_TAG)
     environment = get_murano_client().environments.create({'name': name})
-    LOG.debug('Created Environment:\n{0}'.format(pprinter.pformat(environment)))
-    return environment
+    LOG.debug(
+        'Created Environment:\n{0}'.format(pprinter.pformat(environment)))
+    return environment.id
+
+
+def get_env(env_id=None):
+    if env_id:
+        return get_murano_client().environments.get(env_id)
+    else:
+        fail('Wrong environment id!')
 
 
 def add_service(environment, data, session):
@@ -120,7 +128,7 @@ def add_service(environment, data, session):
     """
 
     LOG.debug('Added service:\n {0}'.format(data))
-    return get_murano_client().services.post(environment.id,
+    return get_murano_client().services.post(get_env(env_id).id,
                                              path='/', data=data,
                                              session_id=session.id)
 
@@ -151,12 +159,12 @@ def fail(msg=None):
 
 
 def get_last_deployment(environment):
-    deployments = get_murano_client().deployments.list(environment.id)
+    deployments = get_murano_client().deployments.list(get_env(env_id).id)
     return deployments[0]
 
 
 def get_deployment_report(environment, deployment, as_list=False):
-    report = get_murano_client().deployments.reports(environment.id, deployment.id)
+    report = get_murano_client().deployments.reports(get_env(env_id).id, deployment.id)
     if as_list:
         history = []
         for status in report:
@@ -169,21 +177,21 @@ def get_deployment_report(environment, deployment, as_list=False):
 
 
 def _log_report(environment):
-    deployment = get_last_deployment(environment)
+    deployment = get_last_deployment(get_env(env_id))
     try:
         details = deployment.result['result']['details']
     except KeyError:
         LOG.error('Deployment has no result details!')
         pass
     LOG.error('Exception found:\n {0}'.format(details))
-    report = get_deployment_report(environment, deployment)
+    report = get_deployment_report(get_env(env_id), deployment)
     LOG.debug('Report:\n {0}\n'.format(report))
 
 
 def _log_quick(environment):
     global history_log
-    deployment = get_last_deployment(environment)
-    history = get_deployment_report(environment, deployment, as_list=True)
+    deployment = get_last_deployment(get_env(env_id))
+    history = get_deployment_report(get_env(env_id), deployment, as_list=True)
     if history_log != len(history) or history_log == 0:
         tmp = len(history)
         history = history[history_log:]
@@ -194,29 +202,29 @@ def _log_quick(environment):
 
 def wait_for_environment_deploy(environment):
     start_time = time.time()
-    status = environment.manager.get(environment.id).status
+    status = get_env(env_id).manager.get(get_env(env_id).id).status
     while status != 'ready':
-        status = environment.manager.get(environment.id).status
+        status = get_env(env_id).manager.get(get_env(env_id).id).status
         LOG.debug('Deployment status:{}...nothing new..'.format(status))
-        _log_quick(environment)
+        _log_quick(get_env(env_id))
         if time.time() - start_time > deploy_timeout:
             time.sleep(60)
-            _log_report(environment)
+            _log_report(get_env(env_id))
             fail(
                 'Environment deployment is not finished in {}seconds'.format(
                     deploy_timeout))
         elif status == 'deploy failure':
-            _log_report(environment)
+            _log_report(get_env(env_id))
             time.sleep(60)
             fail('Environment has incorrect status {0}'.format(status))
         time.sleep(30)
-    LOG.debug('Environment {0} is ready'.format(environment.name))
-    return environment.manager.get(environment.id)
+    LOG.debug('Environment {0} is ready'.format(get_env(env_id).name))
+    return get_env(env_id).manager.get(get_env(env_id).id)
 
 
 def deploy_environment(environment, session):
-    get_murano_client().sessions.deploy(environment.id, session.id)
-    return wait_for_environment_deploy(environment)
+    get_murano_client().sessions.deploy(get_env(env_id).id, session.id)
+    return wait_for_environment_deploy(get_env(env_id))
 
 
 def divine_fip(obj):
@@ -245,7 +253,7 @@ def get_ip_by_instance_name(environment, inst_name):
     :return:
     """
     ip = None
-    e = environment
+    e = get_env(env_id)
     try:
         if inst_name in e.services[0]:
             ip = e.services[0][inst_name]['instance']['floatingIpAddress']
@@ -301,7 +309,7 @@ def deployment_success_check(environment, ip, inst_name='jenkins', ports=[]):
     :param environment:
     :param ports:
     """
-    deployment = get_murano_client().deployments.list(environment.id)[-1]
+    deployment = get_murano_client().deployments.list(get_env(env_id).id)[-1]
     LOG.debug('Deployment status is {0}'.format(deployment.state))
     if str(deployment.state) != 'success':
         fail('Wrong deploymnet state = {}'.format(deployment.state))
@@ -354,10 +362,10 @@ if __name__ == '__main__':
 
     # instant test
     # murano = get_murano_client()
-    # environment = murano.environments.get('8733e543cd4c40d0b4bc4fc9b9fc928d')
+    # environment_id = murano.environments.get('deca41a0e8504eef864')
 
-    environment = create_env()
-    session = get_murano_client().sessions.configure(environment.id)
+    env_id = create_env()
+    session = get_murano_client().sessions.configure(env_id)
 
     post_body = {
         '?': {'_{id}'.format(id=uuid.uuid4().hex): {'name': 'CI/CD'},
@@ -367,7 +375,7 @@ if __name__ == '__main__':
         'availabilityZone': availability_zone,
         'flavor': flavor,
         'image': image,
-        'instance_name': environment.name,
+        'instance_name': get_env(env_id).name,
         'keyname': keyname,
         'ldapEmail': 'email@example.com',
         'ldapPass': m_pass,
@@ -379,16 +387,16 @@ if __name__ == '__main__':
     }
 
     try:
-        create_service(environment, session, post_body)
+        create_service(get_env(env_id), session, post_body)
         LOG.debug("Attempt to deploy env..")
-        deploy_environment(environment, session)
-        fip_map = divine_fip(environment.services[0])
+        deploy_environment(get_env(env_id), session)
+        fip_map = divine_fip(get_env(env_id).services[0])
         for app in check_map:
-            deployment_success_check(environment, fip_map[app], app,
+            deployment_success_check(get_env(env_id), fip_map[app], app,
                                      check_map[app]['ports'])
             if check_map[app]['url']:
                 LOG.debug('Cheking service {}'.format(app))
-                check_path(environment, check_map[app]['url'], fip_map[app],
+                check_path(get_env(env_id), check_map[app]['url'], fip_map[app],
                            port=check_map[app]['url_port'])
         LOG.debug("Deployment finished successfully")
 
@@ -396,5 +404,5 @@ if __name__ == '__main__':
             LOG.exception('Deployment error %s' % exc)
             raise
     finally:
-        deployment = get_last_deployment(environment)
+        deployment = get_last_deployment(get_env(env_id))
 
