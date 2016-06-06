@@ -1,0 +1,31 @@
+Namespaces:
+  =: org.openstack.ci_cd_pipeline_murano_app.utils
+  res: io.murano.resources
+  std: io.murano
+  sys: io.murano.system
+
+Name: CombinableApplication
+
+Methods:
+  deployOnInstance:
+    Arguments:
+      - instance:
+          Contract: $.class(res:Instance).notNull()
+    Body:
+      - $._deployInstance($instance)
+      - $.deployApplication($instance)
+
+  _deployInstance:
+    Arguments:
+      - instance:
+          Contract: $.class(res:Instance).notNull()
+    Body:
+      # Deploy instance in case it wasn't deployed before.
+      - If: not $instance.isDeployed()
+        Then:
+          - $instance.deploy()
+
+  deployApplication:
+    Arguments:
+      - instance:
+          Contract: $.class(res:Instance).notNull()
