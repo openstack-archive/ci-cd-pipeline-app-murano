@@ -1,0 +1,8 @@
+Images:
+- Name: 'ubuntu-14.04-m-agent.qcow2'
+  Hash: '393d4f2a7446ab9804fc96f98b3c9ba1'
+  Meta:
+    title: 'Ubuntu 14.04 x64 (pre-installed murano-agent)'
+    type: 'linux'
+  DiskFormat: qcow2
+  ContainerFormat: bare
