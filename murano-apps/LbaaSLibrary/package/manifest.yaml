@@ -11,17 +11,15 @@
 #  under the License.
 
 Format: 1.0
-Type: Application
-FullName: io.murano.apps.lbaas.HAProxy
-Name: HAProxy based LBaaS
+Type: Library
+FullName: org.openstack.murano.lbaas
+Name: LbaaS Library
 Description: |
- HAProxy is a free, very fast and reliable solution offering high
- availability, load balancing, and proxying for TCP and HTTP-based
- applications.
- Deprecated: use org.openstack.murano.lbaas.HAProxy package instead
+  LbaaS library prototype for Murano
 Author: 'Mirantis, Inc'
-Tags: [HTTP, TCP, Load Balancing as a Service, HAProxy]
+Tags: [MuranoPL, LbaaS]
+
 Classes:
-  io.murano.apps.lbaas.HAProxy: HAProxy.yaml
-Require:
-  io.murano.apps.lbaas.LBaaS:
+  org.openstack.murano.lbaas.Listener: Listener.yaml
+  org.openstack.murano.lbaas.LoadBalancer: LoadBalancer.yaml
+  org.openstack.murano.lbaas.Pool: Pool.yaml
