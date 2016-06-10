@@ -14,7 +14,6 @@
 Namespaces:
     =: org.openstack.ci_cd_pipeline_murano_app.puppet
     res: io.murano.resources
-    std: io.murano
     sys: io.murano.system
 
 Name: YamlTool

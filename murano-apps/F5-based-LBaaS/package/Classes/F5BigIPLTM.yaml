@@ -12,7 +12,6 @@
 
 Namespaces:
   =: io.murano.apps.lbaas
-  std: io.murano
   sys: io.murano.system
 
 

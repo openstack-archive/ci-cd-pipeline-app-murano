@@ -1,7 +1,6 @@
 Namespaces:
   =: org.openstack.ci_cd_pipeline_murano_app
   std: io.murano
-  res: io.murano.resources
   sys: io.murano.system
   puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
 

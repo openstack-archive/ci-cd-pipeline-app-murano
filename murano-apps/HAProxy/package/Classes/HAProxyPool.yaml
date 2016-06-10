@@ -12,8 +12,6 @@
 
 Namespaces:
   =: org.openstack.murano.lbaas
-  res: io.murano.resources
-  conf: io.murano.configuration
   sys: io.murano.system
 
 Name: HAProxyPool
