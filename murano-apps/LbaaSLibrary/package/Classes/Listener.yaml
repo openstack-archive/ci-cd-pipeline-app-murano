@@ -12,7 +12,6 @@
 
 Namespaces:
   =: org.openstack.murano.lbaas
-  std: io.murano
 
 Name: Listener
 
