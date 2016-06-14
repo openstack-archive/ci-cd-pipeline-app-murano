@@ -1,0 +1,6 @@
+testrepository
+testtools
+python-heatclient
+python-muranoclient
+python-keystoneclient
+requests
