@@ -1,0 +1,9 @@
+testrepository
+testtools
+python-heatclient
+python-keystoneclient
+requests
+# FIXME: revert to pip client, when issue with yaql will be fixed
+#python-muranoclient
+git+https://github.com/openstack/python-muranoclient.git@master
+
