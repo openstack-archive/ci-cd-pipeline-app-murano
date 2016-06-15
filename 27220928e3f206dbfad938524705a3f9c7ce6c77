@@ -1,0 +1,13 @@
+Code-Review+1: Wei Cao <cao.wei@99cloud.net>
+Code-Review+1: Nikolay Mahotkin <nmakhotkin@mirantis.com>
+Code-Review+1: Dmytro Dovbii <ddovbii@mirantis.com>
+Code-Review+2: Anastasia Kuznetsova <akuznetsova@mirantis.com>
+Verified+1: murano-ci-cd-bot <murano-ci-cd-bot@mirantis.com>
+Code-Review+2: Alexey Khivin <akhivin@gmail.com>
+Workflow+1: Alexey Khivin <akhivin@gmail.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Wed, 15 Jun 2016 16:13:32 +0000
+Reviewed-on: https://review.openstack.org/328292
+Project: openstack/ci-cd-pipeline-app-murano
+Branch: refs/heads/master
