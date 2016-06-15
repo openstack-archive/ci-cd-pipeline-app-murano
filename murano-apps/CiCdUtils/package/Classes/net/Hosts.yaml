@@ -11,25 +11,24 @@ Name: Hosts
 Properties:
   # The list of entries to be added to /etc/hosts
   hosts:
-    Contract: {}
+    Contract: dict()
+    Default: dict()
     Usage: InOut
 
 Methods:
-  .init:
-    Body:
-      - $this.hosts: dict()
   #
   # Add new entry to be put into /etc/hosts
   #
   addHost:
     Arguments:
-      hostname:
-        Contract: $.string().notNull()
-      ip:
-        Contract: $.string().notNull()
-      aliases:
-        Contract: [$.string()]
-        Default: []
+      - hostname:
+          Contract: $.string().notNull()
+      - ip:
+          Contract: $.string().notNull()
+      - aliases:
+          Contract:
+            - $.string()
+          Default: list()
     Body:
       - $this.hosts[$hostname]:
           name: $hostname
@@ -41,11 +40,12 @@ Methods:
   #
   addHostByInstance:
     Arguments:
-      instance:
-        Contract: $.class(res:LinuxMuranoInstance).notNull()
-      aliases:
-        Contract: [$.string()]
-        Default: []
+      - instance:
+         Contract: $.class(res:LinuxMuranoInstance).notNull()
+      - aliases:
+          Contract:
+            - $.string()
+          Default: list()
     Body:
       - $hostname: $this.getHostName($instance, true)
       - $shortname: $this.getHostName($instance, false)
@@ -58,11 +58,11 @@ Methods:
   #
   getHostName:
     Arguments:
-      instance:
-        Contract: $.class(res:LinuxMuranoInstance).notNull()
-      fqdn:
-        Contract: $.bool().notNull()
-        Default: false
+     - instance:
+         Contract: $.class(res:LinuxMuranoInstance).notNull()
+     - fqdn:
+         Contract: $.bool().notNull()
+         Default: false
     Body:
       - $linux: new(conf:Linux)
 
@@ -78,8 +78,8 @@ Methods:
   #
   applyTo:
     Arguments:
-      instance:
-        Contract: $.class(puppet:PuppetInstance)
+      - instance:
+          Contract: $.class(puppet:PuppetInstance)
     Body:
       - $data:
           hosts: $this.hosts
