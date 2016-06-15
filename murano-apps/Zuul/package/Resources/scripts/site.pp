@@ -14,4 +14,10 @@ node default {
     git_email                      => 'jenkins@openstack.org',
     git_name                       => 'OpenStack Jenkins',
   }
+
+  class { '::zuul::merger':
+    ensure => running,
+    require => Class['openstackci::zuul_scheduler']
+  }
+
 }
