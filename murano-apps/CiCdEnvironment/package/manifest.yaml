@@ -1,4 +1,5 @@
 Format: 1.0
+Version: 0.0.9
 Type: Application
 FullName: org.openstack.ci_cd_pipeline_murano_app.CiCdEnvironment
 Name: CI/CD
