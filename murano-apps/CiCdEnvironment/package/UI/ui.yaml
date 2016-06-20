@@ -11,6 +11,7 @@ Application:
   ldapPass: $.appConfiguration.ldapPass
   ldapEmail: $.appConfiguration.ldapEmail
   userSSH: $.appConfiguration.userSSH
+  zuulNodepoolHelper: $.appConfiguration.zuulNodepoolHelper
   instance_name: generateHostname($.instanceConfiguration.unitNamingPattern, 1)
   flavor: $.instanceConfiguration.flavor
   image: $.instanceConfiguration.osImage
@@ -26,14 +27,14 @@ Forms:
           initial: root
           label: Root Username
           descriptionTitle: Root Username
-          description: >-
+          description: >
             Please, provide name for root user
         - name: ldapRootPass
           type: password
           initial: Openst@ck0
           label: Root Password
           descriptionTitle: Root Password
-          description: >-
+          description: >
             Please, provide password for root user
         - name: ldapRootEmail
           type: string
@@ -43,7 +44,7 @@ Forms:
             invalid: Please provide valid email address.
           label: Root User Email
           descriptionTitle: Root User Email
-          description: >-
+          description: >
             Please, provide email for root user
         - name: ldapUser
           type: string
@@ -51,7 +52,7 @@ Forms:
           label: Username
           required: false
           descriptionTitle: Regular User Name
-          description: >-
+          description: >
             Please, provide name for regular user
         - name: ldapPass
           type: password
@@ -59,7 +60,7 @@ Forms:
           label: Password
           required: false
           descriptionTitle: Regular User Password
-          description: >-
+          description: >
             Please, provide password for regular user
         - name: ldapEmail
           type: string
@@ -70,7 +71,7 @@ Forms:
           label: Email
           required: false
           descriptionTitle: Regular user Email
-          description: >-
+          description: >
             Please, provide regular user email
         - name: userSSH
           type: string
@@ -78,8 +79,15 @@ Forms:
           label: User ssh key
           required: false
           descriptionTitle: User public ssh key
-          description: >-
-            Please, provide user public ssh key
+          description: >
+            Please, provide user public ssh key.
+        - name: zuulNodepoolHelper
+          type: org.openstack.ci_cd_pipeline_murano_app.ZuulNodepoolHelper
+          label: Zuul and Nodepool
+          required: false
+          descriptionTitle: Zuul and Nodepool
+          description: >
+            Specify Zuul and Nodepool parameters if needed.
   - instanceConfiguration:
       fields:
         - name: title
@@ -90,7 +98,7 @@ Forms:
         - name: flavor
           type: flavor
           label: Instance flavor
-          description: >-
+          description: >
             Select registered in Openstack flavor. Consider that application performance
             depends on this parameter.
           initial: m1.medium
@@ -99,13 +107,13 @@ Forms:
           type: image
           imageType: linux
           label: Instance image
-          description: >-
+          description: >
             Select a valid image for the application. Image should already be prepared and
             registered in glance.
         - name: keyPair
           type: keypair
           label: Key Pair
-          description: >-
+          description: >
             Select a Key Pair to control access to instances. You can login to
             instances using this KeyPair after the deployment of application.
           required: false
@@ -123,6 +131,6 @@ Forms:
           errorMessages:
             invalid: Just letters, numbers, underscores and hyphens are allowed.
           helpText: Just letters, numbers, underscores and hyphens are allowed.
-          description: >-
+          description: >
             Specify a string, that will be used in instance hostname.
             Just A-Z, a-z, 0-9, dash and underline are allowed.
