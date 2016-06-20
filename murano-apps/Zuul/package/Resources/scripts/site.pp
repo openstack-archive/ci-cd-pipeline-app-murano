@@ -11,6 +11,8 @@ node default {
     zuul_ssh_private_key           => hiera('zuul_ssh_private_key_contents'),
     job_name_in_report             => true,
     project_config_repo            => hiera('project_config_repo'),
+    zuul_url                       => "http://${::fqdn}/p",
+    status_url                     => "http://${::fqdn}",
     git_email                      => 'jenkins@openstack.org',
     git_name                       => 'OpenStack Jenkins',
   }
