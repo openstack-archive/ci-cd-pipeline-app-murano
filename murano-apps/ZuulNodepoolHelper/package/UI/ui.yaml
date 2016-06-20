@@ -1,0 +1,41 @@
+Version: 2
+
+Application:
+  ?:
+    type: org.openstack.ci_cd_pipeline_murano_app.ZuulNodepoolHelper
+  name: $.appConfiguration.name
+  authUrl: $.appConfiguration.authUrl
+  username: $.appConfiguration.username
+  tenant: $.appConfiguration.tenant
+  password: $.appConfiguration.password
+
+Forms:
+  - appConfiguration:
+      fields:
+        - name: name
+          type: string
+          label: Application Name
+          initial: Zuul and Nodepool Parameters
+          description: >
+            Enter a desired name for the application. Just A-Z, a-z, 0-9, dash and
+            underline are allowed
+        - name: authUrl
+          type: string
+          label: Keystone Auth URL
+          description: Provide Keystone Auth URL.
+          initial: http://192.168.0.2:5000/v2.0
+        - name: username
+          type: string
+          label: Keystone username
+          description: Provide Keystone username.
+          initial: admin
+        - name: tenant
+          type: string
+          label: Keystone tenant
+          description: Provide Keystone tenant name.
+          initial: admin
+        - name: password
+          type: string
+          description: Provide Keystone password.
+          label: Keystone password
+          initial: secret
