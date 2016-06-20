@@ -21,7 +21,9 @@ class MuranoCiCdTest(base.MuranoTestsBase):
     def test_deploy_cicd(self):
         environment = self.create_env()
         session = self.create_session(environment)
-        service_json = {
+
+        zuul_helper_id = str(self.generate_id())
+        service_json1 = {
             '?': {
                 '_{id}'.format(id=self.generate_id().hex): {'name': 'CI/CD'},
                 'id': str(self.generate_id()),
@@ -40,9 +42,28 @@ class MuranoCiCdTest(base.MuranoTestsBase):
             'ldapRootPass': 'P@ssw0rd',
             'ldapRootUser': 'root',
             'ldapUser': 'user',
-            'name': 'CI/CD'
+            'name': 'CI/CD',
+            'zuulNodepoolHelper': zuul_helper_id
         }
-        self.create_service(environment, session, service_json)
+
+        service_json2 = {
+            '?': {
+                '_{id}'.format(id=self.generate_id().hex): {
+                    'name': 'Zuul and Nodepool helper'},
+                'id': zuul_helper_id,
+                'type':
+                    'org.openstack.ci_cd_pipeline_murano_app.ZuulNodepoolHelper'
+            },
+
+            'name': 'Zuul and Nodepool Parameters',
+            'authUrl': self.os_np_auth_uri,
+            'password': self.os_np_password,
+            'tenant': self.os_np_tenant_name,
+            'username': self.os_np_username
+        }
+
+        self.create_service(environment, session, service_json2)
+        self.create_service(environment, session, service_json1)
         self.deploy_env(environment, session)
 
         environment = self.get_env(environment)

@@ -71,6 +71,19 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
         # add such possibility
         self.os_cleanup_before = str2bool('OS_CLEANUP_BEFORE', False)
         self.os_cleanup_after = str2bool('OS_CLEANUP_AFTER', True)
+        #
+        self.os_username = os.environ.get('OS_USERNAME')
+        self.os_password = os.environ.get('OS_PASSWORD')
+        self.os_tenant_name = os.environ.get('OS_TENANT_NAME')
+        self.os_auth_uri = os.environ.get('OS_AUTH_URL')
+
+        # Data for Nodepool app
+        self.os_np_username = os.environ.get('OS_NP_USERNAME', self.os_username)
+        self.os_np_password = os.environ.get('OS_NP_PASSWORD', self.os_password)
+        self.os_np_tenant_name = os.environ.get('OS_NP_TENANT_NAME',
+                                                self.os_tenant_name)
+        self.os_np_auth_uri = os.environ.get('OS_NP_AUTH_URL', self.os_auth_uri)
+        self.os_np_cleanup_before = str2bool('OS_NP_CLEANUP_BEFORE', False)
 
         self.keystone = self.initialize_keystone_client()
         self.heat = self.initialize_heat_client(self.keystone)
@@ -82,16 +95,18 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
         self.envs = []
         if self.os_cleanup_before:
             self.cleanup_up_tenant()
+
+        if self.os_np_cleanup_before:
+            self.cleanup_up_np_tenant()
         LOG.info('Running test: {0}'.format(self._testMethodName))
 
     def tearDown(self):
-        if not self.os_cleanup_after:
+        if self.os_cleanup_after:
             for env in self.envs:
                 try:
                     self.delete_env(env)
                 except Exception:
                     self.delete_stack(env)
-
         super(MuranoTestsBase, self).tearDown()
 
     @staticmethod
@@ -121,6 +136,11 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
                 pass
         return
 
+    def cleanup_up_np_tenant(self):
+        # TODO
+        LOG.warning('NodePool cleanup not implemented yet!')
+        return
+
     def delete_stack(self, environment):
         stack = self._get_stack(environment.id)
         if not stack:
@@ -132,7 +152,8 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
         name = self.rand_name()
         environment = self.murano.environments.create({'name': name})
         self.envs.append(environment)
-        self.addCleanup(self.delete_env, environment)
+        if self.os_cleanup_after:
+            self.addCleanup(self.delete_env, environment)
         LOG.debug('Created Environment:\n {0}'.format(environment))
 
         return environment
@@ -308,7 +329,10 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
             'Deployment status is "{0}"'.format(deployment.state)
         )
 
-        fips = self.guess_fip(environment.services[0])
+        fips = {}
+
+        for service in environment.services:
+            fips.update(self.guess_fip(service))
 
         for service in services_map:
             LOG.debug(
