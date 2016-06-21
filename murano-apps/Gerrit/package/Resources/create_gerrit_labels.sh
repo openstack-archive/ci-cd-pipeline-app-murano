@@ -25,10 +25,18 @@ fi
 
 cat >> project.config << CONFIG
 [label "Verified"]
-       function = MaxWithBlock
-       value = -1 Fails
-       value =  0 No score
-       value = +1 Verified
+        function = MaxWithBlock
+        value = -2 Fails
+        value = -1 Doesn't seem to work
+        value = 0 No score
+        value = +1 Works for me
+        value = +2 Verified
+[label "Workflow"]
+        function = MaxWithBlock
+        value = -1 Work in progress
+        value = 0 Ready for reviews
+        value = +1 Approved
+
 CONFIG
 
 git commit -am "Adding label 'Verified' to All-projects"

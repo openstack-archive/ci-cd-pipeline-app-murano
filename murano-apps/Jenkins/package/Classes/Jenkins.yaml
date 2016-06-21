@@ -99,7 +99,7 @@ Methods:
               - $._environment.reporter.report($this, 'Creating "jenkins" account in Gerrit...')
               - $.createGerritAccount()
               - $.configureGerritPlugin()
-              - $.gerrit.createLabelVerified()
+              - $.gerrit.createLabels()
               - $._upgradeGitPlugin()
 
           - $.configureUser()
