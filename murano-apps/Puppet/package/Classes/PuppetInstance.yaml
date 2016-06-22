@@ -139,3 +139,18 @@ Methods:
               code => $code
             ))
       - Return: $.agent.call($template, $resources)
+
+  applyManifest:
+    Arguments:
+      - manifest:
+          Contract: $.string().notNull()
+      - timeout:
+          Contract: $.int().notNull()
+          Default: 600
+    Body:
+      - $resources: new(sys:Resources)
+      - $parameters:
+          manifestContent: base64encode($manifest)
+      - $template: $resources.yaml('ApplyManifest.template').bind($parameters)
+
+      - Return: $this.agent.call($template, $resources, $timeout)
