@@ -73,6 +73,7 @@ Methods:
 
           - $linux: new(conf:Linux)
           - $linux.runCommand($.instance.agent, 'service zuul start')
+          - $linux.runCommand($.instance.agent, 'service zuul-merger restart')
 
           - $._environment.reporter.report($this, 'Zuul is available at http://{0}:80'.format($host))
           - $.setAttr(deployed, true)
