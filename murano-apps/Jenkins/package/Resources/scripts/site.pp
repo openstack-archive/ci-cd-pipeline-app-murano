@@ -10,4 +10,8 @@ node default {
     ssl_key_file            => '/etc/ssl/private/ssl-cert-snakeoil.key',
     manage_jenkins_jobs     => false,
   }
+
+  package { 'unzip':
+    ensure => present
+  }
 }
