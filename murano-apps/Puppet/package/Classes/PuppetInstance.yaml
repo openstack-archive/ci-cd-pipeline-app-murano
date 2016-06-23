@@ -126,6 +126,13 @@ Methods:
 
   #
   # Apply puppet manifest to the particular instance
+  #
+  # Usage example:
+  #   - $instance.executeInline("create_resources('host', hiera('hosts'))")
+  #
+  # The code above is equal to:
+  #   puppet apply --execute "create_resources('host', hiera('hosts'))"
+  #
   # Known issues:
   #  * do not use " inside the code parameter
   #
