@@ -206,10 +206,10 @@ Methods:
 
   _upgradeGitPlugin:
     Body:
-      - $linux: new(conf:Linux)
       - $resource: new(sys:Resources)
-      - $script: $resource.string('upgrade_git_plugin.sh')
-      - $linux.runCommand($.instance.agent, $script)
+      - $._environment.reporter.report($this, 'Upgrading jenkins git plugin...')
+      - $template: $resource.yaml('InstallPlugins.template').bind({plugins => git})
+      - $.instance.agent.call($template, $resource)
 
   configureCredentials:
     Body:
