@@ -75,6 +75,8 @@ Methods:
           - $linux.runCommand($.instance.agent, 'service zuul start')
           - $linux.runCommand($.instance.agent, 'service zuul-merger restart')
 
+          - $._switchProjectConfig()
+          - $._createPeriodicLayoutUpdate()
           - $._environment.reporter.report($this, 'Zuul is available at http://{0}:80'.format($host))
           - $.setAttr(deployed, true)
 
@@ -90,6 +92,31 @@ Methods:
       - $.instance.setHieraValue('gerrit_server', $gerritHost)
       - $.instance.setHieraValue('gerrit_user', 'zuul')
       - $.instance.setHieraValue('gerrit_ssh_host_key', $.gerrit.instance.getHieraValue('gerrit_ssh_rsa_pubkey_contents'))
+
+  _switchProjectConfig:
+    Body:
+      - $resources: new(sys:Resources)
+      - $linux: new(conf:Linux)
+      - $script: $resources.string('switch_to_local_project_config.sh')
+      - $._environment.reporter.report($this, '[Zuul] Switching to project-config from installed Gerrit...')
+      - $projectConfigURL: format(
+          'ssh://{0}@{1}:29418/open-paas/project-config', 
+          $.instance.getHieraValue('gerrit_user'),
+          $.instance.getHieraValue('gerrit_server')
+         )
+      - $.instance.setHieraValue('project_config_repo', $projectConfigURL)
+      - $linux.runCommand($.instance.agent, $script)
+
+  _createPeriodicLayoutUpdate:
+    Body:
+     - $resources: new(sys:Resources)
+     - $linux: new(conf:Linux)
+     - $script: $resources.string('update_layout.sh')
+     - $._environment.reporter.report($this, '[Zuul] Creating autoupdating layout.yaml file...')
+     - $linux.putFile($.instance.agent, $script, '/usr/local/bin/update_layout.sh')
+     - $manifest: $resources.string('update_layout.pp')
+     - $linux.putFile($.instance.agent, $manifest, '/usr/local/bin/update_layout.pp')
+     - $linux.runCommand($.instance.agent, 'puppet apply /usr/local/bin/update_layout.pp')
 
   destroy:
     Body:
