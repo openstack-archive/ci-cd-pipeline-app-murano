@@ -91,6 +91,24 @@ Methods:
       - $.instance.setHieraValue('gerrit_user', 'zuul')
       - $.instance.setHieraValue('gerrit_ssh_host_key', $.gerrit.instance.getHieraValue('gerrit_ssh_rsa_pubkey_contents'))
 
+  _switchProjectConfig:
+    Body:
+      - $resources: new(sys:Resources)
+      - $linux: new(conf:Linux)
+      - $script: $resources.string('switch_to_local_project_config.sh')
+      - $._environment.reporter.report($this, 'Zuul: Switching to project-config from installed Gerrit...')
+      - $linux.runCommand($.instance.agent, $script)
+
+  _createPeriodicLayoutUpdate:
+    Body:
+     - $resources: new(sys:Resources)
+     - $linux: new(conf:Linux)
+     - $script: $resources.string('update_layout.sh')
+     - $linux.putFile($.instance.agent, $script, '/usr/local/bin/update_layout.sh')
+     - $manifest: $resources.string('update_layout.pp')
+     - $linux.putFile($.instance.agent, $manifest, '/usr/local/bin/update_layout.pp')
+     - $linux.runCommand($.instance.agent, 'puppet apply /usr/local/bin/update_layout.pp')
+
   destroy:
     Body:
       - $.reportDestroyed()
