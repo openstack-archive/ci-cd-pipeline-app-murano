@@ -15,8 +15,6 @@ cp murano.yaml /etc/puppet/hieradata/murano.yaml
 
 mkdir /etc/system-config/
 
-#cp murano.yaml /opt/system-config/murano.yaml
-
 puppet config set environment production
 
 exit
