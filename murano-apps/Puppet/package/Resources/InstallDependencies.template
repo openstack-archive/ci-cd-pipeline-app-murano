@@ -1,0 +1,21 @@
+FormatVersion: 2.1.0
+Version: 1.0.0
+Name: CreateEnvironment
+
+Parameters:
+  environment: $environment
+  puppetfile: $puppetfile
+
+Body:
+  return createEnvironment('{0} "{1}"'.format(args.environment,  args.puppetfile)).stdout
+
+Scripts:
+  createEnvironment:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: 'server/install_dependencies.sh'
+    Files: []
+    Options:
+      captureStdout: true
+      captureStderr: true
+      verifyExitcode: true
