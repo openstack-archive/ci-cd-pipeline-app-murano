@@ -26,7 +26,7 @@ Scripts:
   runPuppet:
     Type: Application
     Version: 1.0.0
-    EntryPoint: exec_puppet_inline.sh
+    EntryPoint: core/exec_puppet_inline.sh
     Files: []
     Options:
       captureStdout: true
