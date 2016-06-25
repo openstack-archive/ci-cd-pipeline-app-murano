@@ -123,10 +123,14 @@ Methods:
         Else:
           - $ldapHost: $ldapInstance.ipAddresses[0]
 
-      - $.instance.setHieraValue('ldap_ip', $ldapHost)
-      - $.instance.setHieraValue('ldap_domain', $.ldap.domain)
-      - $.instance.setHieraValue('ldap_root_user', $.ldap.ldapRootUser)
-      - $.instance.setHieraValue('ldap_root_password', $.ldap.ldapRootPass)
+      - $data:
+          ldap_ip: $ldapHost
+          ldap_domain: $.ldap.domain
+          ldap_root_user: $.ldap.ldapRootUser
+          ldap_root_password: $.ldap.ldapRootPass
+
+      - $this.instance.putHieraData($data)
+      - $this.instance.syncHieraData()
 
       - $resources: new(sys:Resources)
       - $._environment.reporter.report($this, 'Connecting Jenkins to OpenLDAP server')
