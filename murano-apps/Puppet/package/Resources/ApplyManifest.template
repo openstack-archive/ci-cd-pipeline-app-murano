@@ -19,16 +19,17 @@ Body: |
   return applyManifest().exitCode == 0
 
 Files:
-  manifest:
+  destinationFile:
     BodyType: Base64
     Name: site.pp
     Body: $manifestContent
+    #Body: 'bm9kZSBkZWZhdWx0ewogIGZpbGUgeyAnL3RtcC9oZWxsby1maWxlJzoKICAgIGVuc3VyZSAgPT4gJ3ByZXNlbnQnLAogICAgcmVwbGFjZSA9PiAnbm8nLCAjIHRoaXMgaXMgdGhlIGltcG9ydGFudCBwcm9wZXJ0eQogICAgY29udGVudCA9PiAiRnJvbSBQdXBwZXRcbiIsCiAgICBtb2RlICAgID0+ICcwNjQ0JywKICB9Cn0='
 
 Scripts:
   applyManifest:
       Type: Application
       Version: 1.0.0
-      EntryPoint: apply_manifest.sh
+      EntryPoint: core/apply_manifest.sh
       Files:
         - site.pp
       Options:
