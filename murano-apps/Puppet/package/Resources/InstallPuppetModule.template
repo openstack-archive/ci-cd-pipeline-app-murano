@@ -12,7 +12,7 @@ Scripts:
   installPuppetModule:
     Type: Application
     Version: 1.0.0
-    EntryPoint: install_puppet_module.sh
+    EntryPoint: core/install_puppet_module.sh
     Files: []
     Options:
       captureStdout: true

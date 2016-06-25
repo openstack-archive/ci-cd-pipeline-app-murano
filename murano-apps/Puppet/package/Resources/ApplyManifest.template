@@ -19,7 +19,7 @@ Body: |
   return applyManifest().exitCode == 0
 
 Files:
-  manifest:
+  destinationFile:
     BodyType: Base64
     Name: site.pp
     Body: $manifestContent
@@ -28,7 +28,7 @@ Scripts:
   applyManifest:
       Type: Application
       Version: 1.0.0
-      EntryPoint: apply_manifest.sh
+      EntryPoint: core/apply_manifest.sh
       Files:
         - site.pp
       Options:
