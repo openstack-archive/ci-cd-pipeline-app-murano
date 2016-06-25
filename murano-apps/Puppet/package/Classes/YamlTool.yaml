@@ -33,4 +33,4 @@ Methods:
       - $template: $resources.yaml('PutYamlData.template').bind(dict(
           path => $path,
           data => $data))
-      - $instance.agent.call($template, $resources)
+      - $instance.agent.call($template, $resources, 60)
