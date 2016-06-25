@@ -105,7 +105,7 @@ Methods:
     Body:
       - $.instance.setHieraValue( 'project_config_repo', $.getProjectConfigRepo())
 
-  createLdapConfiguration:
+  _createLdapConfiguration:
     Body:
       - $ldapInstance: $.ldap.instance
       - If: $ldapInstance.assignFloatingIp
@@ -114,12 +114,15 @@ Methods:
         Else:
           - $ldapHost: $ldapInstance.ipAddresses[0]
 
-      - $.instance.setHieraValue('ldap_ip', $ldapHost)
-      - $.instance.setHieraValue('ldap_domain', $.ldap.domain)
-      - $.instance.setHieraValue('ldap_root_user', $.ldap.ldapRootUser)
-      - $.instance.setHieraValue('ldap_root_password', $.ldap.ldapRootPass)
-      - $.instance.setHieraValue('ldap_user', $.ldap.ldapUser)
-      - $.instance.setHieraValue('ldap_password', $.ldap.ldapPass)
+      - $data:
+          ldap_ip: $ldapHost
+          ldap_domain: $.ldap.domain
+          ldap_root_user: $.ldap.ldapRootUser
+          ldap_root_password: $.ldap.ldapRootPass
+          ldap_user: $.ldap.ldapUser
+          ldap_password: $.ldap.ldapPass
+
+      - $this.instance.putHieraData($data)
 
   createConfiguration:
     Body:
