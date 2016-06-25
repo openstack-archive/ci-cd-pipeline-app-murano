@@ -1,0 +1,108 @@
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+
+Namespaces:
+    =: org.openstack.ci_cd_pipeline_murano_app.puppet
+    conf: io.murano.configuration
+    res: io.murano.resources
+    std: io.murano
+    sys: io.murano.system
+    net: org.openstack.ci_cd_pipeline_murano_app.utils.net
+    puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
+
+Name: PuppetServer
+
+Properties:
+  masterInstance:
+    Contract: $.class(puppet:PuppetInstance).notNull()
+
+  clients:
+    Contract:
+      - $.class('org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetClient')
+    Usage: Out
+    Default: []
+
+  _hosts:
+    Contract: $.class(net:Hosts)
+    Usage: Out
+
+  _log:
+    Contract: $.class('io.murano.system.Logger')
+
+Methods:
+  .init:
+    Body:
+      - $this.hosts: new(net:Hosts)
+      - $this._log: logger('org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetServer')
+
+  configure:
+    Body:
+      - $this._configureHosts()
+
+      - $this._installPuppetModules()
+
+      - $resources: new(sys:Resources)
+      - $this.masterInstance.applyManifest(
+          $resources.string('scripts/server/puppet_server.pp'))
+
+      - $this.clients.pselect($.configure())
+
+      - $this.clients.pselect($.testRun())
+      # sign obtained requests
+      - $this.clients.pselect($this.signClientCertificate($.role))
+
+  _configureHosts:
+    Body:
+      - $this._hosts: new(net:Hosts)
+      - $this._hosts.addHostByInstance($this.masterInstance, 'puppet')
+      - $this.clients.pselect($this._hosts.addHostByInstance($.instance))
+      - $this._hosts.applyTo($this.masterInstance)
+      - $this.clients.pselect($this._hosts.applyTo($.instance))
+
+  addClient:
+    Arguments:
+      - client:
+          Contract: $.class(puppet:PuppetClient).notNull()
+    Body:
+      - $this.clients: $this.clients.append($client)
+
+
+  #
+  # Sign client's certificate request
+  #
+  signClientCertificate:
+    Arguments:
+      - name:
+          Contract: $.string()
+    Body:
+      # sign cerificate or check it signed erlier
+      # in case of redeploying
+      - $res: new(conf:Linux).runCommand(
+          $this.masterInstance.agent,
+          'puppet cert sign {0} || puppet cert verify {0}'.format($name)).stdout
+
+      - Return: $res
+
+  #
+  # Install all modules on every instance
+  #
+  _installPuppetModules:
+    Body:
+      - $modules:
+        - 'puppetlabs-vcsrepo'
+        - 'theforeman-git'
+        - 'theforeman-puppet'
+
+      - $this.clients.select($.instance).append($this.masterInstance).selectMany(
+            let(x => $) -> $modules.select(
+              {instance => $x, module => $}))
+          .select( $.instance.installPuppetModule($.module))
