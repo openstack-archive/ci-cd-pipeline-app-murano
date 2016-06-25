@@ -75,28 +75,31 @@ Methods:
 
   createConfiguration:
     Body:
-      - $.instance.setHieraValue('ldap_domain', $.domain)
-      - $.instance.setHieraValue('ldap_dc', $.domain.split('.')[0])
-      - $.instance.setHieraValue('ldap_root_user', $.ldapRootUser)
-      - $.instance.setHieraValue('ldap_root_password', $.ldapRootPass)
-      - $.instance.setHieraValue('ldap_user', $.ldapUser)
-      - $.instance.setHieraValue('ldap_password', $.ldapPass)
+      - $data:
+          ldap_domain: $.domain
+          ldap_dc: $.domain.split('.')[0]
+          ldap_root_user: $.ldapRootUser
+          ldap_root_password: $.ldapRootPass
+          ldap_user: $.ldapUser
+          ldap_password: $.ldapPass
+          ldap::client::uri: 'localhost'
+          ldap::server::rootpw: $.ldapRootPass
+          ldap::client::ssl_cert: ''
 
-      - !yaql "$.instance.setHieraValue('ldap::client::uri', 'localhost')"
-      - !yaql "$.instance.setHieraValue('ldap::server::rootpw', $.ldapRootPass)"
-      - !yaql "$.instance.setHieraValue('ldap::client::ssl_cert', '')"
+      - $this.instance.putHieraData($data)
+      - $this.instance.syncHieraData()
 
       #
       # these values are also supported by puppet module
       #
-      #- !yaql "$.instance.setHieraValue('ldap::client::base', 'dc=example,dc=com')"
-      #- !yaql "$.instance.setHieraValue('ldap::client::ssl', 'false')"
-      #- !yaql "$.instance.setHieraValue('ldap::server::suffix', 'dc=example,dc=com')"
-      #- !yaql "$.instance.setHieraValue('ldap::server::rootdn', format('cn={0},dc=example,dc=com', $.ldapRootUser))"
-      #- !yaql "$.instance.setHieraValue('ldap::server::ssl', false)"
-      #- !yaql "$.instance.setHieraValue('ldap::server::ssl_cacert', '')"
-      #- !yaql "$.instance.setHieraValue('ldap::server::ssl_cert', '')"
-      #- !yaql "$.instance.setHieraValue('ldap::server::ssl_key', '')"
+      # 'ldap::client::base', 'dc=example,dc=com'
+      # 'ldap::client::ssl', 'false'
+      # 'ldap::server::suffix', 'dc=example,dc=com'
+      # 'ldap::server::rootdn', format('cn={0},dc=example,dc=com', $.ldapRootUser)
+      # 'ldap::server::ssl', false
+      # 'ldap::server::ssl_cacert', ''
+      # 'ldap::server::ssl_cert', ''
+      # 'ldap::server::ssl_key', ''
 
   configureOpenLDAPRootUser:
     Body:
