@@ -63,10 +63,7 @@ Methods:
       - $.agent.call($template, $resources)
       - $._environment.reporter.report($this,
         'Puppet installed on instance {0}'.format($.openstackId))
-  #
-  # Equals to
-  #   puppet install '<module>'
-  #
+
   installPuppetModule:
     Arguments:
       - module:
@@ -129,13 +126,6 @@ Methods:
 
   #
   # Apply puppet manifest to the particular instance
-  #
-  # Usage example:
-  #   - $instance.executeInline("create_resources('host', hiera('hosts'))")
-  #
-  # The code above is equal to:
-  #   puppet apply --execute "create_resources('host', hiera('hosts'))"
-  #
   # Known issues:
   #  * do not use " inside the code parameter
   #
@@ -149,17 +139,7 @@ Methods:
               code => $code
             ))
       - Return: $.agent.call($template, $resources)
-  
-  #
-  # Apply manifest
-  #
-  # Usage example:
-  #   - $fileContent: $resources.string('example.pp')
-  #   - $.instance1.applyManifest($fileContent)
-  #
-  # The code above is equal to:
-  #   puppet apply example.pp
-  #
+
   applyManifest:
     Arguments:
       - manifest:
