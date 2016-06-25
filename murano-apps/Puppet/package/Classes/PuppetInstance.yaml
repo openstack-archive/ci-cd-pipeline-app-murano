@@ -63,7 +63,6 @@ Methods:
       - $.agent.call($template, $resources)
       - $._environment.reporter.report($this,
         'Hiera is installed on instance {0}'.format($.openstackId))
-
   #
   # Equals to
   #   puppet install '<module>'
@@ -132,7 +131,6 @@ Methods:
       - If: $sync
         Then:
           - $this.hiera.syncronize($this)
-
   #
   # Apply puppet manifest to the particular instance
   #
