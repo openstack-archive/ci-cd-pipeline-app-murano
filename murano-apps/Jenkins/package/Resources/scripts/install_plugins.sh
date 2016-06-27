@@ -31,7 +31,7 @@ do
 done
 
 changed=1
-maxloops=5
+maxloops=20
 
 # Install all dependencies.
 while [ "$changed"  == "1" ]; do
