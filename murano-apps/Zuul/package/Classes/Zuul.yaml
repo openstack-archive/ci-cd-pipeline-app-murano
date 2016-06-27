@@ -50,13 +50,21 @@ Methods:
           - $this.systemConfig: new(puppet:SystemConfig)
           - $this.systemConfig.installOnTheNode($this.instance)
 
+          - $._environment.reporter.report($this, 'Zuul is waiting while Gerrit is being deployed...')
           - $.gerrit.deploy()
 
+          - If: $.instance.assignFloatingIp
+            Then:
+              - $host: $.instance.floatingIpAddress
+            Else:
+              - $host: $.instance.ipAddresses[0]
+
           - $.createConfiguration()
+          - $.instance.setHieraValue('zuul_host', $host)
 
           - $resources: new(sys:Resources)
           - $template: $resources.yaml('DeployZuul.template')
-          - $._environment.reporter.report($this, 'Zuul is deploying')
+          - $._environment.reporter.report($this, 'Zuul is deploying...')
           - $.instance.agent.call($template, $resources)
 
           - $._environment.reporter.report($this, 'Creating Zuul user in Gerrit')
@@ -66,11 +74,6 @@ Methods:
           - $linux: new(conf:Linux)
           - $linux.runCommand($.instance.agent, 'service zuul start')
 
-          - If: $.instance.assignFloatingIp
-            Then:
-              - $host: $.instance.floatingIpAddress
-            Else:
-              - $host: $.instance.ipAddresses[0]
           - $._environment.reporter.report($this, 'Zuul is available at http://{0}:80'.format($host))
           - $.setAttr(deployed, true)
 
