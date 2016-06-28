@@ -13,7 +13,7 @@ function check_dir () {
     fi
 }
 
-default_packages="Puppet SystemConfig CiCdUtils OpenLDAP Gerrit Jenkins Zuul Nodepool CiCdEnvironment"
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 source_dir="murano-apps"
 destination_dir="."
 refresh_existing_packages=false
@@ -30,7 +30,7 @@ where:
     -r  flag to update existing packages, if these files are already in the destination directory. Without this flag old packages will be removed.
     -s  set the path to directory with list of source packages. (default is: $source_dir)
     -d  set the path to output directory, where zipped packages should be placed. (default is: $destination_dir)
-    -p  set package name, which need to archive. (default is: $default_packages)
+    -p  set package name, which need to archive. (default is: $DEFAULT_PACAKGES_LIST)
 
   upload packages options (they require muranoclient installation):
     -U  upload new packages to specified tenant from directory specified with -d option
@@ -87,10 +87,17 @@ while getopts ':hUSs:d:p:e:' option; do
   esac
 done
 
+# import default packages_list, if exist
+if [ -f "${DIR}/default_packages_list.sh" ]; then
+    if [ -z "${DEFAULT_PACKAGES_LIST}" ]; then
+      source "${DIR}/default_packages_list.sh"
+      echo "Packages list has been imported from default_packages_list.sh file"
+   fi
+fi
 
 # set default value for packages
 if [ ${#packages[@]} -eq 0 ]; then
-    packages=$default_packages
+    packages="${DEFAULT_PACKAGES_LIST}"
 fi
 
 # make sure, that we need upload or build packages
