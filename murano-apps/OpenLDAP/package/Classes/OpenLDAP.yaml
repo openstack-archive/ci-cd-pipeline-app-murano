@@ -2,6 +2,7 @@ Namespaces:
   =: org.openstack.ci_cd_pipeline_murano_app
   std: io.murano
   sys: io.murano.system
+  res: io.murano.resources
   puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
 
 
@@ -133,5 +134,6 @@ Methods:
 
   destroy:
     Body:
+      - $.instance.cast(res:LinuxMuranoInstance).releaseResources()
       - $.reportDestroyed()
       - $.setAttr(deployed, false)
