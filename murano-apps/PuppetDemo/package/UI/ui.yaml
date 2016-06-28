@@ -1,0 +1,34 @@
+Version: 2
+
+Application:
+  ?:
+    type: org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetServerDemo
+  nodesStr: $.manifest.nodes
+  puppetfileLink: $.manifest.puppetfileLink
+  manifest: $.manifest.manifest
+
+Forms:
+  - manifest:
+      fields:
+        - name: nodes
+          type: text
+          label: Nodes list
+          initial: server slave1 slave2
+          description: >-
+            Direct link to a Puppetfile
+
+        - name: puppetfileLink
+          type: string
+          label: Puppetfile link
+          #initial: https://raw.githubusercontent.com/akhivin/puppettest/master/Puppetfile
+          initial: http://paste.openstack.org/raw/529624/
+          description: >-
+            List of the nodes name. Every line means separate node connected to puppet
+            master with the same certificate name
+
+        - name: manifest
+          type: string
+          label: Main manifest
+          initial: modules/puppettest/manifests/
+          description: >-
+            The file or directory which contains main manifest fro your environment

@@ -1,0 +1,103 @@
+Namespaces:
+  =: org.openstack.ci_cd_pipeline_murano_app.puppet
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+  ci_cd_pipeline_murano_app: org.openstack.ci_cd_pipeline_murano_app
+  puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
+  net: org.openstack.ci_cd_pipeline_murano_app.utils.net
+
+Name: PuppetServerDemo
+
+Extends: std:Application
+
+Properties:
+  server:
+    Contract: $.class(puppet:PuppetInstance)
+    Usage: InOut
+  clients:
+    Contract:
+      - $.class(puppet:PuppetClient)
+    Usage: InOut
+
+  name:
+    Contract: $.string().notNull()
+    Default: 'PuppetServerDemo'
+
+  puppetfileLink:
+    Contract: $.string().notNull()
+
+  nodesStr:
+    Contract: $.string().notNull()
+
+  manifest:
+    Contract: $.string().notNull()
+
+Methods:
+  initialize:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - $._environment.reporter.report($this, 'Using Puppetfile to install={0}'.format($this.puppetfileLink))
+      - $nodes: $this.nodesStr.split()
+      - $._environment.reporter.report($this, 'Nodes list={0}'.format($nodes))
+
+      - $rules:
+        - FromPort: 1
+          ToPort: 65535
+          IpProtocol: tcp
+          External: false
+        - FromPort: 1025
+          ToPort: 65535
+          IpProtocol: tcp
+          External: true
+        # puppet master port
+        - FromPort: 8140
+          ToPort: 8140
+          IpProtocol: tcp
+          External: false
+
+      - $this._environment.securityGroupManager.addGroupIngress(rules => $rules)
+
+      - Parallel:
+        - If: $.server = null
+          Then:
+            - $this.server: new(puppet:PuppetInstance, $this._environment,
+                name => 'master',
+                flavor => 'm1.medium',
+                image => 'ubuntu-14.04-m-agent.qcow2',
+                keyname => 'common',
+                availabilityZone => 'nova',
+                assignFloatingIp => true)
+            - $this.server.deploy()
+
+        - If: len($this.clients) = 0
+          Then:
+            - $this.clients: $nodes.select(
+                new( 'org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetClient', $this._environment,
+                  instance => new( 'org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetInstance', $this._environment,
+                    name => concat('puppet_', $),
+                    flavor => 'm1.medium',
+                    image => 'ubuntu-14.04-m-agent.qcow2',
+                    keyname => 'common',
+                    availabilityZone => 'nova',
+                    assignFloatingIp => true),
+                  role => $))
+
+            - $this.clients.pselect($.instance.deploy())
+
+      - $master: new( puppet:PuppetServer,
+          masterInstance => $this.server,
+          environment => $this._environment,
+          manifest => 'modules/puppettest/manifests/')
+
+      # add every node with the role assigned to it
+      - $this.clients.select(
+          $master.addClient($))
+
+      - $master.configure()
+      - $master.installDependencies(
+          environment => 'production',
+          puppetfileLink => $this.puppetfileLink)
