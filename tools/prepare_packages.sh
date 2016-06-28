@@ -13,6 +13,7 @@ function check_dir () {
     fi
 }
 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 default_packages="Puppet SystemConfig CiCdUtils OpenLDAP Gerrit Jenkins Zuul Nodepool CiCdEnvironment"
 source_dir="murano-apps"
 destination_dir="."
@@ -87,6 +88,14 @@ while getopts ':hUSs:d:p:e:' option; do
   esac
 done
 
+# import default packages_list, if exist
+if [[  -f "${DIR}/packages_list.sh" ]]; then
+    if [ ! -z "${PACKAGES_LIST}" ]; then
+      source packages_list.sh
+      echo "Packages list has been imported from packages_list.sh file"
+    packages="${PACKAGES_LIST}"
+   fi
+fi
 
 # set default value for packages
 if [ ${#packages[@]} -eq 0 ]; then
