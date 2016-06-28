@@ -62,7 +62,7 @@ Methods:
       - $template: $resources.yaml('InstallHiera.template')
       - $.agent.call($template, $resources)
       - $._environment.reporter.report($this,
-        'Puppet installed on instance {0}'.format($.openstackId))
+        'Hiera installed on instance {0}'.format($.openstackId))
   #
   # Equals to
   #   puppet install '<module>'
