@@ -1,0 +1,81 @@
+Namespaces:
+  =: org.openstack.ci_cd_pipeline_murano_app.puppet
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+  ci_cd_pipeline_murano_app: org.openstack.ci_cd_pipeline_murano_app
+  puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
+  net: org.openstack.ci_cd_pipeline_murano_app.utils.net
+
+Name: PuppetServerDemo
+
+Extends: std:Application
+
+Properties:
+  server:
+    Contract: $.class(puppet:PuppetInstance)
+    Usage: InOut
+  clients:
+    Contract:
+      - $.class(puppet:PuppetClient)
+    Usage: InOut
+  name:
+    Contract: $.string().notNull()
+    Default: 'PuppetServerDemo'
+
+Methods:
+  initialize:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - $rules:
+        - FromPort: 8140
+          ToPort: 8140
+          IpProtocol: tcp
+          External: false
+
+      - $this._environment.securityGroupManager.addGroupIngress(rules => $rules)
+
+      - $roles:
+        - jenkins
+        - gerrit
+        - ldap
+
+      - Parallel:
+        - If: $.server = null
+          Then:
+            - $this.server: new(puppet:PuppetInstance, $this._environment,
+                name => 'master',
+                flavor => 'm1.medium',
+                image => 'ubuntu-14.04-m-agent.qcow2',
+                keyname => 'common',
+                availabilityZone => 'nova',
+                assignFloatingIp => true)
+            - $this.server.deploy()
+
+        - If: len($this.clients) = 0
+          Then:
+            - $this.clients: $roles.select(
+                new( 'org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetClient', $this._environment,
+                  instance => new( 'org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetInstance', $this._environment,
+                    name => concat('client_', $),
+                    flavor => 'm1.medium',
+                    image => 'ubuntu-14.04-m-agent.qcow2',
+                    keyname => 'common',
+                    availabilityZone => 'nova',
+                    assignFloatingIp => true),
+                  role => $))
+
+            - $this.clients.pselect($.instance.deploy())
+
+      - $master: new( puppet:PuppetServer,
+          masterInstance => $this.server,
+          environment => $this._environment)
+
+      # add every node with the role assigned to it
+      - $this.clients.select(
+          $master.addClient($))
+
+      - $master.configure()
