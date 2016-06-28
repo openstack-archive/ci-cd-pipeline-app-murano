@@ -187,3 +187,14 @@ Methods:
       - $applications.select($hosts.applyTo($.instance))
 
       - $._environment.reporter.report($this, 'Hosts added.')
+
+  deleteNodepool:
+    Usage: Action
+    Body:
+      - If: $this.nodepool = null
+        Then:
+          - Return:
+
+      - $._environment.reporter.report($this, 'Deleting Nodepool...')
+      - $this.nodepool.releaseResources()
+      - $._environment.reporter.report($this, 'Nodepool is deleted. Now you can safely delete environment.')
