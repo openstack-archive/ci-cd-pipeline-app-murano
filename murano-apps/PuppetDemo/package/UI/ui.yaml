@@ -1,0 +1,14 @@
+Version: 2
+
+Application:
+  ?:
+    type: org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetServerDemo
+
+Forms:
+  - instanceConfiguration:
+      fields:
+        - name: title
+          type: string
+          required: false
+          hidden: true
+          description: Specify some instance parameters on which the application would be created
