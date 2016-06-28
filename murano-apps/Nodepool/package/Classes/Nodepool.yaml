@@ -128,7 +128,18 @@ Methods:
           - $host: $instance.ipAddresses[0]
       - Return: $host
 
-  destroy:
+  releaseResources:
     Body:
+      # Release resources.
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('ReleaseResources.template')
+      - $._environment.reporter.report($this, 'Deleting nodepool-related VMs and Images from tenant...')
+      - $.instance.agent.call($template, $resources)
+      - $.instance.releaseResources()
+      - $._environment.reporter.report($this, 'Done.')
       - $.reportDestroyed()
       - $.setAttr(deployed, false)
+
+  destroy:
+    Body:
+      - $.releaseResources()
