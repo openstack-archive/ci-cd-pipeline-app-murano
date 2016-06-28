@@ -1,0 +1,4 @@
+export OS_AUTH_URL=`hiera -c /etc/puppet/hiera.yaml os_auth_url`
+export OS_TENANT_NAME=`hiera -c /etc/puppet/hiera.yaml os_tenant_name`
+export OS_USERNAME=`hiera -c /etc/puppet/hiera.yaml os_username`
+export OS_PASSWORD=`hiera -c /etc/puppet/hiera.yaml os_password`
