@@ -135,5 +135,11 @@ Methods:
 
   destroy:
     Body:
+      # Release resources.
+      - $resources: new(sys:Resources)
+      - $template: $resources.yaml('ReleaseResources.template')
+      - $._environment.reporter.report($this, 'Deleting nodepool-related VMs and Images from tenant...')
+      - $.instance.agent.call($template, $resources)
+      - $._environment.reporter.report($this, 'Done.')
       - $.reportDestroyed()
       - $.setAttr(deployed, false)
