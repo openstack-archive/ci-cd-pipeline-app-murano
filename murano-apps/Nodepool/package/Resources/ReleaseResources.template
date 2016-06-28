@@ -1,0 +1,20 @@
+FormatVersion: 2.1.0
+Version: 1.0.0
+Name: Release resources
+
+Parameters:
+
+Body: |
+  releaseResources()
+
+Scripts:
+  releaseResources:
+    Type: Application
+    Version: 1.0.0
+    EntryPoint: release_resources.sh
+    Files:
+      - creds
+    Options:
+      captureStdout: false
+      captureStderr: true
+      verifyExitcode: true
