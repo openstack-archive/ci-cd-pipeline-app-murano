@@ -1,7 +1,7 @@
 node default{
   class { '::puppet':
     server  => false,
-    runmode => 'cron'
+    runmode => 'service'
   }
 
   file { '/tmp/puppet-client':
