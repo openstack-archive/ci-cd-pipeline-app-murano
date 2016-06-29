@@ -32,7 +32,7 @@ Methods:
 
   deploy:
     Body:
-      - $.super($.deploy())
+      - super($, $.deploy())
 
       # Deploy host only once
       - If: $.getAttr(hostDeployed, false)
