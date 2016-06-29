@@ -84,31 +84,11 @@ Methods:
   createConfiguration:
     Body:
       - $jenkinsKey: $.jenkins.instance.getHieraValue('jenkins_ssh_private_key_contents')
-      - $.instance.setHieraValue(
-          'nodepool_ssh_private_key',
-          $jenkinsKey
-          )
       - $jenkinsPubKey: $.jenkins.instance.getHieraValue('jenkins_ssh_pubkey_contents')
       # Extract only the key itself without 'ssh-rsa' and 'username@fqdn'.
       - $jenkinsPubKey: $jenkinsPubKey.split(' ')[1]
-
-      - $.instance.setHieraValue('nodepool_ssh_pubkey', $jenkinsPubKey)
-      - $.instance.setHieraValue('nodepool_mysql_password', 'nodepool')
-      - $.instance.setHieraValue('nodepool_mysql_root_password', 'root')
-      - $.instance.setHieraValue('jenkins_api_user', $.jenkins.ldap.ldapRootUser)
-      - $.instance.setHieraValue('zuul_host', $.detectPrimaryIP($.zuul.instance))
-
-      - $.instance.setHieraValue('os_auth_url', $.authUrl)
-      - $.instance.setHieraValue('os_tenant_name', $.tenant)
-      - $.instance.setHieraValue('os_username', $.username)
-      - $.instance.setHieraValue('os_password', $.password)
-
       - $jenkinsHost: $.detectPrimaryIP($.jenkins.instance)
-
-      - $.instance.setHieraValue('jenkins_host', $jenkinsHost)
-
       - $netInfo: $._environment.defaultNetworks.environment.describe()
-      - $.instance.setHieraValue('nodepool_network_uuid', $netInfo.netId)
 
       # Command to retrieve Jenkins API Token.
       - $linux: new(conf:Linux)
@@ -119,7 +99,23 @@ Methods:
           "%JENKINS_HOST%": $jenkinsHost
       - $script: $resource.string('get_api_token.sh').replace($replacements)
       - $apiKey: $linux.runCommand($.instance.agent, $script).stdout
-      - $.instance.setHieraValue('jenkins_api_key', $apiKey)
+
+      - $config:
+            nodepool_ssh_private_key: $jenkinsKey
+            nodepool_ssh_pubkey: $jenkinsPubKey
+            nodepool_mysql_password: 'nodepool'
+            nodepool_mysql_root_password: 'root'
+            jenkins_api_user: $.jenkins.ldap.ldapRootUser
+            zuul_host: $.detectPrimaryIP($.zuul.instance)
+            os_auth_url: $.authUrl
+            os_tenant_name: $.tenant
+            os_username: $.username
+            os_password: $.password
+            jenkins_host: $jenkinsHost
+            nodepool_network_uuid: $netInfo.netId
+            jenkins_api_key: $apiKey
+
+       - $.instance.putHieraData($config)
 
   detectPrimaryIP:
     Arguments:
