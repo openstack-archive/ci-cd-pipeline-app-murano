@@ -1,4 +1,4 @@
-Format: 1.0
+Format: 1.2
 Type: Application
 FullName: org.openstack.ci_cd_pipeline_murano_app.Nodepool
 Name: Nodepool

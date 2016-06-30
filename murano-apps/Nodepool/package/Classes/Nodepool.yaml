@@ -37,7 +37,7 @@ Methods:
 
   deploy:
     Body:
-      - $.super($.deploy())
+      - super($this, $.deploy())
       - If: $.getAttr(deployed, false)
         Then:
           Return:
