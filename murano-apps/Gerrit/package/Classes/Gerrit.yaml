@@ -80,9 +80,16 @@ Methods:
           - $.createAccount('', $.ldap.ldapUser, $.ldap.ldapEmail, $.userSSH, $.ldap.ldapUser)
 
       - $._environment.reporter.report($this, 'Gerrit is deployed.')
+      - $linux: new(conf:Linux)
+      - $gerritHost: $linux.runCommand($.instance.agent, 'hostname -f').stdout
+      - If: $.instance.assignFloatingIp
+        Then:
+          - $gerritIP: $.instance.floatingIpAddress
+        Else:
+          - $gerritIP: $.instance.ipAddresses[0]
+      - $._environment.reporter.report($this, format('Gerrit service is launched on host {0} accessing by IP {1}.', $gerritHost, $gerritIP))
+      - $._environment.reporter.report($this, format('Gerrit is available at http://{0}:80 or http://{0}:8081', $gerritIP))
       - $.setAttr(deployed, true)
-      - $._environment.reporter.report($this, format('Gerrit is available at http://{0}:80 or http://{1}:8081',
-          $.instance.floatingIpAddress, $.instance.floatingIpAddress))
 
   _deployGerrit:
     Body:
