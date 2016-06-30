@@ -24,7 +24,7 @@ Methods:
 
   deploy:
     Body:
-      - $.super($.deploy())
+      - super($this, deploy())
       - If: not $.getAttr(deployed, false)
         Then:
           - $._environment.reporter.report($this, 'Creating security group for Zuul')
