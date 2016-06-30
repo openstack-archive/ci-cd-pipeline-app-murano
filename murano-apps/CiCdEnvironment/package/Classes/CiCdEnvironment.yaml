@@ -19,7 +19,15 @@ Properties:
   jenkins:
     Contract: $.class(ci_cd_pipeline_murano_app:Jenkins)
     Usage: Out
+  zuul:
+    Contract: $.class(ci_cd_pipeline_murano_app:Zuul)
+    Usage: Out
+  nodepool:
+    Contract: $.class(ci_cd_pipeline_murano_app:Nodepool)
+    Usage: Out
 
+  zuulNodepoolHelper:
+    Contract: $.class(ci_cd_pipeline_murano_app:ZuulNodepoolHelper)
   ldapRootUser:
     Contract: $.string().notNull()
   ldapRootPass:
@@ -122,18 +130,60 @@ Methods:
               gitUser => $.ldapUser,
               gitEmail => $.ldapEmail)
 
+      # Zuul
+      - If: $this.zuul = null
+        Then:
+          - $zuulInstanceName: concat($.instance_name, '-zuul')
+          - $zuulInstance: new(puppet:PuppetInstance, $._environment,
+              name => $zuulInstanceName,
+              flavor => $.flavor,
+              image => $.image,
+              keyname => $.keyname,
+              availabilityZone => $.availabilityZone,
+              assignFloatingIp => $.assignFloatingIp)
+          - $this.zuul: new(ci_cd_pipeline_murano_app:Zuul, $._environment,
+              name => 'Zuul',
+              instance => $zuulInstance,
+              gerrit => $this.gerrit)
+
+      # Nodepool
+      - If: $this.nodepool = null
+        Then:
+          - $nodepoolInstanceName: concat($.instance_name, '-nodepool')
+          - $nodepoolInstance: new(puppet:PuppetInstance, $._environment,
+              name => $nodepoolInstanceName,
+              flavor => $.flavor,
+              image => $.image,
+              keyname => $.keyname,
+              availabilityZone => $.availabilityZone,
+              assignFloatingIp => $.assignFloatingIp)
+          - $this.nodepool: new(ci_cd_pipeline_murano_app:Nodepool, $._environment,
+              name => 'Nodepool',
+              instance => $nodepoolInstance,
+              jenkins => $this.jenkins,
+              zuul => $this.zuul,
+              authUrl => $this.zuulNodepoolHelper.authUrl,
+              username => $this.zuulNodepoolHelper.username,
+              tenant => $this.zuulNodepoolHelper.tenant,
+              password => $this.zuulNodepoolHelper.password)
+
       # Deploy all
-      - Parallel:
-        - $this.ldap.deploy()
-        - $this.gerrit.deploy()
-        - $this.jenkins.deploy()
+      - $applications:
+          - $this.ldap
+          - $this.gerrit
+          - $this.jenkins
+
+      - If: $this.zuulNodepoolHelper != null
+        Then:
+          - $applications: $applications.append($this.zuul, $this.nodepool)
+
+      - $applications.pselect($.deploy())
 
       - $._environment.reporter.report($this, 'Adding hosts...')
 
       - $hosts: new(net:Hosts)
 
-      - $apps: [$.jenkins, $.gerrit, $.ldap]
-      - $apps.select($hosts.addHostByInstance($.instance))
-      - $apps.select($hosts.applyTo($.instance))
+      - $applications.select($hosts.addHostByInstance($.instance))
+      - $applications.select($hosts.applyTo($.instance))
 
       - $._environment.reporter.report($this, 'Hosts added.')
