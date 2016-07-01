@@ -103,7 +103,7 @@ Methods:
   #
   getProjectConfigRepo:
     Body:
-      - Return: !yaql "format('https://{0}/open-paas/project-config', $this.instance.ipAddresses[0])"
+      - Return: format('https://{0}/open-paas/project-config', $this.instance.ipAddresses[0])
 
   #
   # Switch to newly created project-config repo
