@@ -114,9 +114,9 @@ Methods:
      - $script: $resources.string('update_layout.sh')
      - $._environment.reporter.report($this, '[Zuul] Creating autoupdating layout.yaml file...')
      - $linux.putFile($.instance.agent, $script, '/usr/local/bin/update_layout.sh')
+
      - $manifest: $resources.string('update_layout.pp')
-     - $linux.putFile($.instance.agent, $manifest, '/usr/local/bin/update_layout.pp')
-     - $linux.runCommand($.instance.agent, 'puppet apply /usr/local/bin/update_layout.pp')
+     - $this.instance.applyManifest($manifest, 60)
 
   destroy:
     Body:
