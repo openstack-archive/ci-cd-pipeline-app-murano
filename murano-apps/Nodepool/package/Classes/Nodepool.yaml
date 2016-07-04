@@ -114,7 +114,7 @@ Methods:
           os_username: $.username
           zuul_host: $.detectPrimaryIP($.zuul.instance)
 
-       - $.instance.putHieraData($config)
+      - $.instance.putHieraData($config)
 
   detectPrimaryIP:
     Arguments:
