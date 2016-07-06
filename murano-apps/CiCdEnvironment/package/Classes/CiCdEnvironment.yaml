@@ -131,7 +131,7 @@ Methods:
               gitEmail => $.ldapEmail)
 
       # Zuul
-      - If: $this.zuul = null
+      - If: $this.zuul = null and $this.zuulNodepoolHelper != null
         Then:
           - $zuulInstanceName: concat($.instance_name, '-zuul')
           - $zuulInstance: new(puppet:PuppetInstance, $._environment,
@@ -147,7 +147,7 @@ Methods:
               gerrit => $this.gerrit)
 
       # Nodepool
-      - If: $this.nodepool = null
+      - If: $this.nodepool = null and $this.zuulNodepoolHelper != null
         Then:
           - $nodepoolInstanceName: concat($.instance_name, '-nodepool')
           - $nodepoolInstance: new(puppet:PuppetInstance, $._environment,
