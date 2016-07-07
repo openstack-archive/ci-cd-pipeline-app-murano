@@ -110,7 +110,7 @@ Methods:
   #
   _switchProjectConfig:
     Body:
-      - $.instance.setHieraValue( 'project_config_repo', $.getProjectConfigRepo())
+      - $.instance.putHieraData({'project_config_repo' => $.getProjectConfigRepo()})
 
   _createLdapConfiguration:
     Body:
