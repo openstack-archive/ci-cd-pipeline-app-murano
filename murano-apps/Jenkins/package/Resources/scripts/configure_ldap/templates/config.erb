@@ -5,20 +5,30 @@
   <numExecutors>2</numExecutors>
   <mode>NORMAL</mode>
   <useSecurity>true</useSecurity>
-  <securityRealm class="hudson.security.LDAPSecurityRealm" plugin="ldap@1.6">
+  <authorizationStrategy class="hudson.security.FullControlOnceLoggedInAuthorizationStrategy">
+    <denyAnonymousReadAccess>false</denyAnonymousReadAccess>
+  </authorizationStrategy>
+  <securityRealm class="hudson.security.LDAPSecurityRealm" plugin="ldap@1.12">
     <server>ldap://<%= openldap_ip %>:389</server>
     <rootDN>dc=<%= domain.split(".")[0] %>,dc=<%= domain.split(".")[1] %></rootDN>
     <inhibitInferRootDN>false</inhibitInferRootDN>
     <userSearchBase></userSearchBase>
     <userSearch>uid={0}</userSearch>
+    <groupMembershipStrategy class="jenkins.security.plugins.ldap.FromGroupSearchLDAPGroupMembershipStrategy">
+      <filter></filter>
+    </groupMembershipStrategy>
     <managerDN>cn=<%= admin_name %>,dc=<%= domain.split(".")[0] %>,dc=<%= domain.split(".")[1] %></managerDN>
     <!-- NOTE: need to store managerPassword in base64 encoded, otherwise Jenkins can't correctly parse it -->
     <% require 'base64' %>
-    <managerPassword><%= Base64.encode64(admin_password) %></managerPassword>
+    <managerPassword><%= Base64.encode64(admin_password) -%></managerPassword>
     <disableMailAddressResolver>false</disableMailAddressResolver>
+    <displayNameAttributeName>displayname</displayNameAttributeName>
+    <mailAddressAttributeName>mail</mailAddressAttributeName>
+    <userIdStrategy class="jenkins.model.IdStrategy$CaseInsensitive"/>
+    <groupIdStrategy class="jenkins.model.IdStrategy$CaseInsensitive"/>
   </securityRealm>
   <disableRememberMe>false</disableRememberMe>
-  <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy\$DefaultProjectNamingStrategy"/>
+  <projectNamingStrategy class="jenkins.model.ProjectNamingStrategy$DefaultProjectNamingStrategy"/>
   <workspaceDir>${JENKINS_HOME}/workspace/${ITEM_FULLNAME}</workspaceDir>
   <buildsDir>${ITEM_ROOTDIR}/builds</buildsDir>
   <markupFormatter class="hudson.markup.EscapedMarkupFormatter"/>
@@ -33,12 +43,14 @@
       <name>All</name>
       <filterExecutors>false</filterExecutors>
       <filterQueue>false</filterQueue>
-      <properties class="hudson.model.View\$PropertyList"/>
     </hudson.model.AllView>
   </views>
   <primaryView>All</primaryView>
-  <slaveAgentPort>0</slaveAgentPort>
+  <slaveAgentPort>-1</slaveAgentPort>
   <label></label>
+  <crumbIssuer class="hudson.security.csrf.DefaultCrumbIssuer">
+    <excludeClientIPFromCrumb>false</excludeClientIPFromCrumb>
+  </crumbIssuer>
   <nodeProperties/>
   <globalNodeProperties/>
 </hudson>

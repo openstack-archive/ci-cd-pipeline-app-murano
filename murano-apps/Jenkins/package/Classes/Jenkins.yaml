@@ -132,7 +132,11 @@ Methods:
       - $this.instance.putHieraData($data)
 
       - $resources: new(sys:Resources)
-      - $._environment.reporter.report($this, 'Connecting Jenkins to OpenLDAP server')
+      - $._environment.reporter.report($this, 'Installing jenkins LDAP plugin...')
+      - $template: $resources.yaml('InstallPlugins.template').bind({plugins => ldap})
+      - $.instance.agent.call($template, $resources)
+      - $._environment.reporter.report($this, 'LDAP plugin is installed.')
+      - $._environment.reporter.report($this, 'Connecting Jenkins to OpenLDAP server...')
       - $template: $resources.yaml('ConnectLDAP.template')
       - $.instance.agent.call($template, $resources)
       - $._environment.reporter.report($this, 'Jenkins is connected to OpenLDAP server!')
