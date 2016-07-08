@@ -82,6 +82,15 @@ class MuranoCiCdTest(base.MuranoTestsBase):
                 'ports': [389, 22],
                 'url': None
             },
+            'org.openstack.ci_cd_pipeline_murano_app.Zuul': {
+                'ports': [80],
+                'url': None
+            },
+            'org.openstack.ci_cd_pipeline_murano_app.Nodepool': {
+                'ports': [80],
+                'url': 'image.log',
+                'url_port': 80
+            },
         }
 
         self.deployment_success_check(environment, check_services)
