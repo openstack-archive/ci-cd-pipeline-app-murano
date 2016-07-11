@@ -1,8 +1,15 @@
 #!/bin/bash
 
+URL="$1"
+STABLE_FLAG=$2
+
 logger Cloning openstack-ci system-config
 
-git clone https://review.fuel-infra.org/open-paas/system-config
+if $STABLE_FLAG ; then
+   git clone $URL --branch "stable"
+else
+  git clone $URL
+fi
 
 logger Installing openstack-ci system-config
 

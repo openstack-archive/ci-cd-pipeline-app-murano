@@ -2,8 +2,15 @@ FormatVersion: 2.1.0
 Version: 1.0.0
 Name: Deploy Project Config
 
+Parameters:
+  url: $url
+  stable: $stable
+
 Body: |
-  return deploy().stdout
+  return deploy(
+      '"{0}" "{1}"'.format(
+          args.url,
+          args.stable)).stdout
 
 Scripts:
   deploy:
