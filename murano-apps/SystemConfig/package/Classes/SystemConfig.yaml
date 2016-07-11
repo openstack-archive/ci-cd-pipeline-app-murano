@@ -1,13 +1,26 @@
 Namespaces:
   =: org.openstack.ci_cd_pipeline_murano_app.puppet
+  std: io.murano
   sys: io.murano.system
   puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
 
+Extends: std:Application
+
 Name: SystemConfig
 Properties:
-  projectConfigRepo:
+  name:
+    Contract: $.string().notNull()
+    Default: 'System Config'
+  projectConfigUrl:
     Contract: $.string().notNull()
     Default: 'https://review.fuel-infra.org/open-paas/project-config'
+  systemConfigUrl:
+    Contract: $.string().notNull()
+    Default: 'https://review.fuel-infra.org/open-paas/system-config'
+  branchName:
+    Contract: $.string()
+  patchId:
+    Contract: $.string()
 Methods:
   installOnTheNode:
     Arguments:
@@ -15,7 +28,10 @@ Methods:
         Contract: $.class(puppet:PuppetInstance)
     Body:
       - $resources: new(sys:Resources)
-      - $template: $resources.yaml('SystemConfig.template')
+      - $template: $resources.yaml('SystemConfig.template').bind(dict(
+            url => $this.systemConfigUrl,
+            branch => $this.branchName,
+            patch_id => $this.patchId))
       - $instance.agent.call($template, $resources)
-      - $instance.putHieraData({'project_config_repo' => $this.projectConfigRepo})
+      - $instance.putHieraData({'project_config_repo' => $this.projectConfigUrl})
       - $instance.installPuppetModule('reidmv/yamlfile')
