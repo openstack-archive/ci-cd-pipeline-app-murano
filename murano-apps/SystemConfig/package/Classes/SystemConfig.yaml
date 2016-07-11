@@ -10,7 +10,6 @@ Properties:
     Default: 'https://review.fuel-infra.org/open-paas/project-config'
   systemConfigRepo:
     Contract: $.string().notNull()
-    Default: 'https://review.fuel-infra.org/open-paas/system-config'
   stableFlag:
     Contract: $.bool().notNull()
     Default: false

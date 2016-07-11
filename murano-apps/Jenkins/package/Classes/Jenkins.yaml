@@ -29,6 +29,8 @@ Properties:
     Contract: $.string()
   gitEmail:
     Contract: $.string()
+  systemConfig:
+    Contract: $.string().notNull()
 
 Methods:
   initialize:
@@ -52,7 +54,8 @@ Methods:
           - $.instance.deploy()
           - $._environment.reporter.report($this, 'Jenkins VM "{0}" with id {1} created'.format($.instance.name, $.instance.openstackId))
 
-          - $this.systemConfig: new(puppet:SystemConfig)
+          - $this.systemConfig: new(puppet:SystemConfig,
+                                    systemConfigRepo => $this.systemConfigRepo)
           - $this.systemConfig.installOnTheNode($this.instance)
 
           - $resources: new(sys:Resources)

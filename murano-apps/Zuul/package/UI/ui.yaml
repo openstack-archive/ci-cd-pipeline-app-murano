@@ -32,6 +32,14 @@ Forms:
              Select to true to assign floating IP automatically
           initial: true
           required: false
+        - name: systemConfig
+          initial: 'https://review.fuel-infra.org/open-paas/system-config'
+          type: string
+          label: system-config Url
+          required: true
+          descriptionTitle: system-config Url
+          description: >
+            Please, provide url for system-config repository.
 
   - instanceConfiguration:
       fields:
