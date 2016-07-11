@@ -2,8 +2,17 @@ FormatVersion: 2.1.0
 Version: 1.0.0
 Name: Deploy Project Config
 
+Parameters:
+  url: $url
+  branch: $branch
+  patch_id: $patch_id
+
 Body: |
-  return deploy().stdout
+  return deploy(
+      '"{0}" "{1}" "{2}"'.format(
+          args.url,
+          args.branch,
+          args.patch_id)).stdout
 
 Scripts:
   deploy:
