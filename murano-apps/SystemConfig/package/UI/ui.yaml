@@ -1,0 +1,27 @@
+Version: 2
+
+Application:
+  ?:
+    type: org.openstack.ci_cd_pipeline_murano_app.SystemConfig
+  authUrl: $.appConfiguration.
+  username: $.appConfiguration.
+  tenant: $.appConfiguration.
+  password: $.appConfiguration.
+
+Forms:
+  - appConfiguration:
+      fields:
+        - name: repositoryUrl
+          type: string
+          label: Url for System Config Repository
+          description: Provide URL for system config repository.
+          initial: https://review.fuel-infra.org/open-paas/system-config
+          required: true
+        - name: branchName
+          type: string
+          label: Branch Name
+          description: Provide dKeystone username.
+        - name: patchId
+          type: string
+          label: Patch Id
+          description: Provide Id of patchset, which will be used for deployment.
