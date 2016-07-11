@@ -88,6 +88,15 @@ Forms:
           descriptionTitle: Zuul and Nodepool
           description: >
             Specify Zuul and Nodepool parameters if needed.
+        - name: systemConfig
+          initial: 'https://review.fuel-infra.org/open-paas/system-config'
+          type: string
+          label: system-config Url
+          required: true
+          descriptionTitle: system-config Url
+          description: >
+            Please, provide url for system-config repository.
+
   - instanceConfiguration:
       fields:
         - name: title
