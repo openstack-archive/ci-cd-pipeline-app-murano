@@ -2,8 +2,6 @@ FormatVersion: 2.1.0
 Version: 1.0.0
 Name: Deploy Nodepool
 
-Parameters:
-
 Body: |
   deployNodepool()
 
