@@ -8,6 +8,12 @@ Properties:
   projectConfigRepo:
     Contract: $.string().notNull()
     Default: 'https://review.fuel-infra.org/open-paas/project-config'
+  systemConfigRepo:
+    Contract: $.string().notNull()
+    Default: 'https://review.fuel-infra.org/open-paas/system-config'
+  stableFlag:
+    Contract: $.bool().notNull()
+    Default: false
 Methods:
   installOnTheNode:
     Arguments:
@@ -15,7 +21,9 @@ Methods:
         Contract: $.class(puppet:PuppetInstance)
     Body:
       - $resources: new(sys:Resources)
-      - $template: $resources.yaml('SystemConfig.template')
+      - $template: $resources.yaml('SystemConfig.template').bind(dict(
+            url => $this.systemConfigRepo,
+            stable => $this.stableFlag))
       - $instance.agent.call($template, $resources)
       - $instance.setHieraValue( 'project_config_repo', $this.projectConfigRepo)
       - $instance.installPuppetModule('reidmv/yamlfile')
