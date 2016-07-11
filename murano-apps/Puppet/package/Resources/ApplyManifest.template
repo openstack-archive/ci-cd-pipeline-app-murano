@@ -13,8 +13,6 @@ FormatVersion: 2.1.0
 Version: 1.0.0
 Name: Apply Puppet Manifest
 
-Parameters:
-
 Body: |
   applyManifest()
 
