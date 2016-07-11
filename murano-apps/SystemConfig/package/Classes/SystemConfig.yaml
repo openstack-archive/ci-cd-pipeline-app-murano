@@ -8,6 +8,13 @@ Properties:
   projectConfigRepo:
     Contract: $.string().notNull()
     Default: 'https://review.fuel-infra.org/open-paas/project-config'
+  repositoryUrl:
+    Contract: $.string().notNull()
+    Default: 'https://review.fuel-infra.org/open-paas/system-config'
+  branchName:
+    Contract: $.string()
+  patchId:
+    Contract: $.string()
 Methods:
   installOnTheNode:
     Arguments:
@@ -15,7 +22,10 @@ Methods:
         Contract: $.class(puppet:PuppetInstance)
     Body:
       - $resources: new(sys:Resources)
-      - $template: $resources.yaml('SystemConfig.template')
+      - $template: $resources.yaml('SystemConfig.template').bind(dict(
+            url => $this.repositoryUrl,
+            branch => $this.branchName,
+            patch_id => $this.patchId))
       - $instance.agent.call($template, $resources)
       - $instance.putHieraData({'project_config_repo' => $this.projectConfigRepo})
       - $instance.installPuppetModule('reidmv/yamlfile')
