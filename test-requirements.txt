@@ -1,6 +1,8 @@
 testrepository
 testtools
 requests
+paramiko
 python-muranoclient
 python-heatclient
+python-novaclient
 

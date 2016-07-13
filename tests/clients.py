@@ -18,22 +18,20 @@ import os
 from heatclient import client as heatclient
 from keystoneclient.v2_0 import client as keystoneclient
 from muranoclient import client as muranoclient
+from novaclient import client as novaclient
 
 
 class ClientsBase(object):
 
-    @staticmethod
-    def initialize_keystone_client():
-        username = os.environ.get('OS_USERNAME')
-        password = os.environ.get('OS_PASSWORD')
-        tenant_name = os.environ.get('OS_TENANT_NAME')
-        os_auth_uri = os.environ.get('OS_AUTH_URL')
+    @classmethod
+    def initialize_keystone_client(
+            cls, username, password, tenant_name, auth_url):
 
         keystone = keystoneclient.Client(
             username=username,
             password=password,
             tenant_name=tenant_name,
-            auth_url=os_auth_uri
+            auth_url=auth_url
         )
         return keystone
 
@@ -52,7 +50,7 @@ class ClientsBase(object):
                      else cls.initialize_keystone_client())
 
         murano_endpoint = cls.get_endpoint(
-            service_type='application-catalog',
+            service_type='application_catalog',
             endpoint_type='publicURL'
         )
 
@@ -82,3 +80,19 @@ class ClientsBase(object):
 
         return heat
 
+    @classmethod
+    def initialize_nova_client(cls, auth_client=None):
+        ks_client = (auth_client if auth_client
+                     else cls.initialize_keystone_client())
+
+        nova = novaclient.Client(
+            '2',
+            username=None,
+            service_type='compute',
+            endpoint_type='publicURL',
+            auth_token=ks_client.auth_token,
+            auth_url=ks_client.auth_url
+        )
+        nova.client.management_url = cls.get_endpoint('compute', 'publicURL')
+
+        return nova

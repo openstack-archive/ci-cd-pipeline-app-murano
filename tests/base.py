@@ -20,6 +20,7 @@ import socket
 import time
 import uuid
 
+import paramiko
 import requests
 import testtools
 import yaml
@@ -47,9 +48,10 @@ LOG.addHandler(ch)
 
 # Sometimes need to pass some boolean from bash env. Since each bash
 # variable is string, we need such simply hack
-_boolean_states = {'1': True, 'yes': True, 'true': True, 'on': True,
-                   '0': False, 'no': False, 'false': False, 'off': False}
-
+_boolean_states = {
+    '1': True, 'yes': True, 'true': True, 'on': True,
+    '0': False, 'no': False, 'false': False, 'off': False
+}
 
 def str2bool(name, default):
     value = os.environ.get(name, '')
@@ -60,39 +62,48 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
 
     def setUp(self):
         super(MuranoTestsBase, self).setUp()
-        # counter, for murano deployment logger
-        self.latest_report = 0
-        self.flavor = os.environ.get('OS_FLAVOR', 'm1.medium')
-        self.image = os.environ.get('OS_IMAGE')
-        self.keyname = os.environ.get('OS_KEYNAME', None)
-        self.availability_zone = os.environ.get('OS_ZONE', 'nova')
-        self.deploy_timeout = (60 * 60) * 2
-        # Since its really useful to debug deployment after it fail...lets
-        # add such possibility
-        self.os_cleanup_before = str2bool('OS_CLEANUP_BEFORE', False)
-        self.os_cleanup_after = str2bool('OS_CLEANUP_AFTER', True)
-        #
         self.os_username = os.environ.get('OS_USERNAME')
         self.os_password = os.environ.get('OS_PASSWORD')
         self.os_tenant_name = os.environ.get('OS_TENANT_NAME')
         self.os_auth_uri = os.environ.get('OS_AUTH_URL')
 
+        self.keystone = self.initialize_keystone_client(
+            username=self.os_username,
+            password=self.os_password,
+            tenant_name=self.os_tenant_name,
+            auth_url=self.os_auth_uri
+        )
+        self.heat = self.initialize_heat_client(self.keystone)
+        self.murano = self.initialize_murano_client(self.keystone)
+        self.nova = self.initialize_nova_client(self.keystone)
+
+        # Counter for murano deployment logger
+        self.latest_report = 0
+
+        # Application instance parameters
+        self.flavor = os.environ.get('OS_FLAVOR', 'm1.medium')
+        self.image = os.environ.get('OS_IMAGE')
+        self.files = []
+        self.keyname, self.key_file = self._create_keypair()
+        self.availability_zone = os.environ.get('OS_ZONE', 'nova')
+
+        # Since its really useful to debug deployment after it fail lets
+        # add such possibility
+        self.os_cleanup_before = str2bool('OS_CLEANUP_BEFORE', False)
+        self.os_cleanup_after = str2bool('OS_CLEANUP_AFTER', True)
+
         # Data for Nodepool app
         self.os_np_username = os.environ.get('OS_NP_USERNAME', self.os_username)
         self.os_np_password = os.environ.get('OS_NP_PASSWORD', self.os_password)
-        self.os_np_tenant_name = os.environ.get('OS_NP_TENANT_NAME',
-                                                self.os_tenant_name)
+        self.os_np_tenant_name = os.environ.get(
+            'OS_NP_TENANT_NAME',
+            self.os_tenant_name
+        )
         self.os_np_auth_uri = os.environ.get('OS_NP_AUTH_URL', self.os_auth_uri)
         self.os_np_cleanup_before = str2bool('OS_NP_CLEANUP_BEFORE', False)
 
-        self.keystone = self.initialize_keystone_client()
-        self.heat = self.initialize_heat_client(self.keystone)
-        self.murano = self.initialize_murano_client(self.keystone)
-        self.headers = {
-            'X-Auth-Token': self.murano.http_client.auth_token,
-            'content-type': 'application/json'
-        }
         self.envs = []
+
         if self.os_cleanup_before:
             self.cleanup_up_tenant()
 
@@ -101,12 +112,18 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
         LOG.info('Running test: {0}'.format(self._testMethodName))
 
     def tearDown(self):
+        for env in self.envs:
+            self._collect_murano_agent_logs(env)
         if self.os_cleanup_after:
             for env in self.envs:
                 try:
                     self.delete_env(env)
                 except Exception:
                     self.delete_stack(env)
+            self.nova.keypairs.delete(self.keyname)
+            for file in self.files:
+                os.remove(file)
+
         super(MuranoTestsBase, self).tearDown()
 
     @staticmethod
@@ -117,23 +134,21 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
     def generate_id():
         return uuid.uuid4()
 
-    def _get_stack(self, environment_id):
-        for stack in self.heat.stacks.list():
-            if environment_id in stack.description:
-                return stack
+    def create_file(self, name, context):
+        with open(name, 'w') as f:
+            f.write(context)
+        path_to_file = os.path.join(os.getcwd(), name)
+        self.files.append(path_to_file)
+        return path_to_file
 
     def cleanup_up_tenant(self):
         LOG.debug('Removing EVERYTHING in tenant: {0}'.format(
             self.keystone.tenant_name))
         for env in self.murano.environments.list():
             self.delete_env(env)
-        for stack in self.heat.stacks.list():
-            try:
-                self.heat.stacks.delete(stack.id)
-            except Exception as e:
-                LOG.warning("Unable delete stack:{}".format(stack))
-                LOG.exception(e)
-                pass
+            self.delete_stack(env)
+        for key in self.nova.keypairs.list():
+            self.nova.keypairs.delete(key)
         return
 
     def cleanup_up_np_tenant(self):
@@ -141,12 +156,31 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
         LOG.warning('NodePool cleanup not implemented yet!')
         return
 
+    def _create_keypair(self):
+        kp_name = self.rand_name('murano_ci_keypair_')
+        keypair = self.nova.keypairs.create(kp_name)
+        pr_key_file = self.create_file(
+            'id_{}'.format(kp_name), keypair.private_key
+        )
+        self.create_file('id_{}.pub'.format(kp_name), keypair.public_key)
+        return kp_name, pr_key_file
+
+    def _get_stack(self, environment_id):
+        for stack in self.heat.stacks.list():
+            if environment_id in stack.description:
+                return stack
+
     def delete_stack(self, environment):
         stack = self._get_stack(environment.id)
         if not stack:
             return
         else:
-            self.heat.stacks.delete(stack.id)
+            try:
+                self.heat.stacks.delete(stack.id)
+            except Exception as e:
+                LOG.warning("Unable delete stack:{}".format(stack))
+                LOG.exception(e)
+                pass
 
     def create_env(self):
         name = self.rand_name()
@@ -225,7 +259,29 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
             self.latest_report = tmp
             return history
 
-    def wait_for_environment_deploy(self, env):
+    def _collect_murano_agent_logs(self, environment):
+        fips = self.get_services_fips(environment)
+        logs_dir = "{0}/{1}".format(ARTIFACTS_DIR, environment.name)
+        os.makedirs(logs_dir)
+        self.files.append(logs_dir)
+        for service, fip in fips.iteritems():
+            try:
+                ssh = paramiko.SSHClient()
+                ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+                ssh.connect(fip, username='ubuntu', key_filename=self.key_file)
+                ftp = ssh.open_sftp()
+                ftp.get(
+                    '/var/log/murano-agent.log',
+                    os.path.join(logs_dir, '{0}-agent.log'.format(service))
+                )
+                ftp.close()
+            except Exception as e:
+                LOG.warning(
+                    "Couldn't collect murano-agent "
+                    "logs of {0} (IP: {1}): {2}".format(service, fip, e)
+                )
+
+    def wait_for_environment_deploy(self, env, timeout=7200):
         start_time = time.time()
         status = self.get_env(env).manager.get(env.id).status
 
@@ -234,11 +290,11 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
             LOG.debug('Deployment status:{}...nothing new..'.format(status))
             self._log_latest(env)
 
-            if time.time() - start_time > self.deploy_timeout:
+            if time.time() - start_time > timeout:
                 time.sleep(60)
                 self.fail(
                     'Environment deployment wasn\'t'
-                    'finished in {} seconds'.format(self.deploy_timeout)
+                    'finished in {} seconds'.format(self.timeout)
                 )
             elif status == 'deploy failure':
                 self._log_report(env)
@@ -286,6 +342,13 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
 
         return result
 
+    def get_services_fips(self, environment):
+        fips = {}
+        for service in environment.services:
+            fips.update(self.guess_fip(service))
+
+        return fips
+
     def check_ports_open(self, ip, ports):
         for port in ports:
             result = 1
@@ -329,10 +392,7 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
             'Deployment status is "{0}"'.format(deployment.state)
         )
 
-        fips = {}
-
-        for service in environment.services:
-            fips.update(self.guess_fip(service))
+        fips = self.get_services_fips(environment)
 
         for service in services_map:
             LOG.debug(
