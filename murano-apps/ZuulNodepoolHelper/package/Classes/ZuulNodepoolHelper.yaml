@@ -1,7 +1,6 @@
 Namespaces:
   =: org.openstack.ci_cd_pipeline_murano_app
   std: io.murano
-  ci_cd_pipeline_murano_app: org.openstack.ci_cd_pipeline_murano_app
 
 Name: ZuulNodepoolHelper
 
