@@ -247,9 +247,8 @@ Methods:
       - $._environment.reporter.report($this, 'Installing and configuring Jenkins Job Builder...')
       - $script: $resources.string('scripts/update_jobs.sh')
       - $linux.putFile($.instance.agent, $script, '/usr/local/bin/update_jobs.sh')
-      - $script: $resources.string('scripts/install_jjb.pp')
-      - $linux.putFile($.instance.agent, $script, '/usr/local/bin/install_jjb.pp')
-      - $linux.runCommand($.instance.agent, 'puppet apply /usr/local/bin/install_jjb.pp')
+      - $manifest: $resources.string('scripts/install_jjb.pp')
+      - $this.instance.applyManifest($manifest, 180)
       - If: $.gerrit != null
         Then:
           - $._environment.reporter.report($this, 'Switching to project-config from installed Gerrit...')
