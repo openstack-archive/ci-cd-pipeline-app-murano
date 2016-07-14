@@ -22,6 +22,8 @@ Properties:
     Contract: $.class(ci_cd_pipeline_murano_app:OpenLDAP)
   userSSH:
     Contract: $.string()
+  systemConfigRepo:
+    Contract: $.string().notNull()
 
 Methods:
   initialize:
@@ -60,7 +62,8 @@ Methods:
 
       - $._environment.reporter.report($this, 'Installing puppet modules...')
 
-      - $this.systemConfig: new(puppet:SystemConfig)
+      - $this.systemConfig: new(puppet:SystemConfig,
+                                systemConfigRepo=> $this.systemConfigRepo)
       - $this.systemConfig.installOnTheNode($this.instance)
 
       - If: $.ldap != null

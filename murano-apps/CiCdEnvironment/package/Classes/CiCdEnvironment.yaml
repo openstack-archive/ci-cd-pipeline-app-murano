@@ -26,6 +26,9 @@ Properties:
     Contract: $.class(ci_cd_pipeline_murano_app:Nodepool)
     Usage: Out
 
+  systemConfigRepo:
+    Contract: $.string().notNull()
+
   zuulNodepoolHelper:
     Contract: $.class(ci_cd_pipeline_murano_app:ZuulNodepoolHelper)
   ldapRootUser:
@@ -104,7 +107,8 @@ Methods:
               name => 'Gerrit',
               instance => $gerritInstance,
               ldap => $this.ldap,
-              userSSH => $this.userSSH)
+              userSSH => $this.userSSH,
+              systemConfigRepo => $.systemConfigRepo)
 
       # Jenkins
       # set user and mail for accessing to Gerrit from Jenkins
@@ -128,7 +132,8 @@ Methods:
               gerrit => $this.gerrit,
               cfplugin => false,
               gitUser => $.ldapUser,
-              gitEmail => $.ldapEmail)
+              gitEmail => $.ldapEmail,
+              systemConfigRepo => $.systemConfigRepo)
 
       # Zuul
       - If: $this.zuul = null and $this.zuulNodepoolHelper != null
@@ -144,7 +149,8 @@ Methods:
           - $this.zuul: new(ci_cd_pipeline_murano_app:Zuul, $._environment,
               name => 'Zuul',
               instance => $zuulInstance,
-              gerrit => $this.gerrit)
+              gerrit => $this.gerrit,
+              systemConfigRepo => $.systemConfigRepo)
 
       # Nodepool
       - If: $this.nodepool = null and $this.zuulNodepoolHelper != null
@@ -165,7 +171,8 @@ Methods:
               authUrl => $this.zuulNodepoolHelper.authUrl,
               username => $this.zuulNodepoolHelper.username,
               tenant => $this.zuulNodepoolHelper.tenant,
-              password => $this.zuulNodepoolHelper.password)
+              password => $this.zuulNodepoolHelper.password,
+              systemConfigRepo => $.systemConfigRepo)
 
       # Deploy all
       - $applications:
