@@ -44,6 +44,7 @@ class MuranoCiCdTest(base.MuranoTestsBase):
             'ldapUser': 'user',
             'name': 'CI/CD',
             'zuulNodepoolHelper': zuul_helper_id
+            'systemConfigRepo': 'https://review.fuel-infra.org/open-paas/system-config'
         }
 
         service_json2 = {

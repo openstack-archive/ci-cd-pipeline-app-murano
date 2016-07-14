@@ -54,6 +54,14 @@ Forms:
           descriptionTitle: User public ssh key
           description: >-
             Please, provide user public ssh key
+        - name: systemConfigRepo
+          initial: 'https://review.fuel-infra.org/open-paas/system-config'
+          type: string
+          label: system-config Url
+          required: true
+          descriptionTitle: system-config Url
+          description: >
+            Please, provide url for system-config repository.
   - instanceConfiguration:
       fields:
         - name: title
