@@ -3,7 +3,7 @@ Version: 1.0.0
 Name: Connect LDAP
 
 Body: |
-  return deploy(args).stdout
+  return deploy().stdout
 
 Scripts:
   deploy:
