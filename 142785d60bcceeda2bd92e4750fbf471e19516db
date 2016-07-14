@@ -1,0 +1,11 @@
+Code-Review+1: Omar Shykhkerimov <oshykhkerimov@mirantis.com>
+Code-Review+2: Nikolay Mahotkin <nmakhotkin@mirantis.com>
+Verified+1: murano-ci-cd-bot <murano-ci-cd-bot@mirantis.com>
+Code-Review+2: Anastasia Kuznetsova <akuznetsova@mirantis.com>
+Workflow+1: Anastasia Kuznetsova <akuznetsova@mirantis.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Thu, 14 Jul 2016 14:26:49 +0000
+Reviewed-on: https://review.openstack.org/340797
+Project: openstack/ci-cd-pipeline-app-murano
+Branch: refs/heads/master
