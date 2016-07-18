@@ -2,20 +2,34 @@ Version: 2
 
 Application:
   ?:
-    type: org.openstack.ci_cd_pipeline_murano_app.SystemConfig
-  authUrl: $.appConfiguration.
-  username: $.appConfiguration.
-  tenant: $.appConfiguration.
-  password: $.appConfiguration.
+    type: org.openstack.ci_cd_pipeline_murano_app.puppet.SystemConfig
+  name: $.appConfiguration.name
+  projectConfigUrl: $.appConfiguration.projectConfigUrl
+  systemConfigUrl: $.appConfiguration.systemConfigUrl
+  branchName: $.appConfiguration.branchName
+  patchId: $.appConfiguration.patchId
 
 Forms:
   - appConfiguration:
       fields:
-        - name: repositoryUrl
+        - name: name
+          type: string
+          label: Application Name
+          initial: System Config
+          description: >
+            Enter a desired name for the application. Just A-Z, a-z, 0-9, dash and
+            underline are allowed
+        - name: systemConfigUrl
           type: string
           label: Url for System Config Repository
           description: Provide URL for system config repository.
           initial: https://review.fuel-infra.org/open-paas/system-config
+          required: true
+        - name: projectConfigUrl
+          type: string
+          label: Url for Project Config Repository
+          description: Provide URL for project config repository.
+          initial: https://review.fuel-infra.org/open-paas/project-config
           required: true
         - name: branchName
           type: string
