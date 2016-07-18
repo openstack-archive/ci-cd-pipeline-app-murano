@@ -16,6 +16,7 @@ Application:
     keyname: $.instanceConfiguration.keyPair
     availabilityZone: $.instanceConfiguration.availabilityZone
     assignFloatingIp: $.appConfiguration.assignFloatingIP
+    systemConfigRepo: $.appConfiguration.systemConfigRepo
 
 Forms:
   - appConfiguration:
@@ -54,6 +55,13 @@ Forms:
           descriptionTitle: User public ssh key
           description: >-
             Please, provide user public ssh key
+        - name: systemConfigRepo
+          type: org.openstack.ci_cd_pipeline_murano_app.puppet.SystemConfig
+          label: system-config Url
+          required: false
+          descriptionTitle: system-config Url
+          description: >
+            Please, provide url for system-config repository.
   - instanceConfiguration:
       fields:
         - name: title

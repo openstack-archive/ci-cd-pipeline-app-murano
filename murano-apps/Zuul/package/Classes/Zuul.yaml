@@ -17,6 +17,8 @@ Properties:
     Contract: $.class(puppet:PuppetInstance).notNull()
   gerrit:
     Contract: $.class(Gerrit)
+  systemConfigRepo:
+    Contract: $.class(puppet:SystemConfig)
 Methods:
   .init:
     Body:
@@ -47,7 +49,12 @@ Methods:
           - $.instance.deploy()
           - $._environment.reporter.report($this, 'Zuul VM "{0}" with id {1} created'.format($.instance.name, $.instance.openstackId))
 
-          - $this.systemConfig: new(puppet:SystemConfig)
+           # initialize System Config
+          - If: $.systemConfigRepo = null
+            Then:
+              - $this.systemConfig: new(puppet:SystemConfig)
+            Else:
+              - $this.systemConfig: $.systemConfigRepo
           - $this.systemConfig.installOnTheNode($this.instance)
 
           - $._environment.reporter.report($this, 'Zuul is waiting while Gerrit is being deployed...')

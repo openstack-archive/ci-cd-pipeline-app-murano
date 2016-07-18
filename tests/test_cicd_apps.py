@@ -23,6 +23,7 @@ class MuranoCiCdTest(base.MuranoTestsBase):
         session = self.create_session(environment)
 
         zuul_helper_id = str(self.generate_id())
+        system_config_id = str(self.generate_id())
         service_json1 = {
             '?': {
                 '_{id}'.format(id=self.generate_id().hex): {'name': 'CI/CD'},

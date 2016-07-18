@@ -18,6 +18,7 @@ Application:
   keyname: $.instanceConfiguration.keyPair
   availabilityZone: $.instanceConfiguration.availabilityZone
   assignFloatingIp: true
+  systemConfigRepo: $.appConfiguration.systemConfigRepo
 
 Forms:
   - appConfiguration:
@@ -81,6 +82,13 @@ Forms:
           descriptionTitle: User public ssh key
           description: >
             Please, provide user public ssh key.
+        - name: systemConfigRepo
+          type: org.openstack.ci_cd_pipeline_murano_app.puppet.SystemConfig
+          label: system-config Url
+          required: false
+          descriptionTitle: system-config Url
+          description: >
+            Please, provide url for system-config repository.
         - name: zuulNodepoolHelper
           type: org.openstack.ci_cd_pipeline_murano_app.ZuulNodepoolHelper
           label: Zuul and Nodepool
@@ -88,6 +96,7 @@ Forms:
           descriptionTitle: Zuul and Nodepool
           description: >
             Specify Zuul and Nodepool parameters if needed.
+
   - instanceConfiguration:
       fields:
         - name: title
