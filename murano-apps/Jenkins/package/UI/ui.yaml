@@ -10,6 +10,7 @@ Application:
   dockerplugin: $.appConfiguration.dockerplugin
   gitUser: $.appConfiguration.gitUser
   gitEmail: $.appConfiguration.gitEmail
+  systemConfigRepo: $.appConfiguration.systemConfigRepo
   instance:
     ?:
       type: org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetInstance
@@ -56,6 +57,13 @@ Forms:
           required: false
           description: >-
             Specify OpenLDAP domain for authentication
+        - name: systemConfigRepo
+          type: org.openstack.ci_cd_pipeline_murano_app.puppet.SystemConfig
+          label: system-config Url
+          required: false
+          descriptionTitle: system-config Url
+          description: >
+            Please, provide url for system-config repository.
         - name: Gerrit
           type: org.openstack.ci_cd_pipeline_murano_app.Gerrit
           required: false

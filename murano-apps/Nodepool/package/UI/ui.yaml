@@ -10,6 +10,7 @@ Application:
   username: $.openstackConfiguration.username
   tenant: $.openstackConfiguration.tenant
   password: $.openstackConfiguration.password
+  systemConfigRepo: $.appConfiguration.systemConfigRepo
   instance:
     ?:
       type: org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetInstance
@@ -37,6 +38,13 @@ Forms:
              Select to true to assign floating IP automatically
           initial: true
           required: false
+        - name: systemConfigRepo
+          type: org.openstack.ci_cd_pipeline_murano_app.puppet.SystemConfig
+          label: system-config Url
+          required: false
+          descriptionTitle: system-config Url
+          description: >
+            Please, provide url for system-config repository.
         - name: Jenkins
           type: org.openstack.ci_cd_pipeline_murano_app.Jenkins
           label: Jenkins
