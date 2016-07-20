@@ -21,7 +21,7 @@ Properties:
     Contract: $.string()
     Default: 'stable'
   patchId:
-    Contract: $.string()
+    Contract: $.int()
 Methods:
   installOnTheNode:
     Arguments:
