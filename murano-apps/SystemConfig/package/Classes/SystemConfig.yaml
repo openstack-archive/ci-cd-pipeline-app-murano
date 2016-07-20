@@ -19,6 +19,7 @@ Properties:
     Default: 'https://review.fuel-infra.org/open-paas/system-config'
   branchName:
     Contract: $.string()
+    Default: 'stable'
   patchId:
     Contract: $.string()
 Methods:
