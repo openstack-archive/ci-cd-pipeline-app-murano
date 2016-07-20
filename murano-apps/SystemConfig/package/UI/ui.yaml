@@ -38,7 +38,7 @@ Forms:
           description: Provide branch, which should be used for for system-config repo.
           required: false
         - name: patchId
-          type: string
+          type: integer
           label: Patch Id
           description: Provide Id of patchset, which will be used for system-config repo.
           required: false
