@@ -11,5 +11,3 @@ Tags: [CI, Utils]
 Classes:
   org.openstack.ci_cd_pipeline_murano_app.utils.net.Hosts: net/Hosts.yaml
   org.openstack.ci_cd_pipeline_murano_app.utils.CombinableApplication: CombinableApplication.yaml
-Require:
-  org.openstack.ci_cd_pipeline_murano_app.puppet.Puppet:
