@@ -16,5 +16,3 @@ Classes:
   org.openstack.ci_cd_pipeline_murano_app.puppet.Hiera: Hiera.yaml
   org.openstack.ci_cd_pipeline_murano_app.puppet.YamlTool: YamlTool.yaml
   org.openstack.ci_cd_pipeline_murano_app.puppet.YamlFile: YamlFile.yaml
-Require:
-  org.openstack.ci_cd_pipeline_murano_app.utils.CiCdUtils:

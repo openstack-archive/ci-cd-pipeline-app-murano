@@ -1,5 +1,5 @@
 Namespaces:
-  =: org.openstack.ci_cd_pipeline_murano_app.utils.net
+  =: org.openstack.ci_cd_pipeline_murano_app.puppet.net
   std: io.murano
   res: io.murano.resources
   sys: io.murano.system
