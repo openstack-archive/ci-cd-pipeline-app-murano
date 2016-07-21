@@ -2,8 +2,10 @@ import os
 import re
 import yaml
 
+import testtools
 
-class TestNamespaces():
+
+class TestNamespaces(testtools.TestCase):
     def get_list_of_classes(self):
         # TODO: should be fixed future with some common approach for all tests
         root_dir = os.path.dirname(os.path.abspath(__file__)).rsplit('/', 1)[0]
@@ -63,16 +65,7 @@ class TestNamespaces():
             for ns in self.get_namespaces(cls_name):
                 self.check_name(ns, cls_name, error_list)
 
-        if error_list:
-            error_string = "\n".join(error_list)
-            msg = "Test detects follow list of errors: \n%s" % error_string
-            raise ValueError(msg)
+        error_string = "\n".join(error_list)
+        msg = "Test detects follow list of errors: \n%s" % error_string
 
-
-def main():
-    test = TestNamespaces()
-    test.test_namespaces()
-
-# to run test just execute command:
-# python unittests/test_namespaces.py
-main()
+        self.assertEqual(0, len(error_list), msg)
