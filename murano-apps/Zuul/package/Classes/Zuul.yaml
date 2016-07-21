@@ -97,7 +97,7 @@ Methods:
     Body:
       - $resources: new(sys:Resources)
       - $linux: new(conf:Linux)
-      - $script: $resources.string('switch_to_local_project_config.sh')
+      - $script: $resources.string('scripts/switch_to_local_project_config.sh')
       - $._environment.reporter.report($this, '[Zuul] Switching to project-config from installed Gerrit...')
       - $projectConfigURL: format(
           'ssh://{0}@{1}:29418/open-paas/project-config', 
@@ -111,11 +111,11 @@ Methods:
     Body:
      - $resources: new(sys:Resources)
      - $linux: new(conf:Linux)
-     - $script: $resources.string('update_layout.sh')
+     - $script: $resources.string('scripts/update_layout.sh')
      - $._environment.reporter.report($this, '[Zuul] Creating autoupdating layout.yaml file...')
      - $linux.putFile($.instance.agent, $script, '/usr/local/bin/update_layout.sh')
 
-     - $manifest: $resources.string('update_layout.pp')
+     - $manifest: $resources.string('scripts/update_layout.pp')
      - $this.instance.applyManifest($manifest, 60)
 
   destroy:

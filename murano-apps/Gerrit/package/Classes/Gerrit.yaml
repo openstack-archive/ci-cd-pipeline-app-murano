@@ -212,7 +212,7 @@ Methods:
       - $linux: new(conf:Linux)
       - $resource: new(sys:Resources)
 
-      - $script: $resource.string('create_gerrit_labels.sh')
+      - $script: $resource.string('scripts/create_gerrit_labels.sh')
       - $linux.runCommand($.instance.agent, $script)
       - $._environment.reporter.report($this, 'Label "Verified" is successfully created.')
 

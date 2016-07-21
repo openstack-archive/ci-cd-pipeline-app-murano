@@ -94,7 +94,7 @@ Methods:
           "%USERNAME%": $.jenkins.ldap.ldapRootUser
           "%PASSWORD%": $.jenkins.ldap.ldapRootPass
           "%JENKINS_HOST%": $jenkinsHost
-      - $script: $resource.string('get_api_token.sh').replace($replacements)
+      - $script: $resource.string('scripts/get_api_token.sh').replace($replacements)
       - $apiKey: $linux.runCommand($.instance.agent, $script).stdout
       - $credentialsId: $.jenkins.configureCredentials()
 
