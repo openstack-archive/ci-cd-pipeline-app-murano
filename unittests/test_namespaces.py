@@ -52,7 +52,7 @@ class TestNamespaces(testtools.TestCase):
         with open(cls_name) as f:
             data = f.read()
 
-        regexp_str = '%s:[A-Z]+' % namespace
+        regexp_str = '[^a-zA-Z]%s:[a-zA-Z]+' % namespace
         regexp = re.compile(regexp_str)
         if len(regexp.findall(data)) == 0:
             msg = ('Namespace "%s" is not used in the "%s" and should '
