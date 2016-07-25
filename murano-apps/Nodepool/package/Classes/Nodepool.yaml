@@ -29,6 +29,8 @@ Properties:
     Contract: $.string().notNull()
   password:
     Contract: $.string().notNull()
+  systemConfigRepo:
+    Contract: $.class(puppet:SystemConfig)
 
 Methods:
   .init:
@@ -54,7 +56,12 @@ Methods:
 
       - $._environment.reporter.report($this, 'Installing needed puppets for Nodepool...')
 
-      - $this.systemConfig: new(puppet:SystemConfig)
+       # initialize System Config
+      - If: $.systemConfigRepo = null
+        Then:
+          - $this.systemConfig: new(puppet:SystemConfig)
+        Else:
+          - $this.systemConfig: $.systemConfigRepo
       - $this.systemConfig.installOnTheNode($this.instance)
 
       - $._environment.reporter.report($this, 'Waiting while Jenkins is being deployed...')
