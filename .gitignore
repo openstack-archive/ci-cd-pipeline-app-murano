@@ -37,5 +37,8 @@ tools/lintstack.head.py
 tools/pylint_exceptions
 *.zip
 
-#Linux swap file
+# Linux swap file
 *.swp
+
+# Tests results
+.tox
