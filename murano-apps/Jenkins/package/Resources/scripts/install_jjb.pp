@@ -10,12 +10,16 @@ node default {
       base                           => '',
     }
   }
+  service { 'jenkins':
+    ensure => running,
+    enable => true,
+  }
   class { '::jenkins::job_builder':
     url                         => 'http://localhost:8080',
     username                    => $username,
     password                    => $password,
     jenkins_jobs_update_timeout => 1200,
-    git_revision                => 'master',
+    git_revision                => '1.6.1',
     git_url                     => 'https://git.openstack.org/openstack-infra/jenkins-job-builder',
     config_dir                  => $::project_config::jenkins_job_builder_config_dir,
     require                     => $::project_config::config_dir,
