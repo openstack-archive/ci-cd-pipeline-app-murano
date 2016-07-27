@@ -34,7 +34,7 @@ Forms:
           initial: '*'
           label: Listener address
           required: false
-        - name: algorithm 
+        - name: algorithm
           type: string
           label: Algorithm of balancing
           initial: 'roundrobin'
@@ -46,4 +46,4 @@ Forms:
           label: Protocol
         - name: loadBalancer
           type: org.openstack.murano.lbaas.HAProxy
-          label: Load Balancer 
+          label: Load Balancer
