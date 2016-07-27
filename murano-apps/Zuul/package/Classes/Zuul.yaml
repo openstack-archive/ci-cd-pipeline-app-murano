@@ -107,7 +107,7 @@ Methods:
       - $script: $resources.string('scripts/switch_to_local_project_config.sh')
       - $._environment.reporter.report($this, '[Zuul] Switching to project-config from installed Gerrit...')
       - $projectConfigURL: format(
-          'ssh://{0}@{1}:29418/open-paas/project-config', 
+          'ssh://{0}@{1}:29418/open-paas/project-config',
           $.instance.getHieraValue('gerrit_user'),
           $.instance.getHieraValue('gerrit_server')
          )
