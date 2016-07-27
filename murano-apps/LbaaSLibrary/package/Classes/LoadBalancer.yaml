@@ -38,7 +38,7 @@ Methods:
     Body:
       - If: len(list($this.listeners.where($.name = $listener.name))) = 0
         Then:
-           - $.listeners.append($listener)
+          - $.listeners.append($listener)
         Else:
           - $msg: 'Listener with provided name already exists'
           - $._environment.reporter.report_error($this, $msg)

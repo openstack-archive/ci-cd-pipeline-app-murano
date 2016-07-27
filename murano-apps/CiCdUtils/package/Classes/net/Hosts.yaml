@@ -40,7 +40,7 @@ Methods:
   addHostByInstance:
     Arguments:
       - instance:
-         Contract: $.class(res:LinuxMuranoInstance).notNull()
+          Contract: $.class(res:LinuxMuranoInstance).notNull()
       - aliases:
           Contract:
             - $.string()
@@ -57,17 +57,17 @@ Methods:
   #
   getHostName:
     Arguments:
-     - instance:
-         Contract: $.class(res:LinuxMuranoInstance).notNull()
-     - fqdn:
-         Contract: $.bool().notNull()
-         Default: false
+      - instance:
+          Contract: $.class(res:LinuxMuranoInstance).notNull()
+      - fqdn:
+          Contract: $.bool().notNull()
+          Default: false
     Body:
       - $linux: new(conf:Linux)
 
       - If: $fqdn
         Then:
-        - Return: $linux.runCommand($instance.agent, 'hostname -f').stdout
+          - Return: $linux.runCommand($instance.agent, 'hostname -f').stdout
 
       - Return: $linux.runCommand($instance.agent, 'hostname -s').stdout
 
