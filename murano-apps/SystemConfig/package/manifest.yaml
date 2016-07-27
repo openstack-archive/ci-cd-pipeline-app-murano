@@ -12,4 +12,4 @@ Classes:
 UI: ui.yaml
 Logo: logo.png
 Require:
-  org.openstack.ci_cd_pipeline_murano_app.puppet.Puppet:
+ org.openstack.ci_cd_pipeline_murano_app.puppet.Puppet:
