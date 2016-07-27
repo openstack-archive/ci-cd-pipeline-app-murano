@@ -19,18 +19,18 @@ Namespaces:
 Name: YamlTool
 
 Methods:
-  update:
-    Arguments:
-      - instance:
-          Contract: $.class(res:LinuxMuranoInstance).notNull()
-          Usage: Const
-      - path:
-          Contract: $.string().notNull()
-      - data:
-          Contract: {}
-    Body:
-      - $resources: new(sys:Resources)
-      - $template: $resources.yaml('PutYamlData.template').bind(dict(
-          path => $path,
-          data => $data))
-      - $instance.agent.call($template, $resources, 60)
+    update:
+      Arguments:
+        - instance:
+            Contract: $.class(res:LinuxMuranoInstance).notNull()
+            Usage: Const
+        - path:
+            Contract: $.string().notNull()
+        - data:
+            Contract: {}
+      Body:
+        - $resources: new(sys:Resources)
+        - $template: $resources.yaml('PutYamlData.template').bind(dict(
+            path => $path,
+            data => $data))
+        - $instance.agent.call($template, $resources, 60)

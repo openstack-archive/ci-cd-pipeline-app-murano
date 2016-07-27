@@ -21,8 +21,8 @@ Name: PuppetInstance
 Extends: res:LinuxMuranoInstance
 
 Properties:
-  hiera:
-   Contract: $.class(Hiera)
+    hiera:
+      Contract: $.class(Hiera)
 
 Methods:
   .init:
