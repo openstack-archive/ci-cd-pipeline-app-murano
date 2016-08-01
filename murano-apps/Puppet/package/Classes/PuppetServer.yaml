@@ -67,7 +67,8 @@ Methods:
     Body:
       - $this._hosts: new(net:Hosts)
       - $this._hosts.addHostByInstance($this.masterInstance, 'puppet')
-      - $this.clients.pselect($this._hosts.addHostByInstance($.instance, $.role))
+      - $this.clients.pselect(
+          $this._hosts.addHostByInstance($.instance, $.role))
       - $this._hosts.applyTo($this.masterInstance)
       - $this.clients.pselect($this._hosts.applyTo($.instance))
 
@@ -122,3 +123,7 @@ Methods:
           environment => $environment,
           puppetfile => $puppetfileLink))
       - Return: $this.masterInstance.agent.call($template, $resources)
+
+  runPuppetAgents:
+    Body:
+      - $this.clients.select($.runPuppetAgent())
