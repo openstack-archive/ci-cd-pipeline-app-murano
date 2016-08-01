@@ -11,10 +11,10 @@
 #  under the License.
 
 Namespaces:
-    =: org.openstack.ci_cd_pipeline_murano_app.puppet
-    conf: io.murano.configuration
-    sys: io.murano.system
-    net: org.openstack.ci_cd_pipeline_murano_app.puppet.net
+  =: org.openstack.ci_cd_pipeline_murano_app.puppet
+  conf: io.murano.configuration
+  sys: io.murano.system
+  net: org.openstack.ci_cd_pipeline_murano_app.puppet.net
 
 Name: PuppetServer
 
@@ -101,9 +101,9 @@ Methods:
   _installPuppetModules:
     Body:
       - $modules:
-        - 'puppetlabs-vcsrepo'
-        - 'theforeman-git'
-        - 'theforeman-puppet'
+          - 'puppetlabs-vcsrepo'
+          - 'theforeman-git'
+          - 'theforeman-puppet'
 
       - $this.clients.select($.instance).append($this.masterInstance).selectMany(
             let(x => $) -> $modules.select(

@@ -8,7 +8,7 @@ Description: |
 Author: 'Mirantis, Inc'
 Tags: [Server, Java, CI, Jenkins]
 Classes:
- org.openstack.ci_cd_pipeline_murano_app.Jenkins: Jenkins.yaml
+  org.openstack.ci_cd_pipeline_murano_app.Jenkins: Jenkins.yaml
 UI: ui.yaml
 Logo: logo.png
 Require:
