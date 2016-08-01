@@ -35,14 +35,10 @@ Properties:
     Contract: $.class(net:Hosts)
     Usage: Out
 
-  _log:
-    Contract: $.class('io.murano.system.Logger')
-
 Methods:
   .init:
     Body:
       - $this.hosts: new(net:Hosts)
-      - $this._log: logger('org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetServer')
 
   configure:
     Body:
@@ -122,3 +118,7 @@ Methods:
           environment => $environment,
           puppetfile => $puppetfileLink))
       - Return: $this.masterInstance.agent.call($template, $resources)
+
+  runPuppetAgents:
+    Body:
+    - $this.clients.select($.runPuppetAgent())

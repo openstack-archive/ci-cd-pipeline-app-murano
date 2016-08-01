@@ -42,6 +42,24 @@ Methods:
       - $res: new(conf:Linux).runCommand(
           agent => $this.instance.agent,
           command => 'puppet agent --test',
-          ignoreErrors => true).stdout
+          ignoreErrors => true,
+          captureStdout => false,
+          captureStderr => false).stdout
+
+      - Return: $res
+
+  #
+  # Run puppet agent.
+  # Get manifest from the server and apply it
+  #
+  runPuppetAgent:
+    Body:
+
+      - $res: new(conf:Linux).runCommand(
+          agent => $this.instance.agent,
+          command => 'puppet agent --config /etc/puppet/puppet.conf --onetime --no-daemonize --verbose --no-splay',
+          ignoreErrors => false,
+          captureStdout => false,
+          captureStderr => false).stdout
 
       - Return: $res

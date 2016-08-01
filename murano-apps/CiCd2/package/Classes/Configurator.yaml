@@ -1,0 +1,34 @@
+Namespaces:
+  =: org.openstack.ci_cd_pipeline_murano_app.v2
+  std: io.murano
+  sys: io.murano.system
+  ci_cd_pipeline_murano_app: org.openstack.ci_cd_pipeline_murano_app
+  puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
+  conf: io.murano.configuration
+
+Name: Configurator
+
+Properties:
+  config:
+    Contract: {}
+    Usage: InOut
+
+Methods:
+  configure:
+    Arguments:
+      instance:
+        Contract: $.class(puppet:PuppetInstance).notNull()
+    Body:
+      - $instance.putHieraData($this.config)
+
+  setValue:
+    Arguments:
+      key:
+        Contract: $.string().notNull()
+      value:
+        Contract: $.string().notNull()
+    Body:
+      - $this.config[$key]: $value
+
+
+

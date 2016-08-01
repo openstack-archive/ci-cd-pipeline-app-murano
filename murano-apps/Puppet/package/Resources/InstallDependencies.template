@@ -16,6 +16,6 @@ Scripts:
     EntryPoint: 'server/install_dependencies.sh'
     Files: []
     Options:
-      captureStdout: true
-      captureStderr: true
+      captureStdout: false
+      captureStderr: false
       verifyExitcode: true
