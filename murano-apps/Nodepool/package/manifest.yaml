@@ -10,7 +10,7 @@ Description: |
 Author: 'Mirantis, Inc'
 Tags: [Images, CI, Zuul, Jenkins]
 Classes:
- org.openstack.ci_cd_pipeline_murano_app.Nodepool: Nodepool.yaml
+  org.openstack.ci_cd_pipeline_murano_app.Nodepool: Nodepool.yaml
 UI: ui.yaml
 Logo: logo.png
 Require:
