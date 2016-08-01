@@ -1,0 +1,16 @@
+Version: 2
+
+Application:
+  ?:
+    type: org.openstack.ci_cd_pipeline_murano_app.v2.CiCdEnvironment
+  systemConfigUrl: $.appConfiguration.systemConfigUrl
+
+Forms:
+  - appConfiguration:
+      fields:
+        - name: name
+          type: string
+          initial: CICD2
+          label: Application name
+          descriptionTitle:
+          description:

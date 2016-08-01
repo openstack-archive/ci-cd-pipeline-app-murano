@@ -180,3 +180,7 @@ Methods:
       - $template: $resources.yaml('ApplyManifest.template').bind($parameters)
 
       - Return: $this.agent.call($template, $resources, $timeout)
+
+  runPuppetAgents:
+    Body:
+      - $this.clients.pselect( $.agentRun())
