@@ -1,0 +1,25 @@
+Namespaces:
+  =: org.openstack.ci_cd_pipeline_murano_app.v2
+  std: io.murano
+  sys: io.murano.system
+  ci_cd_pipeline_murano_app: org.openstack.ci_cd_pipeline_murano_app
+  puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
+  conf: io.murano.configuration
+
+Name: LdapConfigurator
+
+Extends: Configurator
+
+Methods:
+  .init:
+    Body:
+      - $this.config:
+          ldap::client::ssl_cert: ''
+          ldap::client::uri: localhost
+          ldap::server::rootpw: Openst@ck0
+          ldap_dc: infra
+          ldap_domain: infra.local
+          ldap_password: P@ssw0rd
+          ldap_root_password: Openst@ck0
+          ldap_root_user: root
+          ldap_user: user

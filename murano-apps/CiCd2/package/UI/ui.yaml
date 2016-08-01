@@ -1,0 +1,23 @@
+Version: 2
+
+Application:
+  ?:
+    type: org.openstack.ci_cd_pipeline_murano_app.v2.CiCdEnvironment
+  systemConfigUrl: $.appConfiguration.systemConfigUrl
+
+Forms:
+  - appConfiguration:
+      fields:
+        - name: name
+          type: string
+          initial: CICD2
+          label: Application name
+          descriptionTitle:
+          description:
+        - name: systemConfigUrl
+          type: string
+          initial: https://github.com/openstack-infra/system-config.git
+          label: System config URL
+          descriptionTitle:
+          description: >
+            Please, provide name for root user
