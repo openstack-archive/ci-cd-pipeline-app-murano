@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Fail script if an error occurs.
 set -e
 # TODO(nmakhotkin): It should be removed in the future after fixing the bug:

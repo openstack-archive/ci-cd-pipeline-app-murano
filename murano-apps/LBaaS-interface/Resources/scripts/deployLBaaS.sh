@@ -20,8 +20,8 @@ sudo pip install lbaas.tar.gz
 sudo pip install mysql-python
 
 sudo mkdir /etc/lbaas
-sudo chown -R $USER:$USER /etc/lbaas
-sudo chown -R $USER:$USER /var/log/lbaas.log
+sudo chown -R "$USER:$USER" /etc/lbaas
+sudo chown -R "$USER:$USER" /var/log/lbaas.log
 
 # Moving config to another place.
 cp lbaas.conf.sample /etc/lbaas/lbaas.conf

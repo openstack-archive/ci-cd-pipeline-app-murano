@@ -1,14 +1,16 @@
+#!/bin/bash
+
 # Stop the script if an error occurs.
 set -e
 
 function cleanup {
-  cd $SCRIPTPATH
+  cd "$SCRIPTPATH"
   rm -rf tmp
 }
 
 # In case if script is running not where it is located.
-cd $(dirname $0)
-SCRIPTPATH=`pwd`
+cd "$(dirname "$0")"
+SCRIPTPATH=$(pwd)
 
 # Cleanup tmp dir on script exit.
 trap 'cleanup' EXIT
