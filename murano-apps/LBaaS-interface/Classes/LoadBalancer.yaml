@@ -54,10 +54,10 @@ Methods:
 
       - $.environment.reporter.report($this, 'Creating security groups...')
       - $securityGroupIngress:
-        - ToPort: 65535
-          FromPort: 1
-          IpProtocol: tcp
-          External: true
+          - ToPort: 65535
+            FromPort: 1
+            IpProtocol: tcp
+            External: true
       - $.environment.securityGroupManager.addGroupIngress($securityGroupIngress)
       - $.environment.reporter.report($this, 'Creating instance for LBaaS...')
       - $.instance.deploy()
