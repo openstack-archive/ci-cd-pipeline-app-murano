@@ -19,7 +19,7 @@ Name: PuppetClient
 
 Properties:
   instance:
-    Contract: $.class('org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetInstance').notNull()
+    Contract: $.class(PuppetInstance).notNull()
 
   role:
     Contract: $.string().notNull()
@@ -42,6 +42,27 @@ Methods:
       - $res: new(conf:Linux).runCommand(
           agent => $this.instance.agent,
           command => 'puppet agent --test',
-          ignoreErrors => true).stdout
+          ignoreErrors => true,
+          captureStdout => false,
+          captureStderr => false).stdout
+
+      - Return: $res
+
+  #
+  # Run puppet agent.
+  # Get manifest from the server and apply it
+  #
+  runPuppetAgent:
+    Body:
+      - $command:
+          puppet agent --config /etc/puppet/puppet.conf
+          --onetime --no-daemonize --verbose --no-splay
+
+      - $res: new(conf:Linux).runCommand(
+          agent => $this.instance.agent,
+          command => $command,
+          ignoreErrors => false,
+          captureStdout => false,
+          captureStderr => true).stdout
 
       - Return: $res

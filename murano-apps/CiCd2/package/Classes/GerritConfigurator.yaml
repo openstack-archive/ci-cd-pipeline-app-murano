@@ -1,0 +1,252 @@
+Namespaces:
+  =: org.openstack.ci_cd_pipeline_murano_app.v2
+  std: io.murano
+  sys: io.murano.system
+  ci_cd_pipeline_murano_app: org.openstack.ci_cd_pipeline_murano_app
+  puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
+  conf: io.murano.configuration
+
+Name: GerritConfigurator
+
+Extends: Configurator
+
+Methods:
+  .init:
+    Body:
+      - $this.config:
+          gerrit_acls_dir: /etc/project-config/gerrit/acls
+          gerrit_db_password: P@ssw0rd
+          gerrit_db_root_password: P@ssw0rd
+          gerrit_db_user: gerrit2
+          gerrit_mysql_host: localhost
+          gerrit_contactstore_appsec: dummy content. to be done
+          gerrit_contactstore_pubkey: dummy content. to be done
+          gerrit_email_private_key: dummy content. to be done
+          gerrit_github_token: ''
+          gerrit_lp_access_secret: dummy content. to be done
+          gerrit_lp_access_token: dummy content. to be done
+          gerrit_lp_consumer_key: dummy content. to be done
+          gerrit_notify_impact_file: /etc/project-config/gerrit/notify_impact.yaml
+          gerrit_replication_ssh_rsa_pubkey_contents: dummy content. to be done
+          gerrit_rest_token_private_key: dummy content. to be done
+          gerrit_ssh_dsa_key_contents: |
+            -----BEGIN RSA PRIVATE KEY-----
+            MIIEowIBAAKCAQEA1llEntYbWCti+IxYKV7SyPhrkRwhubl0to70knBrZgzVSnUu
+            ofupwd7wlTXzVOlvd7/2mEIEqKHBXTN4tdMbH8Sjx1SxefjNQRHAaBwtCOG0jFB4
+            K1uMnT9u46xy9mKGqoPt96XqNjPsJ+Tq9q2wbUYAfAOZlPeoB1D7tH3S3LzYbSNi
+            SH3cDp2ALO9iAdILzD9a0qm8PyE7PErqeesIwctQUHyXlM9f9pOlOecjMPB6iUhb
+            /IIUKca+Nrn0lVmPSo+kk/vQE9lLq7VX3aqitH6HIhD+ndcRMyngkV+sOsgMCOkK
+            ct9PTOVjVtNqsh69NIAnP66eiYTS3F1EAIfeqQIDAQABAoIBAQDON8Xf9mcKVXt7
+            WjJ7YsHyHaYHToRX1UenVzOPK174KEKPxttddexlG6JkOypmt8rI78NDysgGoNCS
+            ZTGt5HMFBj73R9ETYr2962EsCGd/Uv5LvCNQu1w18NAzdDaKOlIK/LBWAKarDRsX
+            apJvTr0c9CsFJMV+XyGmIFB43lCekcHokvnVZBWUa6LmqBHN+ACIuSK0GSBGulzl
+            3vZnRQfusi+R0OMXY4Fg1Dyyk5Ji0mOrWWAOyD7yhRc7LsOvw59cwE0ii4ryn4Yp
+            JQ/r8LqpjvFWO2r5HnfCs7vqIWqDcRNoSY4v6iQeLyYyRypkO0HBV4TFPcaOQeMU
+            cE6BZuqBAoGBAO7QXVqhiALm7gJ53J1RYdfL2X8d0MkRYuWHftT7IgmiTpHA0SoI
+            vQNe8oneHb53oBK6hpZWtSw1E0a6+m6qu+zSpvA9fhVtsnrdRPoNjHhRBaOdrLjl
+            EVzxsEw3IjvMHjl8JWk6ILIpxGQlGHeMA0ZP9Kd6KbMNmTnf9hieFg1ZAoGBAOXG
+            Lx5X2w8kOrnwiGLzqOsIXH1WlAv1bg7UkaHTwmj8X8gnzLOhFb2gM7ThNT+3svPr
+            E6DSKkBUzD48yVuCcRsZgaxS2bYHILGY0acblyD62sGgO8dye/mwSsqPk9uoqC2+
+            obu2bD+UpaeGSmsiafbomZZqko0AwZjzv8eU8qHRAoGAH2V1YHzsDLWfhOPQhT41
+            xtEd/wBEeqq2fcaafhWmG+4itjbLSONtNgw9hrKU5n2DpfKvzwQHPZCcwCfE1NfN
+            bQ0ktWDgOqD5Xf3JG7a8SPUd8KzCEGzNI5MCwoJdFc94CcawhG0H72ReVWwrE0xt
+            AclxOLNu2ANpqZowGHxwGcECgYAdfwR7c7HGTtNPHUaU1Uyg51DgMiYNJvN66eTM
+            DmANlCBDlIBdqtccoZ0hoitww4cwcsPxSCluWrRhZPJAUg1s+ihAU95o1J9ozQJU
+            3mDXNfyxEH28C8FIe04OlMHZV9xHCwq+Cxv4SX++cqnI+QD7Vj6pJYMsoKU5mkjL
+            OR6wkQKBgBDb3tFexviFbOgc/zrauvbBid2tPBT6rZSNIeiHYA5F6POZqyxhkOBB
+            0HA8ALlhb3WphJjSmz39m/5xXRG+JItHnRQ2Pwguq7TkC6O+Dxz2McX+bTkqf/hw
+            avC69UgihdlJmz+r8ztklEn9fR+I56gWwt6R8YIKOCvKSvDwsJ7g
+            -----END RSA PRIVATE KEY-----
+          gerrit_ssh_dsa_pubkey_contents: |
+            ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDWWUSe1htYK2L4jFgpXtLI+GuRH
+            CG5uXS2jvSScGtmDNVKdS6h+6nB3vCVNfNU6W93v/aYQgSoocFdM3i10xsfxKPHVL
+            F5+M1BEcBoHC0I4bSMUHgrW4ydP27jrHL2Yoaqg+33peo2M+wn5Or2rbBtRgB8A5m
+            U96gHUPu0fdLcvNhtI2JIfdwOnYAs72IB0gvMP1rSqbw/ITs8Sup56wjBy1BQfJeU
+            z1/2k6U55yMw8HqJSFv8ghQpxr42ufSVWY9Kj6ST+9AT2UurtVfdqqK0fociEP6d1
+            xEzKeCRX6w6yAwI6Qpy309M5WNW02qyHr00gCc/rp6JhNLcXUQAh96p
+            root@murano-mfgoqiqtst28ql-ggg-gerrit-wtowtwnqoz76
+          gerrit_ssh_rsa_key_contents: |
+            -----BEGIN RSA PRIVATE KEY-----
+            MIIEpQIBAAKCAQEAw3S1FFrPx6IWCtJBpxxXx0/LPGOOcqBMEf6AhAhcgV8Pbon0
+            xeT2che4Xe7l651KHgM2KbjwlmpQcXB98q5edyk8i/Q6o2u7cLM0rgq3XvNil4ao
+            V3yz2zKyPhx4YqBRxl7g+qA+EXo9RJxXuZSlyeiw2GJgmWYST/nD7MeBOOh+htmj
+            FgTSnkvVJgElNh+LgDMLmRI5IGmqG/Y+BNpW6yawXHJJepOtz52Fee8xEQTKyJhZ
+            TPoRRRyR9bcIXTOsYVaqQ/D2HutTOtgh/txFyAzYKfoa2DKFPXF1P2Y0bHnAfDsv
+            v3AOSKZ40ZfXujjFDi+GEqywZR1B80EEaPxnpQIDAQABAoIBAHgr+2Gma/XL/E1u
+            9JqwXG/Y6ZYZh+2GDP9LQOzszyNjtPM7stkxayy+1MY8KfTxYi6NvvFsGdABUbBN
+            f8KD3uTY37cU1DDB/h7Or+cKA7BHaCjNzBbuPw7YXqq9im7pLx4OG7k8aK0KQT07
+            +tvJPx2jCYghBE+MaFnvsLyV9SdtBTuvUsaL/zTQPwua3DDsbIiTztyOtiJuHJXX
+            iRiJ70r9q0HwB5FKvCi1t0u2QuevSt6vzp1TQ1TE0y9hGcf1O38KtsF5kUBWBZcZ
+            FO59fATTuBCMihDCGEbxd3NAbUBYGG3hT5NrMzZ0LKwRw0ADWxJfa+np5oBvtnVp
+            gHA1ugECgYEA//+0/Eh28JpKN4w+Xmnqr3A3hMYELUI5HD86GMNTJP2qmZrkE0Fr
+            21Juo4QXShzQ2sdn5Bo6LkxYfyRfGtdgdynn1k5RGR1kP0fE76N3kVBbLcEnHsAB
+            PpFnlWgfjI1ifB6O2jlXMmpb9iFOuUTdyxd50KD7Wsu1kI89ZnH6KcECgYEAw3Tu
+            WnMkTiTK9yUgpDyxtJogZ6CcwzeNvOpERzUh8ynzCKq9LbbSbLMsnu/FvZGfr57S
+            ucGCUaVlmaVwuUd3n0OeAkYbJqDvx+SzFXCCVWHNXEMba9QCADuS82ROsiIsV6ea
+            FAEA0F78yiynthZ4pvQDSyHVNxaqWJo7xLwMjuUCgYEA+dy865hW7tPJKJprrX83
+            nvCqX59eKEaAs39K1yyeFHa6cp5pihnKihDVCCg/CwlBGKiUUGEA9HtzzPTVFr+s
+            2eI+9D8QjLDRTaphH3yvkVebBveFlU/WZxlIvt0YHflJbNfumjRpVT3WcE9mJRKA
+            YF+Td/wIGUDHAEeuqDUK9IECgYEAqedWXqfick9HY6kRg9MCwrSL4KjcPFJpUkPu
+            UFvehCr+CZWp1zgqGLVz30EcihoxTo9oLHMLHoABHpuSrmxyjq5Phzh714tkhEXI
+            aqWflirrQf1Ps97aUmt25T5Xrj9IfnXB2Qu6MmevpOtGamGERdStnDzvw/Be6aBA
+            vladMAUCgYEAqBuQnwblpRU0Z9PKy7ZvbX0fVUQEcRMb3kfFnRcgDDe+w+2tRg+w
+            55sX+SDEV0awiZO/aAecMyrrCjq0LPeu+zqb/09RkCN8MvbABCCeu0RgvWxRBJ0K
+            KqjD5fkzBytJ3VrBtlaJnYAP+g+96dSCYnfhujCeU2/lrt3tsyUOeC4=
+            -----END RSA PRIVATE KEY-----
+          gerrit_ssh_project_rsa_pubkey_contents: |
+            ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDDdLUUWs/HohYK0kGnHFfHT8s8Y
+            45yoEwR/oCECFyBXw9uifTF5PZyF7hd7uXrnUoeAzYpuPCWalBxcH3yrl53KTyL9D
+            qja7twszSuCrde82KXhqhXfLPbMrI+HHhioFHGXuD6oD4Rej1EnFe5lKXJ6LDYYmC
+            ZZhJP+cPsx4E46H6G2aMWBNKeS9UmASU2H4uAMwuZEjkgaaob9j4E2lbrJrBcckl6
+            k63PnYV57zERBMrImFlM+hFFHJH1twhdM6xhVqpD8PYe61M62CH+3EXIDNgp+hrYM
+            oU9cXU/ZjRsecB8Oy+/cA5IpnjRl9e6OMUOL4YSrLBlHUHzQQRo/Gel
+            root@murano-mfgoqiqtst28ql-ggg-gerrit-wtowtwnqoz76
+          gerrit_project_ssh_rsa_key_contents: |
+            -----BEGIN RSA PRIVATE KEY-----
+            MIIEogIBAAKCAQEAvfqOmY3HI9tX43ihF0C0l7acXirbOEE+THX/IUV0XT/ArPPM
+            5l0G71f6mzUxAIhHBw1X0yQqJgrM8cGSe8bTg8J6ciakQHt2SG4wghxr7nZFEqAS
+            NNoaFtE0hPguA1ZU36kkPuoxXWFKuhxnrkvo6Spj488JZ7mmUyVSUQ2tnYBAqQNH
+            3D7bqJ8hBTDRhk+RKEt6GXiT+O1f65eSqmS/eDFh9k7Pkd2DfhrSefGTMEwYTapQ
+            9CX+GZImkERXbUaeTwSqbEVrw6QMknnhKVAj5qk7+ao35ICCeKbFnuKpUfSkO2+4
+            fgPyMtjoiwCQ7/T87tQjxMszNQJxHlvT7dAkiwIDAQABAoIBADnwNxsnfQs3ctdh
+            y6c+yZTXUVr6sP64DxrchaGNAA8MSWO1utCqoFnQOBKrpzUlWpwQ+q7fAae2dYhp
+            Y5YyLgGqBxPXKxKrVIiEanDT4CrKkQg8HzFVLs20odLHqajE5H+Nows4+zMiX9rg
+            nNIwPmkVz38DfjfPC6Wh5Tfo9wDoPMWSTgljn9Ugl/5kW3fgT/2/hENupP/xyPyh
+            qKuxU4d8LlMvp7Q9ySGSriRouDTq8LYYsrQ+KeruUyRHYR/z44m45gHfB4id+Qtl
+            iDJ6MDrGFds/+07CkIxUMMDmzq1heXYb+Ct+DZWbRk+ztQVwEGzQdu+CSYUo9YeY
+            QJ9mF0kCgYEA4Owy5I2EwbR/+Pbcm4+u7UJIRB1Repp+pZPVTbQwIto3xJD9dC7O
+            +lVIHnPQSE3hQiAYxqNGwv60Qk9A0b0rx0B+L7U1mGliqiUNfVZB+gDYVTGodxJI
+            pZkPjO/WxTD4fSJ3/BU62ZSpXWKvYFu8BC+l+OJ626l86M3hNoDbMr8CgYEA2DpY
+            8UdnqgZa9P1GzWFjQGpavinrBcO8gD0pFztEno22UoN7Tj82euzBIkOZVknbAP7q
+            VIWN6KTL6GVoiUussermVx+qvLL8KOnPevgNu2AKtc+NkxYAYs+5e44Lhmu08MHT
+            wPnZioOPG4iB50MlDnVeDFltrDPKj34kuDMRHTUCgYBqJQ2fbmnIQDZkd5uEjjov
+            Haic/HkHMwGxgiKXmQFecT0ANqxlt/FVkgmG1YDlnls/qYYHt+Yc/7Zx1JTyZiPS
+            1Ey4lvvEAXfec735+EsKgHuXOOgXyTkfbSw5hrYEOSgLZcjZ3er344BJ4diB0MjZ
+            8OKSoc74+vNHqmEuJ4FKYQKBgEN4oXxYja5uYT+FMOyxcOkOxtYD+oRH+bACZaoM
+            InNfQP8qa/WUoAlnizSH53cXgLEk2jYZnphzo/UWf7In3PF/nPSeuwY6y5hwrP9w
+            G8jWRUFKTKETAnfS3cwCHPKK9WES+mKDFDC2sJck13Q0bYG/eeNcnG5ZkuGHuSmJ
+            NdPpAoGAL4pU3AuxtiV/25jiOHiTar/s16q9k/lL2qMYesG2Ur7AyCK6NoZm6yx+
+            9222HL//J1xrdA9EZKdFJ7Z0slI3pAHkqH2y4hjF35OgilHkEuQoFHcKxtxAnIHj
+            mEjbeTfSZBv1K40wz7h/0lBrTOONC6xqzR75f5W5W/SBAs7nJ8w=
+            -----END RSA PRIVATE KEY-----
+          gerrit_project_ssh_rsa_pubkey_contents: "\
+            ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9+o6Zjccj21fjeKEXQLSXtpxeK\
+            ts4QT5Mdf8hRXRdP8Cs88zmXQbvV/qbNTEAiEcHDVfTJComCszxwZJ7xtODwnpyJq\
+            RAe3ZIbjCCHGvudkUSoBI02hoW0TSE+C4DVlTfqSQ+6jFdYUq6HGeuS+jpKmPjzwl\
+            nuaZTJVJRDa2dgECpA0fcPtuonyEFMNGGT5EoS3oZeJP47V/rl5KqZL94MWH2Ts+R\
+            3YN+GtJ58ZMwTBhNqlD0Jf4ZkiaQRFdtRp5PBKpsRWvDpAySeeEpUCPmqTv5qjfkg\
+            IJ4psWe4qlR9KQ7b7h+A/Iy2OiLAJDv9Pzu1CPEyzM1AnEeW9Pt0CSL \
+            root@murano-mfgoqiqtst28ql-ggg-gerrit-wtowtwnqoz76"
+          gerrit_ssh_rsa_pubkey_contents: "\
+            ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC9+o6Zjccj21fjeKEXQLSXtpxeK\
+            ts4QT5Mdf8hRXRdP8Cs88zmXQbvV/qbNTEAiEcHDVfTJComCszxwZJ7xtODwnpyJq\
+            RAe3ZIbjCCHGvudkUSoBI02hoW0TSE+C4DVlTfqSQ+6jFdYUq6HGeuS+jpKmPjzwl\
+            nuaZTJVJRDa2dgECpA0fcPtuonyEFMNGGT5EoS3oZeJP47V/rl5KqZL94MWH2Ts+R\
+            3YN+GtJ58ZMwTBhNqlD0Jf4ZkiaQRFdtRp5PBKpsRWvDpAySeeEpUCPmqTv5qjfkg\
+            IJ4psWe4qlR9KQ7b7h+A/Iy2OiLAJDv9Pzu1CPEyzM1AnEeW9Pt0CSL \
+            root@murano-mfgoqiqtst28ql-ggg-gerrit-wtowtwnqoz76"
+          gerrit_ssl_chain_file_contents: ''
+          gerrit_ssl_cert_file_contents: |
+            -----BEGIN CERTIFICATE-----
+            MIIF2TCCA8GgAwIBAgIJAKT56AcRAOjoMA0GCSqGSIb3DQEBCwUAMIGCMQswCQYD
+            VQQGEwJVUzEPMA0GA1UECAwGRGVuaWFsMRQwEgYDVQQHDAtTcHJpbmdmaWVsZDEM
+            MAoGA1UECgwDRGlzMT4wPAYDVQQDDDVtdS10bHRvamlyZGMzNDgyMmMtdW5qYXdp
+            cmRjMzA2NTItZ2Vycml0LXpmbGg0ZWVnc2JjcTAeFw0xNjA4MDIxMTEwMDBaFw0x
+            NzA4MDIxMTEwMDBaMIGCMQswCQYDVQQGEwJVUzEPMA0GA1UECAwGRGVuaWFsMRQw
+            EgYDVQQHDAtTcHJpbmdmaWVsZDEMMAoGA1UECgwDRGlzMT4wPAYDVQQDDDVtdS10
+            bHRvamlyZGMzNDgyMmMtdW5qYXdpcmRjMzA2NTItZ2Vycml0LXpmbGg0ZWVnc2Jj
+            cTCCAiIwDQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAMeqpOPOTALPmXK8FdrR
+            JAUDu/q5q8oPSfuCh5XTApLjchf+z1+UNFm6beYALJAyKYEWmjKwfQGc3Inga3CF
+            03/JIVes87DxR6ajy2eGRQbhfniocAs9h5Mkuh9/yVrBiSRK2V1CBUD7mf6xuMU0
+            FujOUlMFvqmP3yyow7n3HbulQoVXajVd1dHej41t9Da1kUfEqDLEbKaJmvDZ/ghZ
+            I59fU48WftEtV3KtzwGXuLRpnyge0/SFEp6BizQVruFmRdm44wV0vyus5HW1/aVO
+            rFZalUNSB52CM8iJLdS5PxDK0yPMtGYXaf2lfwFiqA49WfJqdnOOeEeLl5YC6J43
+            1G2gaiVCvwKDUpwGH1iPLE2H2Ge3czNMUOBMEgxY8FVdduw2xH7Tu+c4rRH5e6iY
+            1OqthdYLrW7dg3rCMqMWFxsNkT28iFCKGbkOCQht7I2Ye9479yOVyWhanLB1q1ln
+            9wRqq2UvQNSD2vFAlcfVZDQLoEQNorAGUeB9JHEUezK53+b/vuBOfGr9zYsV5sAM
+            zth9x58bRoUbqD5KDyeSFS7kgYUnFRxvwMgxXK8PFU09HwTD/mT5sLPLRLCVdmei
+            g6pthjWyMMicM/lKt4iTfVOUomrzWpbtFClj03wNRfRCcgEROllbK6YLeJYv4X+U
+            mASWuNWmq934NtIuUq8K7WOpAgMBAAGjUDBOMB0GA1UdDgQWBBTE82EgNWmfetQ3
+            elvD1VuojPjP0DAfBgNVHSMEGDAWgBTE82EgNWmfetQ3elvD1VuojPjP0DAMBgNV
+            HRMEBTADAQH/MA0GCSqGSIb3DQEBCwUAA4ICAQCEMHpKdKOafk0w6stw8gKjGzOE
+            BzvFcM9dIL5cfC7az7xeAoFnUVyrk/KR1m+Xx0BPoLgqc/Z53H6eVtFh8DP9mVeI
+            BYBj5lfCwxr+lkkU/la5ZrkS1izv/TJIP/Jx1rPwv0ttapWpDoeLATJeCs2iYFr0
+            JUjXf/SahYn6p4zxs3KUoECYKd/WeCJd77rn4JMKkjPidCxlHicvGwrzJCc8KyxX
+            P1n1mbqBH0TBcBGd8p7iwY8c+sZWKnSJwvcAGL1aG7++GxAkmjUkkANWUZsAQ1fo
+            n5BOzRj5qRax0Vfcj46vcHzhGobtWXwMqpHhqNa55pqAEF1/cOLkvOxBW/QDOhxK
+            u2QNUj30kq4uh/HfPLPchO1Y5JN/5D/YTcDaSHNOlsALYnJz/79IQLeghfkbNVLm
+            gwiZaNfmmIl7vCpxPzmaJD+IKX8CYen2I3uA8O/EqRYKZL4+YQ6/Sk5GKsygK296
+            uJ7CG6DvrQirRyPFLOIJSfkCdWGGkGubLHyd8WByACx8BB4pzmjANldcCeC1GuZo
+            xDymezysHusnPcHwAMKw5Hnl/FTQNe14CxGxN6QF8GcxBIX0fc7L52GLu5nWgXJi
+            1fZY52bgTKvKvFYsuoKiRw6az1fL77aoQgYFZ53d5i0qtNLuFnbIPeOpPq3BmjlD
+            PeTnL3b75F2lCXpl3g==
+            -----END CERTIFICATE-----
+          gerrit_ssl_key_file_contents: |
+            -----BEGIN RSA PRIVATE KEY-----
+            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
+            -----END RSA PRIVATE KEY-----'
+          gerrit_war_url: https://gerrit-releases.storage.googleapis.com/gerrit-2.12.3.war
+          gerrit_gerritbot_password: P@ssw0rd
+          gerritbot_ssh_rsa_pubkey_contents: dummy content. to be done
+          gerritbot_ssh_rsa_key_contents: dummy content. to be done
+          gerrit_mysql_password: P@ssw0rd
+          github_project_password: dummy content. to be done
+          github_project_username: mirademo
+          jeepyb_project_file: /etc/project-config/gerrit/projects.yaml
+          project_config_config_dir: /etc/project-config/
+          project_config_repo: https://review.fuel-infra.org/open-paas/project-config
+          ssh_replication_rsa_key_contents: dummy content. to be done
+          gerrit_replication_ssh_rsa_key_contents: dummy content. to be done
+          swift_store_key: dummy content. to be done
+          swift_store_user: dummy content. to be done
+          welcome_message_gerrit_ssh_private_key: dummy content. to be done
+          welcome_message_gerrit_ssh_public_key: dummy content. to be done
+          gerrit_host: gerrit
