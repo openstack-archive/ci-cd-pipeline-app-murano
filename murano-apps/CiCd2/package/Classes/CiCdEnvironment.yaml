@@ -1,0 +1,134 @@
+Namespaces:
+  =: org.openstack.ci_cd_pipeline_murano_app.v2
+  std: io.murano
+  res: io.murano.resources
+  sys: io.murano.system
+  cicd: org.openstack.ci_cd_pipeline_murano_app
+  puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
+  net: org.openstack.ci_cd_pipeline_murano_app.utils.net
+  conf: io.murano.configuration
+
+Name: CiCdEnvironment
+
+Extends: std:Application
+
+Properties:
+  server:
+    Contract: $.class(puppet:PuppetInstance)
+    Usage: InOut
+  clients:
+    Contract:
+      - $.class(puppet:PuppetClient)
+    Usage: InOut
+
+  name:
+    Contract: $.string().notNull()
+    Default: 'CICD'
+
+  systemConfigUrl:
+    Contract: $.string().notNull()
+
+  puppetfileLink:
+    Contract: $.string().notNull()
+    Default: 'https://raw.githubusercontent.com/akhivin/cicd-dependencies/master/Puppetfile'
+
+#  manifest:
+#    Contract: $.string().notNull()
+
+Methods:
+  .init:
+    Body:
+      - $._environment: $.find(std:Environment).require()
+
+  deploy:
+    Body:
+      - $._environment.reporter.report($this, 'Using Puppetfile to install={0}'.format($this.systemConfigUrl))
+      - $nodes:
+        - review
+        - jenkins
+        - openldap
+
+      - $._environment.reporter.report($this, 'Nodes list={0}'.format($nodes))
+
+      - $rules:
+        - FromPort: 1
+          ToPort: 65535
+          IpProtocol: tcp
+          External: false
+        - FromPort: 1025
+          ToPort: 65535
+          IpProtocol: tcp
+          External: true
+        # puppet master port
+        - FromPort: 8140
+          ToPort: 8140
+          IpProtocol: tcp
+          External: false
+
+      - $this._environment.securityGroupManager.addGroupIngress(rules => $rules)
+
+      - Parallel:
+        - If: $.server = null
+          Then:
+            - $this.server: new(puppet:PuppetInstance, $this._environment,
+                name => 'master',
+                flavor => 'm1.medium',
+                image => 'ubuntu-14.04-m-agent.qcow2',
+                keyname => 'common',
+                availabilityZone => 'nova',
+                assignFloatingIp => true)
+            - $this.server.deploy()
+
+        - If: len($this.clients) = 0
+          Then:
+            - $this.clients: $nodes.select(
+                new( 'org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetClient', $this._environment,
+                  instance => new( 'org.openstack.ci_cd_pipeline_murano_app.puppet.PuppetInstance', $this._environment,
+                    name => concat('puppet_', $),
+                    flavor => 'm1.medium',
+                    image => 'ubuntu-14.04-m-agent.qcow2',
+                    keyname => 'common',
+                    availabilityZone => 'nova',
+                    assignFloatingIp => true),
+                  role => $))
+
+            - $this.clients.pselect($.instance.deploy())
+
+      - $mainManifestPath: '/etc/puppet/environments/production/manifests/site.pp'
+
+      - $master: new( puppet:PuppetServer,
+          masterInstance => $this.server,
+          environment => $this._environment,
+          manifest => $mainManifestPath)
+
+      # add every node with the role assigned to it
+      - $this.clients.pselect(
+          $master.addClient($))
+
+      - $this.systemConfig: new(puppet:SystemConfig)
+
+      - $master.configure()
+
+      - $gerritConfigurator: new(GerritConfigurator)
+      - $gerritConfigurator.configure($master.masterInstance)
+
+      - $._environment.reporter.report($this, 'Configure jenkins')
+
+      - $jenkinsConfigurator: new(JenkinsConfigurator)
+      - $jenkinsConfigurator.configure($master.masterInstance)
+
+      - $ldapConfigurator: new(LdapConfigurator)
+      - $ldapConfigurator.configure($master.masterInstance)
+
+      - $._environment.reporter.report($this, 'Installing dependencies')
+
+      - $master.installDependencies(
+          environment => 'production',
+          puppetfileLink => $this.puppetfileLink)
+
+
+      - $resources: new(sys:Resources)
+      - $mainManifestContent: $resources.string('scripts/site.pp')
+      - new(conf:Linux).putFile($this.server.agent, $mainManifestContent, $mainManifestPath)
+
+      - $._environment.reporter.report($this, 'Done')
