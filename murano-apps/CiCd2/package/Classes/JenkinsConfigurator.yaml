@@ -1,0 +1,90 @@
+Namespaces:
+  =: org.openstack.ci_cd_pipeline_murano_app.v2
+  std: io.murano
+  sys: io.murano.system
+  ci_cd_pipeline_murano_app: org.openstack.ci_cd_pipeline_murano_app
+  puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
+  conf: io.murano.configuration
+
+Name: JenkinsConfigurator
+
+Extends: Configurator
+
+Methods:
+  .init:
+    Body:
+      - $this.config:
+          git_user: user
+          git_user_email: email@example.com
+          jenkins_ssh_private_key_contents: '-----BEGIN RSA PRIVATE KEY-----
+
+            MIIEowIBAAKCAQEAxqtDb4g3BAzWe+NyF5NdHagTa/H3s3beMl8x6vZNv1FcXpnX
+
+            Ub+WfohdOc+josFmzuFZ+M+tNAw6YW7i2BKaVb/WC4brFZER5CAao365XfQWbfPK
+
+            YHmKqhiOuBDBs2N3TGz717th3r1uzpXd8IoIgogTEwi0QFLWls1MlqIakT7NTEJ3
+
+            lOw6GfKVli4PjUxHx/+P/ippMnHrU/HWln3tUM6BXoUoqttiEEPmNzp+q/lKJmFB
+
+            ddBENzBvFcGHqQ10oSxyrNLwnwjgV3vf2kflW8I2wE0vcBHUYI5OGHkdL17O4adj
+
+            bzSvDh3pqQfLRNYfB/PBxAPtauZyQ3Q0LtK63QIDAQABAoIBAGoRmil8AlOJPyJZ
+
+            5tordXWV/PiO8X7BohQmuxIFerEAkV54qHse3QylZZCuCWGl/GvL6StsRb8aIDlQ
+
+            6JAQLpJFn9P7rpuPHow7j71mtTUyUp9Vn+EuQxhZkCk52REbs9/79+HQS4qOfRCS
+
+            9zGroKuAVx68cPA+yg8tgQyTc7fDbCTJ5mnOgwUxcyHTpsyIz+Z/0eitWa4OsFNj
+
+            iYwvRw0vdnlPkQPO1ti4hjOh8LvJZseSVXWR/VfPKBQRes8V7hpLsHK9EzDDNUhz
+
+            tc103fXWLY3z+LG8wK+kbjbbhISOKhPg0DbcTUe92s708cRPI5c/fDCYOb8CAbJo
+
+            PiPrg8kCgYEA9189kS+Hk7ayocakzfQ2voFjpb2FjQ5SXNP940/tbWec5MFkX7zW
+
+            t8EB+CEc8lz6HgRrxsK6neeShx02SvbVIkwoXYDjcEzqgCv7ltbJT8gb0hTqnDgN
+
+            ja28Flm29TxdFxcHQU5ZZhBNSnEl9PdB3+a3NFwSge7Lm/fuoQG9s78CgYEAzZko
+
+            lJnjgoZk7U3tmmNewV5B8yzDdFN430WkdVVlYezN6Bz1oWlJHMyqMj6eKtPCPMrQ
+
+            DklDuLSyO1qdpz9rsEIRbB3GSAPf2X4YggOqSC3R0+ReU6vATc6hPjQSN2ahNdZ0
+
+            90z4djiSXsUL0C1o4DgORejpv/NdEwwTGVA3yGMCgYA78n6vEn+ekmXTwpnpt0cU
+
+            /7IwVi9pMZFQIaejUJlPLA7feOZkNRUrzsA1a4DiUxnh8FxV/JbQ8W+XAsNHg22/
+
+            NAmML1HuwxUJHp+HvGFoziu/y4XXedX/AZ1VJUSrRYehstj1QJF1pHm2kpkKNmlm
+
+            Yzj+nVl213HMSFcx+YQJbQKBgQCU6qOfBtvoVcnSrIg2NFWUv94K8dhccH1zUvEs
+
+            337AcBIwVpF/qVAAoSmBnSNZJ+pfuBL81gpMRe122kqosmIg16ng4qwUy2GfGhtM
+
+            SLVU9IMv9BBykEuIz+qwsGylXhvUcBJmcYThtFYoeJb24X0+Mrv73Rk6JF69Bhjr
+
+            U9QjuwKBgArBLvnkM2SoryzW1aGDqltFEV6vaRIm7Q396QuEBAGR/+XYqtuwMhvv
+
+            pjw6gGkQc+qSlt/ruGY9LQXuLCw4NH/L0RFcHjsaM8a7lQegf77bzmIapHHfcxmC
+
+            gschAFtpRuctLGt+2QlZi7Fc9ZTM59XComT8Moi3rFzGNOfKWksR
+
+            -----END RSA PRIVATE KEY-----'
+          jenkins_ssh_pubkey_contents: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDGq0NviDcEDNZ743IXk10dqBNr8fezdt4yXzHq9k2/UVxemddRv5Z+iF05z6OiwWbO4Vn4z600DDphbuLYEppVv9YLhusVkRHkIBqjfrld9BZt88pgeYqqGI64EMGzY3dMbPvXu2HevW7Old3wigiCiBMTCLRAUtaWzUyWohqRPs1MQneU7DoZ8pWWLg+NTEfH/4/+KmkycetT8daWfe1QzoFehSiq22IQQ+Y3On6r+UomYUF10EQ3MG8VwYepDXShLHKs0vCfCOBXe9/aR+VbwjbATS9wEdRgjk4YeR0vXs7hp2NvNK8OHempB8tE1h8H88HEA+1q5nJDdDQu0rrd
+            root@murano-mfgoqiqtst28ql-ggg-jenkins-mjkge7nxw5f3
+          project_config_repo: https://review.fuel-infra.org/open-paas/project-config
+          jenkins_jobs_password: P@ssw0rd
+
+  #
+  # Project-config local repo
+  #
+  getProjectConfigRepo:
+    Body:
+      - Return: format('https://{0}/open-paas/project-config', $this.instance.ipAddresses[0])
+
+  #
+  # Switch to newly created project-config repo
+  #
+  _switchProjectConfig:
+    Body:
+      - $.instance.setHieraValue( 'project_config_repo', $.getProjectConfigRepo())
+
