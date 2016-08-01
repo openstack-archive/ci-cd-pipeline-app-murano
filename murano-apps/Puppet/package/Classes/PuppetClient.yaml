@@ -45,3 +45,17 @@ Methods:
           ignoreErrors => true).stdout
 
       - Return: $res
+
+  #
+  # Run puppet agent.
+  # Get manifest from the server and apply it
+  #
+  agentRun:
+    Body:
+
+      - $res: new(conf:Linux).runCommand(
+          agent => $this.instance.agent,
+          command => 'puppet agent --config /etc/puppet/puppet.conf --onetime --no-daemonize',
+          ignoreErrors => true).stdout
+
+      - Return: $res
