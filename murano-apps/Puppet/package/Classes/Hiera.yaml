@@ -11,7 +11,7 @@
 #  under the License.
 
 Namespaces:
-    =: org.openstack.ci_cd_pipeline_murano_app.puppet
+  =: org.openstack.ci_cd_pipeline_murano_app.puppet
 
 Name: Hiera
 
