@@ -51,18 +51,18 @@ Methods:
 
   deploy:
     Body:
-    - If: not $.getAttr(installed, false)
-      Then:
-        - $securityGroupIngress:
-          - ToPort: $this.port
-            FromPort: $this.port
-            IpProtocol: tcp
-            External: true
-        - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
-        - $this.installLB()
-        - $.setAttr(installed, true)
-    - $this.syncSettings()
-    - $._environment.reporter.report($this, format('HA-proxy is available at {0}', $this.getEndpoint()))
+      - If: not $.getAttr(installed, false)
+        Then:
+          - $securityGroupIngress:
+              - ToPort: $this.port
+                FromPort: $this.port
+                IpProtocol: tcp
+                External: true
+          - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
+          - $this.installLB()
+          - $.setAttr(installed, true)
+      - $this.syncSettings()
+      - $._environment.reporter.report($this, format('HA-proxy is available at {0}', $this.getEndpoint()))
 
   createPool:
     Arguments:
