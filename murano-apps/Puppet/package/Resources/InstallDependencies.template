@@ -16,6 +16,10 @@ Scripts:
     EntryPoint: 'server/install_dependencies.sh'
     Files: []
     Options:
-      captureStdout: true
-      captureStderr: true
+      # The amout of information printed by script can be huge.
+      # More than Murano allows to collect.
+      # Thus we are forced to set "captureStdout" to false
+      captureStdout: false
+      # the same
+      captureStderr: false
       verifyExitcode: true
