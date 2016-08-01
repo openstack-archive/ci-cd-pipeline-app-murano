@@ -11,10 +11,10 @@
 #  under the License.
 
 Namespaces:
-    =: org.openstack.ci_cd_pipeline_murano_app.puppet
-    res: io.murano.resources
-    std: io.murano
-    sys: io.murano.system
+  =: org.openstack.ci_cd_pipeline_murano_app.puppet
+  res: io.murano.resources
+  std: io.murano
+  sys: io.murano.system
 
 Name: PuppetInstance
 
@@ -22,7 +22,7 @@ Extends: res:LinuxMuranoInstance
 
 Properties:
   hiera:
-   Contract: $.class(Hiera)
+    Contract: $.class(Hiera)
 
 Methods:
   .init:

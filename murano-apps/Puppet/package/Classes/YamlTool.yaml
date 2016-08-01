@@ -12,9 +12,9 @@
 
 # TODO: Make every method of this class static when moving to Mitaka
 Namespaces:
-    =: org.openstack.ci_cd_pipeline_murano_app.puppet
-    res: io.murano.resources
-    sys: io.murano.system
+  =: org.openstack.ci_cd_pipeline_murano_app.puppet
+  res: io.murano.resources
+  sys: io.murano.system
 
 Name: YamlTool
 
