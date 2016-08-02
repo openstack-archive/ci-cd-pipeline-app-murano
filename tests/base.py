@@ -16,6 +16,7 @@
 import json
 import logging
 import os
+import shutil
 import socket
 import time
 import uuid
@@ -118,7 +119,10 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
                     self.delete_stack(env)
             self.nova.keypairs.delete(self.keyname)
             for file in self.files:
-                os.remove(file)
+                if os.path.isfile(file):
+                    os.remove(file)
+                elif os.path.isdir(file):
+                    shutil.rmtree(file)
 
         super(MuranoTestsBase, self).tearDown()
 
