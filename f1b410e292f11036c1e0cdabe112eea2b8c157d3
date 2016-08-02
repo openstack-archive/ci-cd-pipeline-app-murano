@@ -1,0 +1,10 @@
+Code-Review+2: Sergey Kraynev <skraynev@mirantis.com>
+Verified+1: murano-ci-cd CI <murano-ci-cd-bot@mirantis.com>
+Code-Review+2: Anastasia Kuznetsova <akuznetsova@mirantis.com>
+Workflow+1: Anastasia Kuznetsova <akuznetsova@mirantis.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Tue, 02 Aug 2016 12:35:01 +0000
+Reviewed-on: https://review.openstack.org/349548
+Project: openstack/ci-cd-pipeline-app-murano
+Branch: refs/heads/master
