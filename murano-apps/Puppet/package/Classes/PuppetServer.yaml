@@ -15,13 +15,12 @@ Namespaces:
     conf: io.murano.configuration
     sys: io.murano.system
     net: org.openstack.ci_cd_pipeline_murano_app.puppet.net
-    puppet: org.openstack.ci_cd_pipeline_murano_app.puppet
 
 Name: PuppetServer
 
 Properties:
   masterInstance:
-    Contract: $.class(puppet:PuppetInstance).notNull()
+    Contract: $.class(PuppetInstance).notNull()
 
   clients:
     Contract:
@@ -51,8 +50,8 @@ Methods:
 
       - $this._installPuppetModules()
 
-      - $data: dict( 'environment:production:manifest' => $this.manifest)
-      - $this.masterInstance.putHieraData( $data)
+      - $data: dict('environment:production:manifest' => $this.manifest)
+      - $this.masterInstance.putHieraData($data)
 
       - $resources: new(sys:Resources)
       - $this.masterInstance.applyManifest(
@@ -75,7 +74,7 @@ Methods:
   addClient:
     Arguments:
       - client:
-          Contract: $.class(puppet:PuppetClient).notNull()
+          Contract: $.class(PuppetClient).notNull()
     Body:
       - $this.clients: $this.clients.append($client)
 
