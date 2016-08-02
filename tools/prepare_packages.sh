@@ -108,7 +108,7 @@ fi
 # if - yes, then define destination dir
 if $build_packages || $upload ; then
     # check destination dir
-    check_dir $destination_dir
+    check_dir "$destination_dir"
 
     # set distination dir
     # if it's absolute - it will not be changed, otherwise
@@ -116,7 +116,7 @@ if $build_packages || $upload ; then
     if [[ "$destination_dir" = /* ]] ; then
         destination_dir=$destination_dir
     else
-        destination_dir="`pwd`/$destination_dir"
+        destination_dir="$(pwd)/$destination_dir"
     fi
 else
     echo "NOTE: Packages will not be built or uploaded. Use options -S or -U to change it."
@@ -126,20 +126,20 @@ fi
 ### BUILDING PACKAGES ###
 if $build_packages ; then
     # check source dir
-    check_dir $source_dir
+    check_dir "$source_dir"
 
     # zip necessary apps
-    pushd $source_dir
-        for d in ${packages[@]}; do
+    pushd "$source_dir"
+        for d in "${packages[@]}"; do
             filename="$destination_dir/org.openstack.ci_cd_pipeline_murano_app.$d.zip"
-            pushd $d/package
+            pushd "$d/package"
             # check that file exist and remove it or create new version
-            if [ -f $filename ] ; then
+            if [ -f "$filename" ] ; then
                 if ! $refresh_existing_packages ; then
-                    rm $filename
+                    rm "$filename"
                 fi
             fi
-            zip -r $filename *
+            zip -r "$filename" *
             popd
         done
     popd
@@ -157,15 +157,15 @@ fi
 if $upload ; then
     # to have ability upload one package independently we need to remove it
     # via client and then upload it without updating its dependencies
-    for d in ${packages[@]}; do
+    for d in "${packages[@]}"; do
         filename="$destination_dir/org.openstack.ci_cd_pipeline_murano_app.$d.zip"
-        pkg_id=`murano package-list --owned | grep $d | awk '{print $2}'`
-        murano package-delete $pkg_id
-        murano package-import $filename --exists-action s
+        pkg_id=$(murano package-list --owned | grep $d | awk '{print $2}')
+        murano package-delete "$pkg_id"
+        murano package-import "$filename" --exists-action s
     done
 fi
 
 # if env name is specified, then create environment
-if [ ! -z $env_name ] ; then
-    murano environment-create $env_name
+if [ ! -z "$env_name" ] ; then
+    murano environment-create "$env_name"
 fi
