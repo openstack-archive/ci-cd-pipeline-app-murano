@@ -1,3 +1,5 @@
+#!/bin/bash
+
 # Stop the script if an error occurs.
 set -e
 
@@ -5,12 +7,12 @@ set -e
 cd releases/jobs;
 
 pushd lbaas-config
-  tar zcvf lbaas-config.tgz *;
+  tar zcvf lbaas-config.tgz ./*;
   mv lbaas-config.tgz ../
 popd
 
 pushd delete-lbaas
-  tar zcvf delete-lbaas.tgz *;
+  tar zcvf delete-lbaas.tgz ./*;
   mv delete-lbaas.tgz ../
 popd
 
@@ -27,7 +29,7 @@ pushd python/python
 popd
 
 pushd python
-  tar zcvf python.tgz *;
+  tar zcvf python.tgz ./*;
   mv python.tgz ../
 popd
 
@@ -69,7 +71,7 @@ sed -i -e "s/%sha1_delete_lbaas_job%/${sha1_delete_lbaas_job}/g" tmp/releases/re
 
 # Pack the release.
 cd tmp/releases;
-tar zcvf example-release-10.tgz *;
+tar zcvf example-release-10.tgz ./*;
 cd ../..
 
 # Enable option 'extended globbing' for easy deletion.
@@ -80,7 +82,7 @@ rm -rf tmp/releases/!(example-release-10.tgz)
 
 # Pack tile.
 cd tmp;
-zip -r lbaas-tile.zip *;
+zip -r lbaas-tile.zip ./*;
 cd ..
 mv tmp/lbaas-tile.zip .
 
