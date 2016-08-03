@@ -7,12 +7,12 @@ cmd="curl --user '$username:$password' http://${jenkins_host}:8080/me/configure 
 
 # Jenkins might not be ready at this point.
 # Retry logic is used here.
-token=$(eval $cmd)
+token=$(eval "$cmd")
 tries=10
 
 while [ -z "$token" ]; do
   sleep 20
-  token=$(eval $cmd)
+  token=$(eval "$cmd")
 
   tries=$((tries-1))
 
@@ -21,4 +21,4 @@ while [ -z "$token" ]; do
   fi
 done
 
-echo $token
+echo "$token"
