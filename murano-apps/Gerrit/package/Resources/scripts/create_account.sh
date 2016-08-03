@@ -1,6 +1,6 @@
 #!/bin/bash
 
-GERRIT_USER="$1"
+# GERRIT_USER="$1"
 GROUP="$2"
 FULL_NAME="$3"
 EMAIL="$4"
@@ -12,7 +12,7 @@ NAME="$6"
 # ssh -p 29418 $GERRIT_USER@localhost -i /home/gerrit2/review_site/etc/ssh_host_rsa_key gerrit create-account \
 #   --group "'$GROUP'" --full-name "'$FULL_NAME'" --email $EMAIL --ssh-key "'$SSHKEY'" $NAME
 
-HOSTNAME="`hostname -f`"
+HOSTNAME="$(hostname -f)"
 
 create_args=
 set_args=
@@ -42,12 +42,12 @@ fi
 
 set +e
 su gerrit2 -c "ssh -p 29418 -i /home/gerrit2/review_site/etc/ssh_project_rsa_key project-creator@$HOSTNAME \
-gerrit create-account ${create_args[@]} $NAME"
+gerrit create-account ${create_args[*]} $NAME"
 
 code=$?
 
 if [ $code -ne 0 ]; then
   # Do not create account but set related properties.
   su gerrit2 -c "ssh -p 29418 -i /home/gerrit2/review_site/etc/ssh_project_rsa_key project-creator@$HOSTNAME \
-  gerrit set-account ${set_args[@]} $NAME"
+  gerrit set-account ${set_args[*]} $NAME"
 fi
