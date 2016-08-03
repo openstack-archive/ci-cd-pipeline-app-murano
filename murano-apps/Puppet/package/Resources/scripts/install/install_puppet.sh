@@ -39,7 +39,7 @@ function is_ubuntu {
 
 function is_opensuse {
     [ -f /usr/bin/zypper ] && \
-        cat /etc/os-release | grep -q -e "openSUSE"
+        grep -q -e "openSUSE" < /etc/os-release
 }
 
 # dnf is a drop-in replacement for yum on Fedora>=22
@@ -145,17 +145,17 @@ function setup_puppet_ubuntu {
             --assume-yes install -y --force-yes lsb-release
     fi
 
-    lsbdistcodename=`lsb_release -c -s`
-    if [ $lsbdistcodename != 'trusty' ] ; then
+    lsbdistcodename=$(lsb_release -c -s)
+    if [ "$lsbdistcodename" != 'trusty' ] ; then
         rubypkg=rubygems
     else
         rubypkg=ruby
     fi
 
 
-    PUPPET_VERSION=3.*
-    PUPPETDB_VERSION=2.*
-    FACTER_VERSION=2.*
+    PUPPET_VERSION="3.*"
+    PUPPETDB_VERSION="2.*"
+    FACTER_VERSION="2.*"
 
     cat > /etc/apt/preferences.d/00-puppet.pref <<EOF
 Package: puppet puppet-common puppetmaster puppetmaster-common puppetmaster-passenger
@@ -172,9 +172,9 @@ Pin-Priority: 501
 EOF
 
     puppet_deb=puppetlabs-release-${lsbdistcodename}.deb
-    wget http://apt.puppetlabs.com/$puppet_deb -O $puppet_deb
-    dpkg -i $puppet_deb
-    rm $puppet_deb
+    wget "http://apt.puppetlabs.com/$puppet_deb" -O "$puppet_deb"
+    dpkg -i "$puppet_deb"
+    rm "$puppet_deb"
 
     apt-get update
     DEBIAN_FRONTEND=noninteractive apt-get --option 'Dpkg::Options::=--force-confold' \
@@ -186,8 +186,9 @@ EOF
 }
 
 function setup_puppet_opensuse {
-    local version=`grep -e "VERSION_ID" /etc/os-release | tr -d "\"" | cut -d "=" -f2`
-    zypper ar http://download.opensuse.org/repositories/systemsmanagement:/puppet/openSUSE_${version}/systemsmanagement:puppet.repo
+    local version=
+    version=$(grep -e "VERSION_ID" /etc/os-release | tr -d "\"" | cut -d "=" -f2)
+    zypper ar "http://download.opensuse.org/repositories/systemsmanagement:/puppet/openSUSE_${version}/systemsmanagement:puppet.repo"
     zypper -v --gpg-auto-import-keys --no-gpg-checks -n ref
     zypper --non-interactive in --force-resolution puppet
     # Wipe out templatedir so we don't get warnings about it
