@@ -2,7 +2,7 @@
 
 # Cloning 'project-config' from deployed Gerrit
 
-GERRIT_URL=`hiera -c /etc/puppet/hiera.yaml gerrit_host`
+GERRIT_URL=$(hiera -c /etc/puppet/hiera.yaml gerrit_host)
 su jenkins -c "git clone ssh://jenkins@$GERRIT_URL:29418/open-paas/project-config /tmp/project-config/"
 
 # Removing old project-config
