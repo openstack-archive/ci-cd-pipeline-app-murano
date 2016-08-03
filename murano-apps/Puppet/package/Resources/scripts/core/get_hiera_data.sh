@@ -2,4 +2,4 @@
 
 KEY="$1"
 
-hiera -c /etc/puppet/hiera.yaml $KEY
+hiera -c /etc/puppet/hiera.yaml "$KEY"
