@@ -2,7 +2,7 @@
 
 set +e
 
-PUPPET_CODE=`echo -n $1 | base64 -d`
+PUPPET_CODE=$(echo -n "$1" | base64 -d)
 
 puppet apply --detailed-exitcodes --color=false --execute "${PUPPET_CODE}"
 
