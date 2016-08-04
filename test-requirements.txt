@@ -6,3 +6,5 @@ python-muranoclient
 python-heatclient
 python-novaclient
 
+python-jenkins
+git-review
