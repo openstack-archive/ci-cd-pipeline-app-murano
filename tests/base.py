@@ -16,11 +16,13 @@
 import json
 import logging
 import os
-import shutil
 import socket
+import shutil
 import time
 import uuid
+from xml.etree import ElementTree as et
 
+import jenkins
 import paramiko
 import requests
 import testtools
@@ -75,8 +77,8 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
 
         # Since its really useful to debug deployment after it fail lets
         # add such possibility
-        self.os_cleanup_before = str2bool('OS_CLEANUP_BEFORE', False)
-        self.os_cleanup_after = str2bool('OS_CLEANUP_AFTER', True)
+        self.os_cleanup_before = str2bool('OS_CLEANUP_BEFORE', True)
+        self.os_cleanup_after = str2bool('OS_CLEANUP_AFTER', False)
 
         # Data for Nodepool app
         self.os_np_username = os.environ.get('OS_NP_USERNAME', self.os_username)
@@ -99,9 +101,10 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
 
         # Application instance parameters
         self.flavor = os.environ.get('OS_FLAVOR', 'm1.medium')
-        self.image = os.environ.get('OS_IMAGE')
+        self.image = os.environ.get('OS_IMAGE', 'ubuntu-14.04-m-agent.qcow2')
+        self.docker_image = os.environ.get('OS_DOCKER_IMAGE', 'ubuntu14.04-x64-docker.qcow2')
         self.files = []
-        self.keyname, self.key_file = self._create_keypair()
+        self.keyname, self.pr_key, self.pub_key = self._create_keypair()
         self.availability_zone = os.environ.get('OS_ZONE', 'nova')
 
         self.envs = []
@@ -163,8 +166,14 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
         pr_key_file = self.create_file(
             'id_{}'.format(kp_name), keypair.private_key
         )
-        self.create_file('id_{}.pub'.format(kp_name), keypair.public_key)
-        return kp_name, pr_key_file
+        # Note: by default, permissions of created file with
+        # private keypair is too open
+        os.chmod(pr_key_file, 0600)
+
+        pub_key_file = self.create_file(
+            'id_{}.pub'.format(kp_name), keypair.public_key
+        )
+        return kp_name, pr_key_file, pub_key_file
 
     def _get_stack(self, environment_id):
         for stack in self.heat.stacks.list():
@@ -269,7 +278,7 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
             try:
                 ssh = paramiko.SSHClient()
                 ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                ssh.connect(fip, username='ubuntu', key_filename=self.key_file)
+                ssh.connect(fip, username='ubuntu', key_filename=self.pr_key)
                 ftp = ssh.open_sftp()
                 ftp.get(
                     '/var/log/murano-agent.log',
@@ -368,22 +377,14 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
                 self.fail('{} port is not opened on instance'.format(port))
 
     def check_url_access(self, ip, path, port):
-        attempt = 0
         proto = 'http' if port not in (443, 8443) else 'https'
-        url = '%s://%s:%s/%s' % (proto, ip, port, path)
-
-        while attempt < 5:
-            resp = requests.get(url)
-            if resp.status_code == 200:
-                LOG.debug('Service path "{}" is available'.format(url))
-                return
-            else:
-                time.sleep(5)
-                attempt += 1
-
-        self.fail(
-            'Service path {0} is unavailable after 5 attempts'.format(url)
+        url = '{proto}://{ip}:{port}/{path}'.format(
+            proto=proto, ip=ip, port=port, path=path
         )
+
+        resp = requests.get(url)
+
+        return resp.status_code
 
     def deployment_success_check(self, environment, services_map):
         deployment = self.murano.deployments.list(environment.id)[-1]
@@ -414,3 +415,172 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
                     services_map[service]['url'],
                     services_map[service]['url_port']
                 )
+
+    @staticmethod
+    def add_to_file(path_to_file, context):
+        with open(path_to_file, "a") as f:
+            f.write(context)
+
+    @staticmethod
+    def read_from_file(path_to_file):
+        with open(path_to_file, "r") as f:
+            return f.read()
+
+    def execute_cmd_on_remote_host(self, host, cmd, key, user='ubuntu'):
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(hostname=host, username=user, key_filename=key)
+        stdin, stdout, stderr = client.exec_command(cmd)
+        data = stdout.read() + stderr.read()
+        client.close()
+
+        return data
+
+    def export_ssh_options(self):
+        context = '#!/bin/bash\n' \
+                  'ssh -o StrictHostKeyChecking=no ' \
+                  '-i {0} "$@"'.format(self.pr_key)
+        gitwrap = self.create_file('/tmp/gitwrap.sh', context)
+        os.chmod(gitwrap, 0744)
+        os.environ['GIT_SSH'] = gitwrap
+
+    def clone_repo(self, gerrit_host, gerrit_user, repo, dest_dir):
+        repo_dest_path = os.path.join(dest_dir, repo.split('/')[-1])
+        self.files.append(repo_dest_path)
+
+        if os.path.isdir(repo_dest_path):
+            shutil.rmtree(repo_dest_path)
+
+        os.system('git clone ssh://{user}@{host}:29418/{repo} {dest}'.format(
+            user=gerrit_user, host=gerrit_host, repo=repo, dest=repo_dest_path
+        ))
+        return repo_dest_path
+
+    def switch_to_branch(self, repo, branch):
+        os.system('cd {repo}; git checkout {branch}'.format(
+            repo=repo, branch=branch)
+        )
+
+    def add_committer_info(self, configfile, user, email):
+        author_data = \
+            '[user]\n'\
+            '    name={0}\n'\
+            '    email={1}\n'.format(user, email)
+        self.add_to_file(configfile, author_data)
+
+    def make_commit(self, repo, branch, key, msg):
+        # NOTE need to think how to use GIT_SSH
+        os.system(
+            'cd {repo};'
+            'git add . ; git commit -am "{msg}"; '
+            'ssh-agent bash -c "ssh-add {key}; '
+            'git-review -r origin {branch}"'.format(
+                repo=repo,
+                msg=msg,
+                key=key,
+                branch=branch
+            )
+        )
+
+    @staticmethod
+    def _gerrit_cmd(gerrit_host, cmd):
+        return 'sudo su -c "ssh -p 29418 -i ' \
+               '/home/gerrit2/review_site/etc/ssh_project_rsa_key ' \
+               'project-creator@{host} {cmd}" ' \
+               'gerrit2'.format(host=gerrit_host, cmd=cmd)
+
+    def get_last_open_patch(self, gerrit_ip, gerrit_host, project, commit_msg):
+        cmd = 'gerrit query --format JSON status:open ' \
+              'project:{project} limit:1'.format(project=project)
+        cmd = self._gerrit_cmd(gerrit_host, cmd)
+
+        # Note: "gerrit query" returns results describing changes that
+        # match the input query.
+        # Here is an example of results for above query:
+        # {"project":"open-paas/project-config" ... "number":"1",
+        # {"type":"stats","rowCount":1,"runTimeMilliseconds":219, ...}
+        # Output has to be cut using "head -1", because json.loads can't
+        # decode multiple jsons
+
+        patch = self.execute_cmd_on_remote_host(
+            host=gerrit_ip,
+            key=self.pr_key,
+            cmd='{} | head -1'.format(cmd)
+        )
+        patch = json.loads(patch)
+        self.assertIn(commit_msg, patch['commitMessage'])
+
+        return patch['number']
+
+    def merge_commit(self, gerrit_ip, gerrit_host, project, commit_msg):
+        changeid = self.get_last_open_patch(
+            gerrit_ip=gerrit_ip,
+            gerrit_host=gerrit_host,
+            project=project,
+            commit_msg=commit_msg
+        )
+
+        cmd = 'gerrit review --project {project} --verified +2 ' \
+              '--code-review +2 --label Workflow=+1 ' \
+              '--submit {id},1'.format(project=project, id=changeid)
+        cmd = self._gerrit_cmd(gerrit_host, cmd)
+
+        self.execute_cmd_on_remote_host(
+            host=gerrit_ip,
+            user='ubuntu',
+            key=self.pr_key,
+            cmd=cmd
+        )
+
+    def set_tomcat_properties(self, pom_file, ip):
+        et.register_namespace('', 'http://maven.apache.org/POM/4.0.0')
+        tree = et.parse(pom_file)
+        new_url = 'http://{ip}:8080/manager/text'.format(ip=ip)
+        ns = {'ns': 'http://maven.apache.org/POM/4.0.0'}
+        for plugin in tree.findall('ns:build/ns:plugins/', ns):
+            plugin_id = plugin.find('ns:artifactId', ns).text
+            if plugin_id == 'tomcat7-maven-plugin':
+                plugin.find('ns:configuration/ns:url', ns).text = new_url
+
+        tree.write(pom_file)
+
+    def get_gerrit_projects(self, gerrit_ip, gerrit_host):
+        cmd = self._gerrit_cmd(gerrit_host, 'gerrit ls-projects')
+        return self.execute_cmd_on_remote_host(
+            host=gerrit_ip,
+            user='ubuntu',
+            key=self.pr_key,
+            cmd=cmd
+        )
+
+    def get_jenkins_jobs(self, ip):
+        server = jenkins.Jenkins('http://{0}:8080'.format(ip))
+
+        return [job['name'] for job in server.get_all_jobs()]
+
+    def wait_for(self, func, expected, fail_msg, timeout, **kwargs):
+        LOG.debug('Waiting for {0}.'.format(expected))
+        start_time = time.time()
+
+        current = func(**kwargs)
+
+        check = lambda exp, cur: \
+            exp not in cur if isinstance(cur, list) or isinstance(cur, str) \
+                else exp != cur
+
+        while check(expected, current):
+            current = func(**kwargs)
+
+            if time.time() - start_time > timeout:
+                time.sleep(60)
+                self.fail("Time is out. {0}".format(fail_msg))
+            time.sleep(30)
+        LOG.debug('Expected result has been achieved.')
+
+    def run_job(self, ip, user, password, job_name):
+        server = jenkins.Jenkins(
+            'http://{0}:8080'.format(ip),
+            username=user,
+            password=password
+        )
+        server.build_job(job_name)
