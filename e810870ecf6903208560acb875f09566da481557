@@ -1,0 +1,9 @@
+Code-Review+2: Nikolay Mahotkin <nmakhotkin@mirantis.com>
+Code-Review+2: Artem Silenkov <asilenkov@mirantis.com>
+Workflow+1: Artem Silenkov <asilenkov@mirantis.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Thu, 04 Aug 2016 07:30:05 +0000
+Reviewed-on: https://review.openstack.org/350537
+Project: openstack/ci-cd-pipeline-app-murano
+Branch: refs/heads/master
