@@ -38,7 +38,7 @@ Forms:
         - name: warUrl
           type: string
           label: URL for war
-          initial: 'http://tarballs.openstack.org/ci/test/gerrit-v2.11.9.3.eb6e48d.war'
+          initial: 'https://gerrit-releases.storage.googleapis.com/gerrit-2.12.3.war'
           description: >-
             Enter the war version from Gerrit's site
             http://gerrit-releases.storage.googleapis.com/index.html
