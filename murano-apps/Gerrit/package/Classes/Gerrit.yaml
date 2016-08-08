@@ -38,22 +38,22 @@ Methods:
           Return:
 
       - $securityGroupIngress:
-        - ToPort: 80
-          FromPort: 80
-          IpProtocol: tcp
-          External: true
-        - ToPort: 443
-          FromPort: 443
-          IpProtocol: tcp
-          External: true
-        - ToPort: 8081
-          FromPort: 8081
-          IpProtocol: tcp
-          External: true
-        - ToPort: 29418
-          FromPort: 29418
-          IpProtocol: tcp
-          External: true
+          - ToPort: 80
+            FromPort: 80
+            IpProtocol: tcp
+            External: true
+          - ToPort: 443
+            FromPort: 443
+            IpProtocol: tcp
+            External: true
+          - ToPort: 8081
+            FromPort: 8081
+            IpProtocol: tcp
+            External: true
+          - ToPort: 29418
+            FromPort: 29418
+            IpProtocol: tcp
+            External: true
 
       - $._environment.securityGroupManager.addGroupIngress($securityGroupIngress)
       - $._environment.reporter.report($this, 'Creating VM for Gerrit "{0}"'.format($.instance.name))

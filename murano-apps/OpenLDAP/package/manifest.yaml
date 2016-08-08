@@ -8,7 +8,7 @@ Description: |
 Author: 'Mirantis, Inc'
 Tags: [Server, LDAP]
 Classes:
- org.openstack.ci_cd_pipeline_murano_app.OpenLDAP: OpenLDAP.yaml
+  org.openstack.ci_cd_pipeline_murano_app.OpenLDAP: OpenLDAP.yaml
 UI: ui.yaml
 Logo: logo.png
 Require:

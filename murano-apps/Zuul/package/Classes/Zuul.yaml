@@ -116,14 +116,14 @@ Methods:
 
   _createPeriodicLayoutUpdate:
     Body:
-     - $resources: new(sys:Resources)
-     - $linux: new(conf:Linux)
-     - $script: $resources.string('scripts/update_layout.sh')
-     - $._environment.reporter.report($this, '[Zuul] Creating autoupdating layout.yaml file...')
-     - $linux.putFile($.instance.agent, $script, '/usr/local/bin/update_layout.sh')
+      - $resources: new(sys:Resources)
+      - $linux: new(conf:Linux)
+      - $script: $resources.string('scripts/update_layout.sh')
+      - $._environment.reporter.report($this, '[Zuul] Creating autoupdating layout.yaml file...')
+      - $linux.putFile($.instance.agent, $script, '/usr/local/bin/update_layout.sh')
 
-     - $manifest: $resources.string('scripts/update_layout.pp')
-     - $this.instance.applyManifest($manifest, 60)
+      - $manifest: $resources.string('scripts/update_layout.pp')
+      - $this.instance.applyManifest($manifest, 60)
 
   destroy:
     Body:

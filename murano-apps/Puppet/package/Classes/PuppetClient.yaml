@@ -11,9 +11,9 @@
 #  under the License.
 
 Namespaces:
-    =: org.openstack.ci_cd_pipeline_murano_app.puppet
-    conf: io.murano.configuration
-    sys: io.murano.system
+  =: org.openstack.ci_cd_pipeline_murano_app.puppet
+  conf: io.murano.configuration
+  sys: io.murano.system
 
 Name: PuppetClient
 

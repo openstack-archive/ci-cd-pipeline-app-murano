@@ -8,7 +8,7 @@ Description: |
 Author: 'Mirantis, Inc'
 Tags: [CI]
 Classes:
- org.openstack.ci_cd_pipeline_murano_app.puppet.SystemConfig: SystemConfig.yaml
+  org.openstack.ci_cd_pipeline_murano_app.puppet.SystemConfig: SystemConfig.yaml
 UI: ui.yaml
 Logo: logo.png
 Require:
