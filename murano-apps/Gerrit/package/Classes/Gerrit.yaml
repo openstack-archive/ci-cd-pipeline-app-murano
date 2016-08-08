@@ -17,7 +17,7 @@ Properties:
     Contract: $.string().notNull()
   warUrl:
     Contract: $.string()
-    Default: 'http://tarballs.openstack.org/ci/test/gerrit-v2.11.9.3.eb6e48d.war'
+    Default: https://gerrit-releases.storage.googleapis.com/gerrit-2.12.3.war
   ldap:
     Contract: $.class(ci_cd_pipeline_murano_app:OpenLDAP)
   userSSH:
