@@ -131,7 +131,9 @@ if $build_packages ; then
     # zip necessary apps
     pushd "$source_dir"
         for d in ${packages[*]}; do
-            filename="$destination_dir/org.openstack.ci_cd_pipeline_murano_app.$d.zip"
+            # get FQN for creating package
+            package_name="$(grep FullName "$d/package/manifest.yaml" | awk '{print $2}')"
+            filename="$destination_dir/$package_name.zip"
             pushd "$d/package"
             # check that file exist and remove it or create new version
             if [ -f "$filename" ] ; then
@@ -158,7 +160,8 @@ if $upload ; then
     # to have ability upload one package independently we need to remove it
     # via client and then upload it without updating its dependencies
     for d in "${packages[@]}"; do
-        filename="$destination_dir/org.openstack.ci_cd_pipeline_murano_app.$d.zip"
+        package_name="$(ls "$destination_dir" | grep "$d")"
+        filename="$destination_dir/$package_name"
         pkg_id=$(murano package-list --owned | grep "$d" | awk '{print $2}')
         murano package-delete "$pkg_id"
         murano package-import "$filename" --exists-action s
