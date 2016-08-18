@@ -131,6 +131,8 @@ if $build_packages ; then
     # zip necessary apps
     pushd "$source_dir"
         for d in ${packages[*]}; do
+            # check that package is realy existed
+            check_dir "$d"
             # get FQN for creating package
             package_name="$(grep FullName "$d/package/manifest.yaml" | awk '{print $2}')"
             filename="$destination_dir/$package_name.zip"
@@ -160,8 +162,7 @@ if $upload ; then
     # to have ability upload one package independently we need to remove it
     # via client and then upload it without updating its dependencies
     for d in "${packages[@]}"; do
-        package_name="$(ls "$destination_dir" | grep "$d")"
-        filename="$destination_dir/$package_name"
+        filename="$(find "$destination_dir" -maxdepth 1 -name "*$d*")"
         pkg_id=$(murano package-list --owned | grep "$d" | awk '{print $2}')
         murano package-delete "$pkg_id"
         murano package-import "$filename" --exists-action s
