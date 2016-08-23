@@ -9,4 +9,3 @@ Tags: [CI, helper]
 Classes:
   org.openstack.ci_cd_pipeline_murano_app.ZuulNodepoolHelper: ZuulNodepoolHelper.yaml
 UI: ui.yaml
-Logo: logo.png
