@@ -189,3 +189,10 @@ as **root** and execute command:
 
 - Re-login with root credentials and merge this patch.
 - Re-run job in Jenkins. And re-check Tomcat server again.
+
+
+Demonstration video
+===================
+
+Demo CI/CD Murano application - https://www.youtube.com/watch?v=waTqsHfnVSo
+Demo CI/CD Murano application (with Zuul & Nodepool) - https://www.youtube.com/watch?v=p8ce-j2-a1M
