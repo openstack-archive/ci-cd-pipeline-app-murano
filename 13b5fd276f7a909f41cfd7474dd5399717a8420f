@@ -1,0 +1,12 @@
+Verified+1: murano-ci-cd CI <murano-ci-cd-bot@mirantis.com>
+Code-Review+1: Dmytro Dovbii <ddovbii@mirantis.com>
+Code-Review+1: Kirill Zaitsev <kzaitsev@mirantis.com>
+Code-Review+2: Nikolay Mahotkin <nmakhotkin@mirantis.com>
+Code-Review+2: Alexey Khivin <akhivin@gmail.com>
+Workflow+1: Alexey Khivin <akhivin@gmail.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Mon, 29 Aug 2016 09:08:32 +0000
+Reviewed-on: https://review.openstack.org/359185
+Project: openstack/ci-cd-pipeline-app-murano
+Branch: refs/heads/master
