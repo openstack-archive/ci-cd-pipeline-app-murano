@@ -135,6 +135,8 @@ class MuranoCiCdFlowTest(base.MuranoTestsBase):
 
         self.export_ssh_options()
 
+        # Initialize Jenkins server when it's deployed
+
         # Clone "project-config" repository
 
         project_config_location = self.clone_repo(
@@ -157,42 +159,6 @@ class MuranoCiCdFlowTest(base.MuranoTestsBase):
             new_project
         )
 
-        # Add committer info to project-config repo git config
-
-        self.add_committer_info(
-            configfile='{0}/.git/config'.format(project_config_location),
-            user=ldap_user,
-            email=ldap_user_email
-        )
-
-        # Make commit to project-config
-
-        self.make_commit(
-            repo=project_config_location,
-            branch='master',
-            key=self.pr_key,
-            msg='Add new project to gerrit/projects.yaml'
-        )
-
-        # Merge commit
-
-        self.merge_commit(
-            gerrit_ip=gerrit_ip,
-            gerrit_host=gerrit_hostname,
-            project='open-paas/project-config',
-            commit_msg='Add new project to gerrit/projects.yaml'
-        )
-
-        self.wait_for(
-            func=self.get_gerrit_projects,
-            expected='demo/petclinic',
-            debug_msg='Waiting while "demo/petlinic" project is created',
-            fail_msg='Project "demo/petclinic" wasn\'t created',
-            timeout=600,
-            gerrit_ip=gerrit_ip,
-            gerrit_host=gerrit_hostname,
-        )
-
         # Create jenkins job for building petclinic app
 
         new_job = (
@@ -210,13 +176,21 @@ class MuranoCiCdFlowTest(base.MuranoTestsBase):
             new_job
         )
 
-        # Making commit to project-config
+        # Add committer info to project-config repo git config
+
+        self.add_committer_info(
+            configfile='{0}/.git/config'.format(project_config_location),
+            user=ldap_user,
+            email=ldap_user_email
+        )
+
+        # Make commit to project-config
 
         self.make_commit(
             repo=project_config_location,
             branch='master',
             key=self.pr_key,
-            msg='Add job for petclinic app'
+            msg='Add new project and job for its deployment'
         )
 
         # Merge commit
@@ -225,7 +199,17 @@ class MuranoCiCdFlowTest(base.MuranoTestsBase):
             gerrit_ip=gerrit_ip,
             gerrit_host=gerrit_hostname,
             project='open-paas/project-config',
-            commit_msg='Add job for petclinic app'
+            commit_msg='Add new project and job for its deployment'
+        )
+
+        self.wait_for(
+            func=self.get_gerrit_projects,
+            expected='demo/petclinic',
+            debug_msg='Waiting while "demo/petlinic" project is created',
+            fail_msg='Project "demo/petclinic" wasn\'t created',
+            timeout=600,
+            gerrit_ip=gerrit_ip,
+            gerrit_host=gerrit_hostname,
         )
 
         # Wait while new "petclinic-java-app-deploy" job is created

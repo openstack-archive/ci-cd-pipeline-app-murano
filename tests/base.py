@@ -60,6 +60,8 @@ def str2bool(name, default):
     value = os.environ.get(name, '')
     return _boolean_states.get(value.lower(), default)
 
+TIMEOUT_DELAY = 30
+
 
 class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
 
@@ -273,7 +275,6 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
         fips = self.get_services_fips(environment)
         logs_dir = "{0}/{1}".format(ARTIFACTS_DIR, environment.name)
         os.makedirs(logs_dir)
-        self.files.append(logs_dir)
         for service, fip in fips.iteritems():
             try:
                 ssh = paramiko.SSHClient()
@@ -312,7 +313,7 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
                     'Environment has incorrect status "{0}"'.format(status)
                 )
 
-            time.sleep(30)
+            time.sleep(TIMEOUT_DELAY)
         LOG.debug('Environment "{0}" is ready'.format(self.get_env(env).name))
         return self.get_env(env).manager.get(env.id)
 
@@ -526,7 +527,7 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
         return patch['number']
 
     def merge_commit(self, gerrit_ip, gerrit_host, project, commit_msg):
-        changeid = self.get_last_open_patch(
+        patch_num = self.get_last_open_patch(
             gerrit_ip=gerrit_ip,
             gerrit_host=gerrit_host,
             project=project,
@@ -536,7 +537,7 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
         cmd = (
             'gerrit review --project {project} --verified +2 '
             '--code-review +2 --label Workflow=+1 '
-            '--submit {id},1'.format(project=project, id=changeid)
+            '--submit {id},1'.format(project=project, id=patch_num)
         )
         cmd = self._gerrit_cmd(gerrit_host, cmd)
 
@@ -568,37 +569,41 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
             cmd=cmd
         )
 
-    def get_jenkins_jobs(self, ip):
-        server = jenkins.Jenkins('http://{0}:8080'.format(ip))
-
-        return [job['name'] for job in server.get_all_jobs()]
-
     def wait_for(self, func, expected, debug_msg, fail_msg, timeout, **kwargs):
-        LOG.debug(debug_msg)
-        start_time = time.time()
-
-        current = func(**kwargs)
-
         def check(exp, cur):
             if isinstance(cur, list) or isinstance(cur, str):
                 return exp not in cur
             else:
                 return exp != cur
 
+        LOG.debug(debug_msg)
+        start_time = time.time()
+
+        current = func(**kwargs)
+
         while check(expected, current):
             current = func(**kwargs)
 
             if time.time() - start_time > timeout:
                 self.fail("Time is out. {0}".format(fail_msg))
-            time.sleep(30)
+            time.sleep(TIMEOUT_DELAY)
         LOG.debug('Expected result has been achieved.')
 
-    def get_last_build_number(self, ip, user, password, job_name, build_type):
-        server = jenkins.Jenkins(
+    @staticmethod
+    def _connect_jenkins_server(ip, user=None, password=None):
+        return jenkins.Jenkins(
             'http://{0}:8080'.format(ip),
             username=user,
             password=password
         )
+
+    def get_jenkins_jobs(self, ip):
+        server = self._connect_jenkins_server(ip)
+
+        return [job['name'] for job in server.get_all_jobs()]
+
+    def get_last_build_number(self, ip, user, password, job_name, build_type):
+        server = self._connect_jenkins_server(ip, user, password)
         # If there are no builds of desired type get_job_info returns None and
         # it is not possible to get number, in this case this function returns
         # None too and it means that there are no builds yet
