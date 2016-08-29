@@ -25,8 +25,8 @@ Properties:
 Methods:
   installOnTheNode:
     Arguments:
-      instance:
-        Contract: $.class(puppet:PuppetInstance)
+      - instance:
+          Contract: $.class(puppet:PuppetInstance)
     Body:
       - $resources: new(sys:Resources)
       - $template: $resources.yaml('SystemConfig.template').bind(dict(
