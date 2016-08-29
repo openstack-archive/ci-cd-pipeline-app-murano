@@ -35,7 +35,7 @@ Methods:
       - $this.configFile: new(YamlFile, path => $this.configFilePath)
       - $this.dataFile: new(YamlFile, path => $this.dataFilePath)
       # add new data file to hiera
-      # this file is the only file to store all of data the passed throw Hiera class
+      # this file is the only one to store all data passed using Hiera class
       - $config: dict(':hierarchy' => 'murano')
       - $this.configFile.putData($config)
 
