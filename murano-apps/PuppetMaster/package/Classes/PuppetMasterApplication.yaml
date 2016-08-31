@@ -129,3 +129,4 @@ Methods:
             '{0} can be accessed on {1}'.format(
               $.role,
               $.instance.floatingIpAddress)))
+
