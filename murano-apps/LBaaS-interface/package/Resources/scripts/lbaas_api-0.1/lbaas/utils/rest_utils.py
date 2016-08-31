@@ -19,7 +19,7 @@ import json
 
 import pecan
 import six
-from webob import Response
+import webob
 from wsme import exc
 
 from lbaas import exceptions as ex
@@ -53,7 +53,7 @@ def wrap_pecan_controller_exception(func):
         try:
             return func(*args, **kwargs)
         except ex.LBaaSException as excp:
-            return Response(
+            return webob.Response(
                 status=excp.http_code,
                 content_type='application/json',
                 body=json.dumps(dict(
