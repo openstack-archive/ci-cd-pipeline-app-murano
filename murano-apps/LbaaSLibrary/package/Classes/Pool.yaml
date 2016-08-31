@@ -17,12 +17,15 @@ Name: Pool
 
 Properties:
 
+  algorithm:
+    Contract: $.string()
+
   listener:
     Contract:
       - $.class(Listener)
 
   protocol:
-    Contract: $.string().notNull()
+    Contract: $.string()
 
   members:
     Usage: InOut
@@ -34,5 +37,26 @@ Properties:
 Methods:
 
   addMember:
+    Arguments:
+      - host:
+          Contract: $.string().notNull()
+      - address:
+          Contract: $.string().notNull()
+      - port:
+          Contract: $.int().check($>0)
+    Body:
+      - $m:
+          host: $host
+          port: $port
+          address: $address
+      - If: not $m in $this.members
+        Then:
+          - $this.members: $this.members.append($m)
 
   deleteMember:
+    Arguments:
+      - host:
+          Contract: $.string().notNull()
+    Body:
+      - $this.members: $.members.where($.host != $host)
+      - Return: $this.members

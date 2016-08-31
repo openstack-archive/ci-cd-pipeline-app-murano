@@ -1,0 +1,113 @@
+#  Licensed under the Apache License, Version 2.0 (the "License"); you may
+#  not use this file except in compliance with the License. You may obtain
+#  a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+#  WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+#  License for the specific language governing permissions and limitations
+#  under the License.
+
+Namespaces:
+  =: org.openstack.murano.lbaas
+  bigip: io.murano.extensions.lbaas.f5
+  res: io.murano.resources
+  conf: io.murano.configuration
+  sys: io.murano.system
+  std: io.murano
+
+Name: F5LoadBalancer
+
+Extends:
+  - std:Application
+  - LoadBalancer
+
+Properties:
+  user:
+    Contract: $.string().notNull()
+
+  password:
+    Contract: $.string().notNull()
+
+  host:
+    Contract: $.string().notNull()
+
+
+Methods:
+  .init:
+    Body:
+      - $._resources: new(sys:Resources)
+      - $._environment: $.find(std:Environment).require()
+      - Try:
+          $._client: new(bigip:BigIpClient, user => $.user, password => $.password, host => $.host)
+        Catch:
+          With: 'murano.dsl.exceptions.NoPackageForClassFound'
+          Do:
+            Throw: PluginNotFoundException
+            Message: 'Plugin for F5 Big Ip is not installed'
+
+  deploy:
+    Body:
+      - If: not $.getAttr(deployed, false)
+        Then:
+          - $._environment.reporter.report($this, $this.getEndpoint())
+          - $.setAttr(deployed, true)
+
+  createPool:
+    Arguments:
+      - name:
+          Contract: $.string().notNull()
+      - algorithm:
+          Contract: $.string().notNull()
+      - listener:
+          Contract: $.class(Listener).notNull()
+
+    Body:
+      - $pool: new(Pool, $this, name=>$name, algorithm=>$algorithm, listener => $listener)
+      - $this._client.createPool(neme=>$name, algorithm=>$algorithm, listener => name($listener))
+      - $this.pools[$name]: $pool
+      - Return: $pool
+
+  addListener:
+    Arguments:
+      - listener:
+          Contract: $.class(Listener).notNull()
+
+    Body:
+      - super($this, $.addListener($listener))
+      - $this._client.createListener($listener)
+
+  deleteListener:
+    Arguments:
+      - name:
+          Contract: $.string().notNull()
+
+    Body:
+      - super($this, $.deleteListener($name))
+      - $this._client.deleteListener($name)
+
+  addHostToPool:
+    Arguments:
+      - poolName:
+          Contract: $.string().notNull()
+      - host:
+          Contract: $.string().notNull()
+      - ip:
+          Contract: $.string().notNull()
+      - port:
+          Contract: $.int().check($>0)
+    Body:
+      - $pool: $this.pools.get($poolName)
+      - $pool.addMember($host, $ip, $port)
+      - $m:
+          host: $host
+          port: $port
+          address: $ip
+      - $this._client.createMember(member =>$m, pname => $poolName )
+      - $this.pools[$poolName]: $pool
+
+  getEndpoint:
+    Body:
+      - Return: format("https://{0}/tmui/login.jsp", $this.host)

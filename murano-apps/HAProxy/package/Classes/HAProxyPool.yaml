@@ -30,23 +30,6 @@ Properties:
 
 
 Methods:
-  addMember:
-    Arguments:
-      - host:
-          Contract: $.string().notNull()
-      - address:
-          Contract: $.string().notNull()
-      - port:
-          Contract: $.int().check($>0)
-    Body:
-      - $m:
-          host: $host
-          port: $port
-          address: $address
-      - If: not $m in $this.members
-        Then:
-          - $this.members: $this.members.append($m)
-
 
   generateConfiguration:
     Body:

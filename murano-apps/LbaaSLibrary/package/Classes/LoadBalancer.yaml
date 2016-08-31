@@ -30,6 +30,8 @@ Methods:
 
   deploy:
 
+  createPool:
+
   addListener:
     Arguments:
       - listener:
