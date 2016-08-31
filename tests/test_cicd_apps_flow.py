@@ -210,7 +210,7 @@ class MuranoCiCdFlowTest(base.MuranoTestsBase):
             new_job
         )
 
-        # Making commit to project-config
+        # Make commit to project-config
 
         self.make_commit(
             repo=project_config_location,
