@@ -20,7 +20,7 @@ import socket
 import shutil
 import time
 import uuid
-from xml.etree import ElementTree as et
+from xml import etree
 
 import jenkins
 import paramiko
@@ -548,8 +548,8 @@ class MuranoTestsBase(testtools.TestCase, clients.ClientsBase):
         )
 
     def set_tomcat_ip(self, pom_file, ip):
-        et.register_namespace('', 'http://maven.apache.org/POM/4.0.0')
-        tree = et.parse(pom_file)
+        etree.ElementTree.register_namespace('', 'http://maven.apache.org/POM/4.0.0')
+        tree = etree.ElementTree.parse(pom_file)
         new_url = 'http://{ip}:8080/manager/text'.format(ip=ip)
         ns = {'ns': 'http://maven.apache.org/POM/4.0.0'}
         for plugin in tree.findall('ns:build/ns:plugins/', ns):
