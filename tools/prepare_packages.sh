@@ -3,12 +3,12 @@
 # function for checking directories
 function check_dir () {
     if [[ -z "$1" ]]; then
-        echo "No directory name provided."
+        echo "ERROR: No directory name provided."
         exit
     fi
 
     if [[ ! -d "${1}" ]]; then
-        echo "Folder '${1}' doesn't exist."
+        echo "ERROR: Folder '${1}' doesn't exist."
         exit
     fi
 }
@@ -19,6 +19,10 @@ destination_dir="."
 refresh_existing_packages=false
 upload=false
 build_packages=true
+action_for_dependency='s'
+
+HOST='example.com'
+DEP_OPTS='s a u'
 
 help_string="$(basename "$0") [-h] [-s source_dir] [-d destination_dir] [-p package_name] -- script to build packages for downloading to Murano
 
@@ -35,14 +39,27 @@ where:
   upload packages options (they require muranoclient installation):
     -U  upload new packages to specified tenant from directory specified with -d option
         if this option is set, old packages will be removed from tenant and new will be imported instead.
+    -H  Ip address of the Openstack used in endpoints
+    -a  Default action when a dependency package already
+        exists: (s)kip, (u)pdate, (a)bort. Default value is: (s)kip.
     -e  name of environment, which will be created
 
 For using muranoclient please also specify necessary credentials in environment:
     export OS_USERNAME=user
     export OS_PASSWORD=password
     export OS_TENANT_NAME=tenant
-    export OS_AUTH_URL=http://auth.example.com:5000/v2.0
-    export MURANO_URL=http://murano.example.com:8082/
+
+    To use non default backend please export follow option.
+    Default value is defined in /etc/murano/murano.conf
+
+    export MURANO_PACKAGES_SERVICE=glare
+
+    Follow endpoints will be set automatially, with provided $HOST (variable mentioned with -H option),
+    if they are not exported already:
+
+    export GLARE_URL=http://$HOST:9494/
+    export OS_AUTH_URL=http://$HOST:5000/v2.0
+    export MURANO_URL=http://$HOST:8082/
 
 Examples
 --------
@@ -59,12 +76,20 @@ Upload existing packages without building them:
 ./tools/prepare_packages.sh -S -U -d $destination_dir
 "
 
-while getopts ':hUSs:d:p:e:' option; do
+while getopts ':hUSs:d:p:e:a:H:' option; do
   case "$option" in
     h) echo "$help_string"
        exit
        ;;
+    H) HOST=$OPTARG
+       ;;
     e) env_name=$OPTARG
+       ;;
+    a) action_for_dependency=$OPTARG
+       if ! [[ $DEP_OPTS =~ $OPTARG ]] ; then
+           echo "ERROR: action should be one of the '$DEP_OPTS'."
+           exit 1
+       fi
        ;;
     r) refresh_existing_packages=true
        ;;
@@ -91,7 +116,7 @@ done
 if [ -f "${DIR}/default_packages_list.sh" ]; then
     if [ -z "${DEFAULT_PACKAGES_LIST}" ]; then
       source "${DIR}/default_packages_list.sh"
-      echo "Packages list has been imported from default_packages_list.sh file"
+      echo "INFO: Packages list has been imported from default_packages_list.sh file"
    fi
 fi
 
@@ -119,7 +144,7 @@ if $build_packages || $upload ; then
         destination_dir="$(pwd)/$destination_dir"
     fi
 else
-    echo "NOTE: Packages will not be built or uploaded. Use options -S or -U to change it."
+    echo "INFO: Packages will not be built or uploaded. So remove -S or use -U to make any action."
 fi
 
 
@@ -153,9 +178,20 @@ fi
 # Follow part uses Murano client, so let's
 # check, that muranoclient is available
 if ! hash murano 2>/dev/null; then
-    echo "Murano client is not available, please install it if you want to use it."
+    echo "INFO: Murano client is not available, please install it if you want to use it."
     exit 1
 fi
+
+if [ "$HOST" = 'example.com' ] ; then
+    echo "ERROR: please specify correct HOST (option -H) to get access to Openstack APIs"
+    exit 1
+fi
+
+# check and define endpoints
+
+: "${MURANO_URL:?MURANO_URL is not set. Try to execute command: export MURANO_URL=http://$HOST:8082/}"
+: "${GLARE_URL:?GLARE_URL is not set. Try to execute command: export GLARE_URL=http=http://$HOST:9494/}"
+: "${OS_AUTH_URL:?OS_AUTH_URL is not set. Try to execute command: export OS_AUTH_URL=http=http://$HOST:5000/v2.0}"
 
 # upload packages
 if $upload ; then
@@ -165,7 +201,7 @@ if $upload ; then
         filename="$(find "$destination_dir" -maxdepth 1 -name "*$d*")"
         pkg_id=$(murano package-list --owned | grep "$d" | awk '{print $2}')
         murano package-delete "$pkg_id"
-        murano package-import "$filename" --exists-action s
+        murano package-import "$filename" --exists-action s --dep-exists-action $action_for_dependency
     done
 fi
 
