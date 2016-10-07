@@ -19,6 +19,7 @@ destination_dir="."
 refresh_existing_packages=false
 upload=false
 build_packages=true
+action_for_dependency='s'
 
 help_string="$(basename "$0") [-h] [-s source_dir] [-d destination_dir] [-p package_name] -- script to build packages for downloading to Murano
 
@@ -35,6 +36,8 @@ where:
   upload packages options (they require muranoclient installation):
     -U  upload new packages to specified tenant from directory specified with -d option
         if this option is set, old packages will be removed from tenant and new will be imported instead.
+    -a  Default action when a dependency package already
+        exists: (s)kip, (u)pdate, (a)bort. Default value is: (s)kip.
     -e  name of environment, which will be created
 
 For using muranoclient please also specify necessary credentials in environment:
@@ -43,6 +46,11 @@ For using muranoclient please also specify necessary credentials in environment:
     export OS_TENANT_NAME=tenant
     export OS_AUTH_URL=http://auth.example.com:5000/v2.0
     export MURANO_URL=http://murano.example.com:8082/
+
+    if you want to use Glare, then specify follow options too:
+
+    export GLARE_URL=http://murano.example.com:9494/
+    export MURANO_PACKAGES_SERVICE=glare
 
 Examples
 --------
@@ -59,12 +67,14 @@ Upload existing packages without building them:
 ./tools/prepare_packages.sh -S -U -d $destination_dir
 "
 
-while getopts ':hUSs:d:p:e:' option; do
+while getopts ':hUSs:d:p:e:a:' option; do
   case "$option" in
     h) echo "$help_string"
        exit
        ;;
     e) env_name=$OPTARG
+       ;;
+    a) action_for_dependency=$OPTARG
        ;;
     r) refresh_existing_packages=true
        ;;
@@ -165,7 +175,7 @@ if $upload ; then
         filename="$(find "$destination_dir" -maxdepth 1 -name "*$d*")"
         pkg_id=$(murano package-list --owned | grep "$d" | awk '{print $2}')
         murano package-delete "$pkg_id"
-        murano package-import "$filename" --exists-action s
+        murano package-import "$filename" --exists-action s --dep-exists-action $action_for_dependency
     done
 fi
 
