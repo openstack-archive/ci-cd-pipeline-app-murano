@@ -23,7 +23,6 @@ Methods:
     Arguments:
       - instance:
           Contract: $.class(res:LinuxMuranoInstance).notNull()
-          Usage: Const
       - path:
           Contract: $.string().notNull()
       - data:

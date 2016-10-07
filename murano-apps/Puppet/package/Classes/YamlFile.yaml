@@ -18,7 +18,6 @@ Name: YamlFile
 Properties:
   path:
     Contract: $.string().notNull()
-    Usage: Const
   data:
     Contract: {}
     Default: dict()

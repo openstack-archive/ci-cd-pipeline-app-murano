@@ -19,11 +19,9 @@ Properties:
   dataFilePath:
     Contract: $.string()
     Default: '/etc/puppet/hieradata/murano.yaml'
-    Usage: Const
   configFilePath:
     Contract: $.string()
     Default: '/etc/puppet/hiera.yaml'
-    Usage: Const
   configFile:
     Contract: $.class(YamlFile)
   dataFile:
