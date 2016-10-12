@@ -129,3 +129,8 @@ Methods:
               $.role,
               $.instance.floatingIpAddress)))
 
+  getEndpoints:
+    Usage: Action
+    Body:
+      - Return: $.clients.select({$.role => $.instance.floatingIpAddress})
+
