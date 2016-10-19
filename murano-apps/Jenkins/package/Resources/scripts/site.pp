@@ -9,7 +9,6 @@ node default {
     ssl_cert_file           => '/etc/ssl/certs/ssl-cert-snakeoil.pem',
     ssl_key_file            => '/etc/ssl/private/ssl-cert-snakeoil.key',
     manage_jenkins_jobs     => false,
-    jenkins_version        => '2.19.1',
   }
 
   package { 'unzip':
