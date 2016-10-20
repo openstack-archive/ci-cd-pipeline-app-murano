@@ -14,4 +14,8 @@ node default {
   package { 'unzip':
     ensure => present
   }
+
+  Package<| title == 'jenkins' |> {
+    ensure  => '2.19.1',
+  }
 }
