@@ -35,11 +35,11 @@ where:
     -s  set the path to directory with list of source packages. (default is: $source_dir)
     -d  set the path to output directory, where zipped packages should be placed. (default is: $destination_dir)
     -p  set package name, which need to archive. (default is: $DEFAULT_PACKAGES_LIST)
+    -H  Ip address of the Openstack used in endpoints
 
   upload packages options (they require muranoclient installation):
     -U  upload new packages to specified tenant from directory specified with -d option
         if this option is set, old packages will be removed from tenant and new will be imported instead.
-    -H  Ip address of the Openstack used in endpoints
     -a  Default action when a dependency package already
         exists: (s)kip, (u)pdate, (a)bort. Default value is: (s)kip.
     -e  name of environment, which will be created
@@ -112,6 +112,17 @@ while getopts ':hUSs:d:p:e:a:H:' option; do
   esac
 done
 
+if [ "$HOST" = 'example.com' ] ; then
+    echo "ERROR: please specify correct HOST (option -H) to get access to Openstack APIs"
+    exit 1
+fi
+
+# check and define endpoints
+
+: "${MURANO_URL:?MURANO_URL is not set. Try to execute command: export MURANO_URL=http://$HOST:8082/}"
+: "${GLARE_URL:?GLARE_URL is not set. Try to execute command: export GLARE_URL=http=http://$HOST:9494/}"
+: "${OS_AUTH_URL:?OS_AUTH_URL is not set. Try to execute command: export OS_AUTH_URL=http=http://$HOST:5000/v2.0}"
+
 # import default packages_list, if exist
 if [ -f "${DIR}/default_packages_list.sh" ]; then
     if [ -z "${DEFAULT_PACKAGES_LIST}" ]; then
@@ -182,26 +193,16 @@ if ! hash murano 2>/dev/null; then
     exit 1
 fi
 
-if [ "$HOST" = 'example.com' ] ; then
-    echo "ERROR: please specify correct HOST (option -H) to get access to Openstack APIs"
-    exit 1
-fi
-
-# check and define endpoints
-
-: "${MURANO_URL:?MURANO_URL is not set. Try to execute command: export MURANO_URL=http://$HOST:8082/}"
-: "${GLARE_URL:?GLARE_URL is not set. Try to execute command: export GLARE_URL=http=http://$HOST:9494/}"
-: "${OS_AUTH_URL:?OS_AUTH_URL is not set. Try to execute command: export OS_AUTH_URL=http=http://$HOST:5000/v2.0}"
-
 # upload packages
 if $upload ; then
     # to have ability upload one package independently we need to remove it
     # via client and then upload it without updating its dependencies
-    for d in "${packages[@]}"; do
+    val="${packages[@]}"
+    for d in $val; do
         filename="$(find "$destination_dir" -maxdepth 1 -name "*$d*")"
         pkg_id=$(murano package-list --owned | grep "$d" | awk '{print $2}')
         murano package-delete "$pkg_id"
-        murano package-import "$filename" --exists-action s --dep-exists-action $action_for_dependency
+        murano package-import "$filename" --exists-action s --dep-exists-action "$action_for_dependency"
     done
 fi
 
