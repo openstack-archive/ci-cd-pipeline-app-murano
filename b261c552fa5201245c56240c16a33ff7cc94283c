@@ -1,0 +1,9 @@
+Verified+1: murano-ci-cd CI <murano-ci-cd-bot@mirantis.com>
+Code-Review+2: Stan Lagun <slagun@mirantis.com>
+Workflow+1: Stan Lagun <slagun@mirantis.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Tue, 25 Oct 2016 15:16:22 +0000
+Reviewed-on: https://review.openstack.org/389222
+Project: openstack/ci-cd-pipeline-app-murano
+Branch: refs/heads/master
