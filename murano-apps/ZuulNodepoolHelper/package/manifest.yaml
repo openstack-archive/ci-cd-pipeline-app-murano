@@ -1,4 +1,5 @@
 Format: 1.2
+Version: 0.0.10
 Type: Library
 FullName: org.openstack.ci_cd_pipeline_murano_app.ZuulNodepoolHelper
 Name: Zuul and Nodepool helper
