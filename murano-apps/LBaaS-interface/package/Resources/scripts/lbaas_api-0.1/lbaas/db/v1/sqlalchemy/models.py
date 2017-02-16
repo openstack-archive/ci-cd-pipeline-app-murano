@@ -16,15 +16,11 @@ import sqlalchemy as sa
 from sqlalchemy.orm import backref
 from sqlalchemy.orm import relationship
 
-from oslo_log import log as logging
-
 from lbaas.db.sqlalchemy import model_base as mb
 from lbaas.db.sqlalchemy import types as st
 
 
 # Definition objects.
-
-LOG = logging.getLogger(__name__)
 
 
 class Listener(mb.LbaasModelBase):

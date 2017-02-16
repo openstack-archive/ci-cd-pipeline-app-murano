@@ -18,7 +18,6 @@ import sys
 from oslo_config import cfg
 from oslo_db import exception as db_exc
 from oslo_db.sqlalchemy import utils as db_utils
-from oslo_log import log as logging
 import sqlalchemy as sa
 
 from lbaas.db.sqlalchemy import base as b
@@ -26,7 +25,6 @@ from lbaas.db.v1.sqlalchemy import models
 from lbaas import exceptions as exc
 
 CONF = cfg.CONF
-LOG = logging.getLogger(__name__)
 
 
 def get_backend():
