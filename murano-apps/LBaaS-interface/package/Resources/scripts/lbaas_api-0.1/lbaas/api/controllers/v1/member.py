@@ -12,7 +12,6 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-from oslo_log import log as logging
 import pecan
 from pecan import hooks
 from pecan import rest
@@ -24,9 +23,6 @@ from lbaas.db.v1 import api as db_api
 from lbaas.drivers import driver
 from lbaas import exceptions
 from lbaas.utils import rest_utils
-
-
-LOG = logging.getLogger(__name__)
 
 
 class Member(resource.Resource):
