@@ -120,8 +120,8 @@ fi
 # check and define endpoints
 
 : "${MURANO_URL:?MURANO_URL is not set. Try to execute command: export MURANO_URL=http://$HOST:8082/}"
-: "${GLARE_URL:?GLARE_URL is not set. Try to execute command: export GLARE_URL=http=http://$HOST:9494/}"
-: "${OS_AUTH_URL:?OS_AUTH_URL is not set. Try to execute command: export OS_AUTH_URL=http=http://$HOST:5000/v2.0}"
+: "${GLARE_URL:?GLARE_URL is not set. Try to execute command: export GLARE_URL=http://$HOST:9494/}"
+: "${OS_AUTH_URL:?OS_AUTH_URL is not set. Try to execute command: export OS_AUTH_URL=http://$HOST:5000/v2.0}"
 
 # import default packages_list, if exist
 if [ -f "${DIR}/default_packages_list.sh" ]; then
