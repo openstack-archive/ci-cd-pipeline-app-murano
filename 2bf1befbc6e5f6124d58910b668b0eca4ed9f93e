@@ -1,0 +1,9 @@
+Code-Review+2: Felipe Monteiro <felipe.monteiro@att.com>
+Code-Review+2: Sergey Kraynev <sergejyit@gmail.com>
+Workflow+1: Sergey Kraynev <sergejyit@gmail.com>
+Verified+2: Jenkins
+Submitted-by: Jenkins
+Submitted-at: Thu, 13 Jul 2017 07:03:18 +0000
+Reviewed-on: https://review.openstack.org/480863
+Project: openstack/ci-cd-pipeline-app-murano
+Branch: refs/heads/master
