@@ -10,10 +10,10 @@ Methods:
       - $instance: $.deployInstance()
       - $.deployApplication($instance)
 
-  # This method should be overriden in child classes.
+  # This method should be overridden in child classes.
   deployInstance:
 
-  # This method should be overriden in child classes.
+  # This method should be overridden in child classes.
   deployApplication:
     Arguments:
       - instance:
