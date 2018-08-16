@@ -1,0 +1,10 @@
+Code-Review+1: Sorin Sbarnea <ssbarnea@redhat.com>
+Code-Review+2: Sergey Kraynev <sergejyit@gmail.com>
+Verified+1: Sergey Kraynev <sergejyit@gmail.com>
+Workflow+1: Sergey Kraynev <sergejyit@gmail.com>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Thu, 16 Aug 2018 11:48:45 +0000
+Reviewed-on: https://review.openstack.org/570470
+Project: openstack/ci-cd-pipeline-app-murano
+Branch: refs/heads/master
