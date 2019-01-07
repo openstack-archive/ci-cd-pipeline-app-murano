@@ -150,7 +150,7 @@ To apply this job template you need to connect to Jenkins VM via ssh. Login
 as **root** and execute command:
 **jenkins-jobs update /etc/project-config/jenkins/jobs**
 
-- Go to Jenkins UI form, open created job and and configure it. Set
+- Go to Jenkins UI form, open created job and configure it. Set
   **Source Code management** to *Git* .Set **Repository url** as it's displayed
   in Gerrit. For example:
   **ssh://<username>@<gerrit_hostname>:29418/demo/petclinic**
