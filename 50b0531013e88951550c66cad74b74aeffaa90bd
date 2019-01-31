@@ -1,0 +1,9 @@
+Code-Review+2: Sergey Kraynev <sergejyit@gmail.com>
+Verified+1: Sergey Kraynev <sergejyit@gmail.com>
+Workflow+1: Sergey Kraynev <sergejyit@gmail.com>
+Verified+2: Zuul
+Submitted-by: Zuul
+Submitted-at: Thu, 31 Jan 2019 07:06:37 +0000
+Reviewed-on: https://review.openstack.org/628802
+Project: openstack/ci-cd-pipeline-app-murano
+Branch: refs/heads/master
