@@ -1,6 +1,0 @@
-applications:
-- name: lbaas-service-broker
-  mem: 128M
-  command: python service-broker/lbaas-service-broker.py config.json
-  disk: 512M
-  buildpack: python_buildpack

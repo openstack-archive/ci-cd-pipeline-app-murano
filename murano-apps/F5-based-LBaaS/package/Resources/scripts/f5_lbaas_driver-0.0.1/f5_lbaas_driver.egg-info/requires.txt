@@ -1,3 +1,0 @@
-f5-sdk>=0.1
-requests!=2.9.0,>=2.8.1
-oslo.config>=3.7.0

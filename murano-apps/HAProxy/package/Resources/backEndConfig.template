@@ -1,4 +1,0 @@
-backend $name
-  mode $mode
-  balance $balance
-$servers

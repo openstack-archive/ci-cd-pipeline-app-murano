@@ -1,4 +1,0 @@
-frontend $name
-$binds
-  mode $mode
-  default_backend $default_backend

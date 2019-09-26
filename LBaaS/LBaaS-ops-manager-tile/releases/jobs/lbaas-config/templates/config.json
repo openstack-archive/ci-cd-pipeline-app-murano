@@ -1,8 +1,0 @@
-{
-  "auth_url": "<%= p('openstack.os_auth_url') %>",
-  "username": "<%= p('openstack.os_username') %>",
-  "password": "<%= p('openstack.os_password') %>",
-  "tenant_name": "<%= p('openstack.os_tenant_name') %>",
-  "keyname": "lbaas-generated",
-  "image_name": "<%= p('lbaas.image_name') %>"
-}
